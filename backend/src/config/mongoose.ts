@@ -9,7 +9,6 @@ dotenv.config({ path: envFile });
 
 
 const MONGO_DB_URI = process.env.MONGO_DB_URI;
-console.log('herrreeeeeee!!!!',MONGO_DB_URI)
 
 
 export const connectToDB = async () => {

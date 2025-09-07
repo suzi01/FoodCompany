@@ -1,11 +1,14 @@
 import { Schema, model, Document, Types } from 'mongoose';
 
+type SupplerStatus = 'Active'|'Pending'|'Removed'
+
 export interface ISupplier extends Document {
     companyName: string;
     mainContactName: string;
     address?: string;
     email: string,
     phoneNumber?:string,
+    status: SupplerStatus;
     productsProvided: Types.ObjectId[];
     branches:Types.ObjectId[]
 }
@@ -37,6 +40,10 @@ const supplierSchema = new Schema<ISupplier>({
     type: String,
     trim: true,
     maxLength: 70,
+  },
+  status: {
+    type: String,
+    enum: ['Active', 'Pending', 'Removed'],
   },
   phoneNumber: {
     type: String,
