@@ -1,10 +1,11 @@
-import Supplier from "../models/supplier";
+
 import { Request, Response } from 'express'
+import * as supplierService from '../services/supplier.service'
 
 // Display a list of all suppliers.
 export const getAllSuppliers = async (req:Request, res:Response) => {
     try {
-        const suppliers = await Supplier.find()
+        const suppliers = await supplierService.getAllSuppliers()
         res.status(200).json({success:true, data:suppliers})
         
     } catch (error) {
@@ -15,7 +16,7 @@ export const getAllSuppliers = async (req:Request, res:Response) => {
 // Display a supplier.
 export const getSupplier = async (req:Request, res:Response) => {
     try {
-        const supplier = await Supplier.find({_id: req.params.id})
+        const supplier = await supplierService.getSupplier(req.params.id)
         if(!supplier){
             throw Error('User not found')
         }
@@ -24,20 +25,17 @@ export const getSupplier = async (req:Request, res:Response) => {
     } catch (error) {
         console.error('Unable to find supplier')
     }
-
 }
 
-// - **Create**: Add a new supplier.
-
+// Add a new supplier.
 export const createSupplier = async (req:Request, res:Response) => {
     try {
-        const newSupplier = await Supplier.create(req.body)
+        const newSupplier = await supplierService.createSupplier(req.body)
         res.status(201).json({success:true, data:newSupplier})
         
     } catch (error) {
         console.error('Could not add supplier')
     }
-
 }
 
 

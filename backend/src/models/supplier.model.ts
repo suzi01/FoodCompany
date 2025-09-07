@@ -1,17 +1,6 @@
-import { Schema, model, Document, Types } from 'mongoose';
+import { Schema, model } from 'mongoose';
+import { ISupplier } from '../dtos/supplier.dto';
 
-type SupplerStatus = 'Active'|'Pending'|'Removed'
-
-export interface ISupplier extends Document {
-    companyName: string;
-    mainContactName: string;
-    address?: string;
-    email: string,
-    phoneNumber?:string,
-    status: SupplerStatus;
-    productsProvided: Types.ObjectId[];
-    branches:Types.ObjectId[]
-}
 
 const supplierSchema = new Schema<ISupplier>({
   companyName: {

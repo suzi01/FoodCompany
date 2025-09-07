@@ -1,5 +1,5 @@
 import Router from 'express'
-import { createSupplier, getAllSuppliers, getSupplier } from '../controllers/supplierController'
+import { createSupplier, getAllSuppliers, getSupplier } from '../controllers/supplier.controller'
 
 const supplierRouter = Router()
 
