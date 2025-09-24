@@ -1,6 +1,6 @@
 import { Types } from "mongoose";
 
-export type SupplerStatus = 'Active'|'Pending'|'Removed'
+export type SupplierStatusType = 'Active'|'Pending'|'Removed'
 
 export interface ISupplier extends Document {
     companyName: string;
@@ -8,7 +8,7 @@ export interface ISupplier extends Document {
     address?: string;
     email: string,
     phoneNumber?:string,
-    status: SupplerStatus;
+    status: SupplierStatusType;
     productsProvided: Types.ObjectId[];
     branches:Types.ObjectId[]
 }

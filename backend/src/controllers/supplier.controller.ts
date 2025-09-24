@@ -38,16 +38,52 @@ export const createSupplier = async (req:Request, res:Response) => {
     }
 }
 
-
-
-
-
 // - **Search**: Filter suppliers by name, items they provide (through a product search), or unique code (which you could add, such as a supplier ID).
+export const searchSuppliers = async (req:Request, res:Response) => {
+    try {
+        const { companyName, product, code, sort, order } = req.query
+        const suppliers = await supplierService.searchSuppliers(
+            typeof companyName === 'string' ? companyName : '',
+            typeof product === 'string' ? product : '',
+            typeof code === 'string' ? code : '',
+            typeof sort === 'string' ? sort : 'CompanyName',
+            typeof order === 'string' ? order : 'Ascending'
+        )
+        res.status(200).json({success:true, data:suppliers})
+    } catch (error) {
+        console.error('Could not search suppliers')
+    }
+}
+
 
 // - **Update**: Modify an existing supplier's details.
+
+export const updateSupplier = async (req:Request, res:Response) => {
+    try {
+        const updatedSupplier = await supplierService.updateSupplier(req.params.id, req.body)
+        if(!updatedSupplier){
+            throw Error('Supplier not found')
+        }
+        res.status(200).json({success:true, data:updatedSupplier})
+        
+    } catch (error) {
+        console.error('Could not update supplier')
+    }
+}
 
 
 // Remove a supplier.
 
+export const deleteSupplier = async (req:Request, res:Response) => {
+    try {
+        const deletedSupplier = await supplierService.deleteSupplier(req.params.id)
+        if(!deletedSupplier){
+            throw Error('Supplier not found')
+        }
+        res.status(200).json({success:true, data:deletedSupplier})
 
+    } catch (error) {
+        console.error('Could not delete supplier')
+    }
+}
 
