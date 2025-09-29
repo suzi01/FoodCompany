@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import type { MongoError } from 'mongodb';
-import { HttpError } from '../utils/appError';
+import { HttpError } from '../utils/app-error';
 
 const { ValidationError } = mongoose.Error;
 

@@ -1,5 +1,4 @@
-
-import Supplier, { ISupplier } from '../models/supplier.model';
+import Supplier, { ISupplier } from './supplier.model';
 
 export const getAllSuppliers = async () => {
   return Supplier.find();

@@ -1,7 +1,8 @@
 import { z } from 'zod';
-import { supplierStatusValues } from '../constants';
+import { supplierStatusValues } from '../../constants';
 
-export const createSupplierSchema = z.object({
+export const supplierSchema = z.object({
+  id: z.string(),
   status: z.enum(supplierStatusValues),
   companyName: z
     .string()
@@ -16,6 +17,8 @@ export const createSupplierSchema = z.object({
   phoneNumber: z.string().optional(),
   productsProvided: z.array(z.string()),
   branches: z.array(z.string()),
+  createdAt: z.string(),
+  updatedAt: z.string(),
 });
 
-export type CreateSupplierDto = z.infer<typeof createSupplierSchema>;
+export type SupplierDto = z.infer<typeof supplierSchema>;

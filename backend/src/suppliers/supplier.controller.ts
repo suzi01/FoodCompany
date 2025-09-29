@@ -1,6 +1,6 @@
-import * as supplierService from '../services/supplier.service';
-import { HttpError } from '../utils/appError';
-import { catchAsync } from '../utils/catchAsync';
+import * as supplierService from './supplier.service';
+import { HttpError } from '../utils/app-error';
+import { catchAsync } from '../utils/catch-async';
 import { toSupplierResponseDTO } from '../utils/mappers/supplier.mapper';
 
 // Display a list of all suppliers.

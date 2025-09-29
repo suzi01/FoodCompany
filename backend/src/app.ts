@@ -1,9 +1,9 @@
 import express from 'express';
-import config from './config/config';
-import { connectToDB } from './config/mongoose';
-import supplierRouter from './routes/supplierRoutes';
-import { globalErrorHandler } from './controllers/error.controller';
-import { HttpError } from './utils/appError';
+import config from './config/env.config';
+import { connectToDB } from './config/mongoose.config';
+import supplierRouter from './suppliers/supplier.routes';
+import { globalErrorHandler } from './error/error.controller';
+import { HttpError } from './utils/app-error';
 
 const app = express();
 

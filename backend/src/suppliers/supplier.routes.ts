@@ -6,9 +6,9 @@ import {
   getSupplier,
   searchSuppliers,
   updateSupplier,
-} from '../controllers/supplier.controller';
-import { createSupplierSchema } from '../dtos/createSupplier.dto';
-import { validateSchema } from '../middlewares/validateSchema';
+} from './supplier.controller';
+import { createSupplierSchema } from './dtos/create-supplier.dto';
+import { validateSchema } from '../middlewares/validate-schema.middleware';
 
 const supplierRouter = Router();
 

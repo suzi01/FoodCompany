@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { HttpError } from '../utils/appError';
+import { HttpError } from '../utils/app-error';
 import { GlobalError } from '../types/GlobalError';
 
 const handleCastErrorDB = (err: GlobalError) => {
@@ -22,7 +22,6 @@ const handleValidationErrorDB = (err: GlobalError) => {
 };
 
 const sendErrorDev = (err: GlobalError, res: Response) => {
- 
   res.status(err.statusCode || 500).json({
     status: err.status || 'error',
     error: err,
