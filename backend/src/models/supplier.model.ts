@@ -1,11 +1,12 @@
-import { Schema, model } from 'mongoose';
-
+import { Document, Schema, model } from 'mongoose';
 
 import { Types } from 'mongoose';
+import { supplierStatusValues } from '../constants';
 
-export type SupplierStatusType = 'Active' | 'Pending' | 'Removed';
+export type SupplierStatusType = (typeof supplierStatusValues)[number];
 
-export interface ISupplier {
+export interface ISupplier extends Document {
+  _id: Types.ObjectId;
   companyName: string;
   mainContactName: string;
   address?: string;
