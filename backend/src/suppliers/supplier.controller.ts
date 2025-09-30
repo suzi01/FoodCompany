@@ -38,7 +38,7 @@ export const searchSuppliers = catchAsync(async (req, res, next) => {
     typeof product === 'string' ? product : '',
     typeof code === 'string' ? code : '',
     typeof sort === 'string' ? sort : 'CompanyName',
-    typeof order === 'string' ? order : 'Ascending',
+    typeof order === 'string' ? order : 'asc',
   );
 
   const mappedSuppliers = suppliers.map(toSupplierResponseDTO);
