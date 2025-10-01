@@ -3,11 +3,12 @@
     "target": "ESNext",
     "module": "CommonJS",
     "outDir": "dist",
-    "rootDir": "src",
+    "rootDir": "./",
     "esModuleInterop": true,
     "strict": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "types": ["jest"]
   },
-  "include": ["src"],
+  "include": ["./src/**/*.ts", "tests/**/*.ts"],
   "exclude": ["node_modules"]
 }
