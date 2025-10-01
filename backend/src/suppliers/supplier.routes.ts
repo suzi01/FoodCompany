@@ -1,4 +1,6 @@
 import Router from 'express';
+import { validateSchema } from '../middlewares/validate-schema.middleware';
+import { createSupplierSchema } from './dtos/create-supplier.dto';
 import {
   createSupplier,
   deleteSupplier,
@@ -7,8 +9,6 @@ import {
   searchSuppliers,
   updateSupplier,
 } from './supplier.controller';
-import { createSupplierSchema } from './dtos/create-supplier.dto';
-import { validateSchema } from '../middlewares/validate-schema.middleware';
 
 const supplierRouter = Router();
 
