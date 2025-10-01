@@ -6,11 +6,13 @@ import {
   getSupplier,
   searchSuppliers,
   updateSupplier,
-} from '../controllers/supplier.controller';
+} from './supplier.controller';
+import { createSupplierSchema } from './dtos/create-supplier.dto';
+import { validateSchema } from '../middlewares/validate-schema.middleware';
 
 const supplierRouter = Router();
 
-supplierRouter.post('/', createSupplier);
+supplierRouter.post('/', validateSchema(createSupplierSchema), createSupplier);
 supplierRouter.get('/', getAllSuppliers);
 supplierRouter.get('/search', searchSuppliers);
 supplierRouter.get('/:id', getSupplier);

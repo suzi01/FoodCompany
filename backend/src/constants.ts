@@ -1,0 +1,1 @@
+export const supplierStatusValues = ['Active', 'Inactive', 'Pending'] as const;
