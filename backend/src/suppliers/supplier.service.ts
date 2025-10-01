@@ -1,16 +1,16 @@
-import { CreateBranchDto } from '../branches/dtos/create-branch.dto';
-import { EditBranchDto } from '../branches/dtos/edit-branch.dto';
-import Supplier, { ISupplier } from './supplier.model';
+import { CreateSupplierDto } from './dtos/create-supplier.dto';
+import { EditSupplierDto } from './dtos/edit-supplier.dto';
+import Supplier from './supplier.model';
 
 export const getAllSuppliers = async () => {
   return Supplier.find();
 };
 
-export const createSupplier = async (data: CreateBranchDto) => {
+export const createSupplier = async (data: CreateSupplierDto) => {
   return await Supplier.create(data);
 };
 
-export const updateSupplier = async (id: string, data: EditBranchDto) => {
+export const updateSupplier = async (id: string, data: EditSupplierDto) => {
   return Supplier.findByIdAndUpdate(id, data, { new: true });
 };
 

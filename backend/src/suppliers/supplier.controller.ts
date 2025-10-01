@@ -15,7 +15,9 @@ export const getAllSuppliers = catchAsync(async (req, res, next) => {
 export const getSupplier = catchAsync(async (req, res, next) => {
   const supplier = await supplierService.getSupplier(req.params.id);
   if (!supplier) {
-    return next(new HttpError(404, 'No supplier found with that ID'));
+    return next(
+      new HttpError(404, `No supplier found with ID ${req.params.id}`),
+    );
   }
 
   const mappedSupplier = toSupplierResponseDTO(supplier);
@@ -54,7 +56,9 @@ export const updateSupplier = catchAsync(async (req, res, next) => {
     req.body,
   );
   if (!updatedSupplier) {
-    return next(new HttpError(404, 'Supplier not found'));
+    return next(
+      new HttpError(404, `Supplier with ID ${req.params.id} not found`),
+    );
   }
   const mappedSupplier = toSupplierResponseDTO(updatedSupplier);
   res.status(200).json({ success: true, data: mappedSupplier });
@@ -65,9 +69,12 @@ export const updateSupplier = catchAsync(async (req, res, next) => {
 export const deleteSupplier = catchAsync(async (req, res, next) => {
   const deletedSupplier = await supplierService.deleteSupplier(req.params.id);
   if (!deletedSupplier) {
-    return next(new HttpError(404, 'Supplier not found'));
+    return next(
+      new HttpError(404, `Supplier with ID ${req.params.id} not found`),
+    );
   }
-  res
-    .status(200)
-    .json({ success: true, message: 'Supplier deleted successfully' });
+  res.status(200).json({
+    success: true,
+    message: 'Supplier deleted successfully',
+  });
 });
