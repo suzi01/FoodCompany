@@ -60,13 +60,10 @@ export const globalErrorHandler = (
   ) {
     sendErrorDev(err, res);
   } else {
-    let error: GlobalError = { ...err };
+    if (err.name === 'CastError') err = handleCastErrorDB(err);
+    if ((err as any).code === 11000) err = handleDuplicateFieldsDB(err);
+    if (err.name === 'ValidationError') err = handleValidationErrorDB(err);
 
-    if (error.name === 'CastError') error = handleCastErrorDB(error);
-    if ((error as any).code === 11000) error = handleDuplicateFieldsDB(error);
-    if (error.name === 'ValidationError')
-      error = handleValidationErrorDB(error);
-
-    sendErrorProd(error, res);
+    sendErrorProd(err, res);
   }
 };
