@@ -1,9 +1,9 @@
 import request from 'supertest';
-import app from '../../src/app';
+import app from '../../../src/app';
 
-import * as supplierService from '../../src/suppliers/supplier.service';
+import * as supplierService from '../../../src/suppliers/supplier.service';
 
-jest.mock('../../src/suppliers/supplier.service');
+jest.mock('../../../src/suppliers/supplier.service');
 
 const mockSuppliers = [
   {

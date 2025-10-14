@@ -1,9 +1,9 @@
 import request from 'supertest';
-import app from '../../src/app';
+import app from '../../../src/app';
 
-import * as branchService from '../../src/branches/branch.service';
+import * as branchService from '../../../src/branches/branch.service';
 
-jest.mock('../../src/branches/branch.service');
+jest.mock('../../../src/branches/branch.service');
 
 const mockBranches = [
   {
@@ -235,7 +235,7 @@ describe('branch Controller', () => {
 
   describe('updateBranch', () => {
     it('PUT / should update an existing branch with valid data', async () => {
-      const updatedValue = { ...mockBranches[1], branchName: 'updated Name' };
+      
       (branchService.updateBranch as jest.Mock).mockResolvedValue({
         ...mockBranches[1],
         branchName: 'updated Name',

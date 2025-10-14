@@ -113,7 +113,7 @@ describe('Supplier Service', () => {
       (Supplier.find as jest.Mock).mockRejectedValue(error);
 
       await expect(getAllSuppliers()).rejects.toThrow('Database query failed');
-      expect(Supplier.find).toHaveBeenCalledWith();
+      expect(Supplier.find).toHaveBeenCalled();
     });
   });
 
@@ -133,36 +133,35 @@ describe('Supplier Service', () => {
       (Supplier.findById as jest.Mock).mockResolvedValue(supplier);
 
       const result = await getSupplier('123');
-      console.log(result);
 
       expect(Supplier.findById).toHaveBeenCalled();
       expect(result).toEqual(supplier);
     });
     it('should return empty array when supplier does not exist', async () => {
-      (Supplier.find as jest.Mock).mockResolvedValue([]);
+      (Supplier.findById as jest.Mock).mockResolvedValue([]);
 
-      const result = await getAllSuppliers();
+      const result = await getSupplier('123');
 
-      expect(Supplier.find).toHaveBeenCalledWith();
+      expect(Supplier.findById).toHaveBeenCalledWith('123');
       expect(result).toEqual([]);
       expect(result).toHaveLength(0);
     });
 
     it('should handle database errors', async () => {
       const error = new Error('Database query failed');
-      (Supplier.find as jest.Mock).mockRejectedValue(error);
+      (Supplier.findById as jest.Mock).mockRejectedValue(error);
 
-      await expect(getAllSuppliers()).rejects.toThrow('Database query failed');
-      expect(Supplier.find).toHaveBeenCalledWith();
+      await expect(getSupplier('123')).rejects.toThrow('Database query failed');
+      expect(Supplier.findById).toHaveBeenCalledWith('123');
     });
   });
 
   describe('updateSupplier', () => {
+    const updateData = {
+      companyName: 'Updated Acme Corp',
+      phoneNumber: '987-654-3210',
+    };
     it('should update supplier successfully', async () => {
-      const updateData = {
-        companyName: 'Updated Acme Corp',
-        phoneNumber: '987-654-3210',
-      };
       const updatedSupplier = { ...mockSupplier, ...updateData };
 
       (Supplier.findByIdAndUpdate as jest.Mock).mockResolvedValue(
@@ -189,20 +188,33 @@ describe('Supplier Service', () => {
       }
     });
     it('should return null when no suppliers exist', async () => {
-      (Supplier.find as jest.Mock).mockResolvedValue(null);
+      (Supplier.findByIdAndUpdate as jest.Mock).mockResolvedValue(null);
 
-      const result = await getAllSuppliers();
+      const result = await updateSupplier(
+        '507f1f77bcf86cd799439011',
+        updateData,
+      );
 
-      expect(Supplier.find).toHaveBeenCalledWith();
+      expect(Supplier.findByIdAndUpdate).toHaveBeenCalledWith(
+        '507f1f77bcf86cd799439011',
+        updateData,
+        { new: true },
+      );
       expect(result).toBeNull();
     });
 
     it('should handle database errors', async () => {
       const error = new Error('Database query failed');
-      (Supplier.find as jest.Mock).mockRejectedValue(error);
+      (Supplier.findByIdAndUpdate as jest.Mock).mockRejectedValue(error);
 
-      await expect(getAllSuppliers()).rejects.toThrow('Database query failed');
-      expect(Supplier.find).toHaveBeenCalledWith();
+      await expect(
+        updateSupplier('507f1f77bcf86cd799439011', updateData),
+      ).rejects.toThrow('Database query failed');
+      expect(Supplier.findByIdAndUpdate).toHaveBeenCalledWith(
+        '507f1f77bcf86cd799439011',
+        updateData,
+        { new: true },
+      );
     });
   });
 

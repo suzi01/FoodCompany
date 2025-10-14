@@ -11,7 +11,11 @@ export const createSupplier = async (data: CreateSupplierDto) => {
 };
 
 export const updateSupplier = async (id: string, data: EditSupplierDto) => {
-  return Supplier.findByIdAndUpdate(id, data, { new: true });
+  try {
+    return Supplier.findByIdAndUpdate(id, data, { new: true });
+  } catch (error) {
+    throw new Error('Database query failed');
+  }
 };
 
 export const deleteSupplier = async (id: string) => {

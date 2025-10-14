@@ -1,7 +1,7 @@
 import Supplier from '../../../src/suppliers/supplier.model';
 import { toSupplierResponseDTO } from '../../../src/utils/mappers/supplier.mapper';
 
-describe('Supplier Service', () => {
+describe('Supplier mappers', () => {
   const mockSupplier = {
     _id: '507f1f77bcf86cd799439011',
     companyName: 'Acme Corp',

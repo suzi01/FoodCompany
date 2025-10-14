@@ -23,7 +23,7 @@ describe('Supplier Model Test', () => {
       );
     }
   });
-  it.only('should throw validation error when company name is missing', async () => {
+  it('should throw validation error when company name is missing', async () => {
     const supplier = new Supplier({ companyName: '' });
 
     try {
