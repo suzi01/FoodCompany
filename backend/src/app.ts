@@ -26,7 +26,7 @@ app.all(/.*/, (req, _res, next) => {
   next(new HttpError(404, `Can't find ${req.originalUrl} on this server!`));
 });
 
-app.use(globalErrorHandler);
+// app.use(globalErrorHandler);
 
 app.listen(config.port, async () => {
   console.log(`🚀 Server running on http://localhost:${config.port}`);
