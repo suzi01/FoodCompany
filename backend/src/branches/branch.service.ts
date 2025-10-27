@@ -25,7 +25,7 @@ export const searchBranches = async (
   if (supplierName !== '')
     query.supplierName = { $regex: supplierName, $options: 'i' };
 
-  return Branch.find(query).sort({ [sort]: order === 'Ascending' ? 1 : -1 });
+  return Branch.find(query).sort({ [sort]: order === 'asc' ? 1 : -1 });
 };
 
 export const createBranch = async (data: CreateBranchDto) => {
