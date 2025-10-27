@@ -16,6 +16,11 @@ if (fs.existsSync(envFile)) {
   );
 }
 
+console.log('Environment check:', {
+  NODE_ENV: process.env.NODE_ENV,
+  hasMongoUri: !!process.env.MONGODB_URI,
+});
+
 interface Config {
   port: number;
   nodeEnv: string;
