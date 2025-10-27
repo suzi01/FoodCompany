@@ -31,19 +31,10 @@ app.use(globalErrorHandler);
 if (process.env.NODE_ENV !== 'production') {
   console.log('Local development mode detected.');
 
-  connectToDB()
-    .then(() => {
-      app.listen(config.port, () => {
-        console.log(`🚀 Server running on http://localhost:${config.port}`);
-      });
-    })
-    .catch((err) => {
-      console.error(
-        '❌ Failed to start local server due to MongoDB error:',
-        err,
-      );
-      process.exit(1);
-    });
+  app.listen(config.port, async () => {
+    await connectToDB();
+    console.log(`🚀 Server running on http://localhost:${config.port}`);
+  });
 }
 
 export default app;
