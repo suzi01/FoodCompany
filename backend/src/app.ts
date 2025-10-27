@@ -22,11 +22,23 @@ app.use('/', (_req, res) => {
   res.send('Welcome to the API');
 });
 
+app.use('/api/test', async (req, res, next) => {
+  try {
+    console.log('➡️ Connecting to DB...');
+    await connectToDB();
+    console.log('✅ DB connected, sending response');
+    res.json({ success: true });
+  } catch (err) {
+    console.error('❌ DB connect failed', err);
+    next(err);
+  }
+});
+
 app.all(/.*/, (req, _res, next) => {
   next(new HttpError(404, `Can't find ${req.originalUrl} on this server!`));
 });
 
-// app.use(globalErrorHandler);
+app.use(globalErrorHandler);
 
 app.listen(config.port, async () => {
   console.log(`🚀 Server running on http://localhost:${config.port}`);
