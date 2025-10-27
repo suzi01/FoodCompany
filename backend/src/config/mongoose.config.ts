@@ -1,4 +1,4 @@
-import { connect, set } from 'mongoose';
+import mongoose, { connect, set } from 'mongoose';
 import dotenv from 'dotenv';
 import fs from 'fs';
 
@@ -15,6 +15,10 @@ if (fs.existsSync(envFile)) {
     '⚠️ No local .env file found. Assuming environment variables are injected (e.g. on Vercel).',
   );
 }
+
+console.log('MONGO URI exists:', !!process.env.MONGODB_URI);
+mongoose.connection.on('connected', () => console.log('✅ Connected to Mongo'));
+mongoose.connection.on('error', (err) => console.error('❌ Mongo error:', err));
 
 const MONGO_DB_URI = process.env.MONGO_DB_URI;
 
