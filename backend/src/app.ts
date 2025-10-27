@@ -1,4 +1,5 @@
 import express from 'express';
+import cors from 'cors';
 import config from './config/env.config';
 import { connectToDB } from './config/mongoose.config';
 import supplierRouter from './suppliers/supplier.routes';
@@ -8,9 +9,14 @@ import branchRouter from './branches/branch.routes';
 import productRouter from './products/product.routes';
 
 const app = express();
+app.use(cors());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+app.use('/', (req, res) => {
+  res.send('Welcome to the API');
+});
 
 app.use('/api/v1/products', productRouter);
 app.use('/api/v1/suppliers', supplierRouter);
