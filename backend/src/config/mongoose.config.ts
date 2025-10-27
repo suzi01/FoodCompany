@@ -22,6 +22,7 @@ export const connectToDB = async () => {
   console.log('Starting MongoDB connection...');
   try {
     if (!MONGO_DB_URI) {
+      console.log('❌ MONGODB_URI is not defined');
       throw new Error(
         'Please define the MONGODB_URI environment variable inside .env.<development/production>.local',
       );
@@ -30,6 +31,7 @@ export const connectToDB = async () => {
     const db = await connect(MONGO_DB_URI);
     console.log('MongoDB connected to', db.connection.name);
   } catch (error) {
+    console.log('❌ MongoDB connection failed');
     console.error(error);
     process.exit(1);
   }
