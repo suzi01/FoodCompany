@@ -22,10 +22,10 @@ app.use('/', (_req, res) => {
   res.send('Welcome to the API');
 });
 
-app.use('/api/test', async (req, res, next) => {
+app.use('/api/test', (_req, res, next) => {
   try {
     console.log('➡️ Connecting to DB...');
-    await connectToDB();
+    connectToDB();
     console.log('✅ DB connected, sending response');
     res.json({ success: true });
   } catch (err) {
