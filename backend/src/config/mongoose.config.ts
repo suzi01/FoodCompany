@@ -16,8 +16,10 @@ if (fs.existsSync(envFile)) {
   );
 }
 
-console.log('MONGO URI exists:', !!process.env.MONGODB_URI);
-mongoose.connection.on('connected', () => console.log('✅ Connected to Mongo'));
+console.log('MONGO URI exists:', !!process.env.MONGO_DB_URI);
+mongoose.connection.on('connected', () =>
+  console.log('✅ Connected to Mongo Yay'),
+);
 mongoose.connection.on('error', (err) => console.error('❌ Mongo error:', err));
 
 const MONGO_DB_URI = process.env.MONGO_DB_URI;
