@@ -14,9 +14,9 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// connectToDB()
-//   .then(() => console.log('✅ MongoDB connected'))
-//   .catch((err) => console.error('❌ MongoDB connection failed', err));
+connectToDB()
+  .then(() => console.log('✅ MongoDB connected'))
+  .catch((err) => console.error('❌ MongoDB connection failed', err));
 
 app.use('/api/v1/products', productRouter);
 app.use('/api/v1/suppliers', supplierRouter);
