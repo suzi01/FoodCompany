@@ -31,6 +31,7 @@ app.use(globalErrorHandler);
 app.listen(config.port, async () => {
   console.log(`🚀 Server running on http://localhost:${config.port}`);
   if (process.env.NODE_ENV !== 'test') {
+    console.log('🌱 Connecting to MongoDB...');
     await connectToDB();
   }
 });

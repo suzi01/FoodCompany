@@ -1,12 +1,20 @@
 import { connect, set } from 'mongoose';
 import dotenv from 'dotenv';
+import fs from 'fs';
 
 const envFile =
   process.env.NODE_ENV === 'production'
     ? '.env.production.local'
     : '.env.development.local';
 
-dotenv.config({ path: envFile });
+if (fs.existsSync(envFile)) {
+  dotenv.config({ path: envFile });
+  console.log(`✅ Loaded environment from ${envFile}`);
+} else {
+  console.log(
+    '⚠️ No local .env file found. Assuming environment variables are injected (e.g. on Vercel).',
+  );
+}
 
 const MONGO_DB_URI = process.env.MONGO_DB_URI;
 
