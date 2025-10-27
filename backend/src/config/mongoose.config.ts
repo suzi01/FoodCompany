@@ -19,6 +19,7 @@ if (fs.existsSync(envFile)) {
 const MONGO_DB_URI = process.env.MONGO_DB_URI;
 
 export const connectToDB = async () => {
+  console.log('Starting MongoDB connection...');
   try {
     if (!MONGO_DB_URI) {
       throw new Error(

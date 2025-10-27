@@ -54,6 +54,9 @@ export const globalErrorHandler = (
   err.statusCode = err.name === 'ValidationError' ? 400 : err.statusCode || 500;
   err.status = err.status || 'error';
 
+  console.log('Error:', err.status);
+  console.log('Message:', err.message);
+
   if (
     process.env.NODE_ENV === 'development' ||
     process.env.NODE_ENV === 'test'
