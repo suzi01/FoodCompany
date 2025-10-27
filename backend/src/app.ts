@@ -1,4 +1,5 @@
 import express from 'express';
+import cors from 'cors';
 import config from './config/env.config';
 import { connectToDB } from './config/mongoose.config';
 import supplierRouter from './suppliers/supplier.routes';
@@ -7,6 +8,7 @@ import { HttpError } from './utils/app-error';
 import branchRouter from './branches/branch.routes';
 
 const app = express();
+app.use(cors());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
