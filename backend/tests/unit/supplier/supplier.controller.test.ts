@@ -1,9 +1,9 @@
 import request from 'supertest';
-import app from '../../src/app';
+import app from '../../../src/app';
 
-import * as supplierService from '../../src/suppliers/supplier.service';
+import * as supplierService from '../../../src/suppliers/supplier.service';
 
-jest.mock('../../src/suppliers/supplier.service');
+jest.mock('../../../src/suppliers/supplier.service');
 
 const mockSuppliers = [
   {
@@ -256,7 +256,9 @@ describe('supplier Controller', () => {
         .put('/api/v1/suppliers/60c72b2f9b1d8c1e8c8b4567')
         .send({ companyName: 'updated Name' });
       expect(response.status).toBe(404);
-      expect(response.body.message).toBe('Supplier not found');
+      expect(response.body.message).toBe(
+        'Supplier with ID 60c72b2f9b1d8c1e8c8b4567 not found',
+      );
     });
 
     it('PUT / should handle validation errors during update', async () => {
@@ -329,7 +331,9 @@ describe('supplier Controller', () => {
         '/api/v1/suppliers/68d3d624eb3b2060dcc384f8',
       );
       expect(response.status).toBe(404);
-      expect(response.body.message).toBe('Supplier not found');
+      expect(response.body.message).toBe(
+        'Supplier with ID 68d3d624eb3b2060dcc384f8 not found',
+      );
     });
   });
 });

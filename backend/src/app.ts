@@ -6,6 +6,7 @@ import supplierRouter from './suppliers/supplier.routes';
 import { globalErrorHandler } from './error/error.controller';
 import { HttpError } from './utils/app-error';
 import branchRouter from './branches/branch.routes';
+import productRouter from './products/product.routes';
 
 const app = express();
 app.use(cors());
@@ -13,6 +14,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+app.use('/api/v1/products', productRouter);
 app.use('/api/v1/suppliers', supplierRouter);
 app.use('/api/v1/branches', branchRouter);
 
