@@ -14,10 +14,6 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// connectToDB()
-//   .then(() => console.log('✅ MongoDB connected'))
-//   .catch((err) => console.error('❌ MongoDB connection failed', err));
-
 app.use('/api/v1/products', productRouter);
 app.use('/api/v1/suppliers', supplierRouter);
 app.use('/api/v1/branches', branchRouter);
@@ -32,14 +28,22 @@ app.all(/.*/, (req, _res, next) => {
 
 app.use(globalErrorHandler);
 
-console.log('config port:', config.port);
+if (process.env.NODE_ENV !== 'production') {
+  console.log('Local development mode detected.');
 
-app.listen(config.port, async () => {
-  console.log(`🚀 Server running on http://localhost:${config.port}`);
-  if (process.env.NODE_ENV !== 'test') {
-    console.log('🌱 Connecting to MongoDB...');
-    await connectToDB();
-  }
-});
+  connectToDB()
+    .then(() => {
+      app.listen(config.port, () => {
+        console.log(`🚀 Server running on http://localhost:${config.port}`);
+      });
+    })
+    .catch((err) => {
+      console.error(
+        '❌ Failed to start local server due to MongoDB error:',
+        err,
+      );
+      process.exit(1);
+    });
+}
 
 export default app;
