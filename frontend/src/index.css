@@ -1,5 +1,13 @@
 @import './stylesheets/typography.css';
 
+body {
+  font-family: 'Poppins', 'monospace';
+}
+
+/* @theme {
+  --font-poppins: Poppins, 'monospace';
+} */
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
