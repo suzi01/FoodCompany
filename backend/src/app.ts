@@ -37,10 +37,10 @@ console.log('config port:', config.port);
 
 app.listen(config.port, async () => {
   console.log(`🚀 Server running on http://localhost:${config.port}`);
-  if (process.env.NODE_ENV !== 'test') {
-    console.log('🌱 Connecting to MongoDB...');
-    await connectToDB();
-  }
+  // if (process.env.NODE_ENV !== 'test') {
+  //   console.log('🌱 Connecting to MongoDB...');
+  //   await connectToDB();
+  // }
 });
 
 export default app;
