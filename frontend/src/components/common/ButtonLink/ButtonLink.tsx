@@ -12,7 +12,7 @@ export const ButtonLink = ({
   ...props
 }: ButtonLinkProps) => (
   <Link
-    className={`text-[#3C4CE3] underline font-medium ${className || ''}`}
+    className={`text-[#3C4CE3] underline underline-offset-8 font-medium ${className || ''}`}
     {...props}
   >
     {children}
