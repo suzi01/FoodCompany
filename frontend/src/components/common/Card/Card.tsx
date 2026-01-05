@@ -9,7 +9,7 @@ interface CardProps {
 export const Card = ({ children, borderColor, className }: CardProps) => {
   return (
     <div
-      className={`p-6 border-2 border-gray-300  border-t-${borderColor ? borderColor : 'gray'}-300 w-full rounded-lg ${className ?? ''}`}
+      className={`bg-white p-6 border-2 border-gray-300  border-t-${borderColor ? borderColor : 'gray'}-300 w-full rounded-lg ${className ?? ''}`}
     >
       {children}
     </div>
