@@ -2,6 +2,10 @@ import { Card } from '@/components/common/Card';
 import { ButtonLink } from '@/components/common/ButtonLink';
 import { Image } from '@/components/common/Image';
 import { Heading } from '@/components/common/Heading';
+import Fruits from '@/assets/FruitsAndVeg.jpg';
+import Branch from '@/assets/Branches.png';
+import FreshProduce from '@/assets/FreshProduce.png';
+import SupplierIcon from '@/assets/Suppliers.png';
 
 export const HomePage = () => {
   return (
@@ -15,11 +19,7 @@ export const HomePage = () => {
           >
             Awards & Accomplishments
           </Heading>
-          <Image
-            src="src/assets/fruits-and-veg.jpg"
-            alt="food bowl"
-            className="rounded-lg"
-          />
+          <Image src={Fruits} alt="food bowl" className="rounded-lg" />
         </div>
         <div>
           <p className="mb-4">
@@ -49,11 +49,7 @@ export const HomePage = () => {
       </Card>
       <div className="flex flex-col gap-6 md:flex-row md:gap-4">
         <Card className="flex flex-col gap-6 items-center">
-          <Image
-            src="src/assets/branch.png"
-            alt="branch icon"
-            className="w-1/3 flex"
-          />
+          <Image src={Branch} alt="branch icon" className="w-1/3 flex" />
           <p>
             Find a store near you and learn more about our local teams and
             offerings.
@@ -61,11 +57,7 @@ export const HomePage = () => {
           <ButtonLink to="/branches">Find a branch</ButtonLink>
         </Card>
         <Card className="flex flex-col gap-6 items-center">
-          <Image
-            src="src/assets/fresh-produce.png"
-            alt="produce icon"
-            className="w-1/3 flex"
-          />
+          <Image src={FreshProduce} alt="produce icon" className="w-1/3 flex" />
           <p>
             Browse our full selection of food products, from fresh produce to
             gourmet specialties.
@@ -74,7 +66,7 @@ export const HomePage = () => {
         </Card>
         <Card className="flex flex-col gap-6 items-center">
           <Image
-            src="src/assets/supplier-icon.png"
+            src={SupplierIcon}
             alt="suppliers icon"
             className="w-1/3 flex"
           />
