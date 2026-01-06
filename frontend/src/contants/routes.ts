@@ -1,1 +1,6 @@
-export const ROUTES = {};
+export const ROUTES = {
+  HOME: '/',
+  BRANCHES: '/branches',
+  SUPPLIERS: '/suppliers',
+  PRODUCTS: '/products',
+};

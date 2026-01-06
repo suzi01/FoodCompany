@@ -1,10 +1,11 @@
 import { MantineProvider } from '@mantine/core';
 import './App.css';
+import { Router } from './pages/Routes';
 
 function App() {
   return (
     <MantineProvider>
-      {<h1 className="text-3xl font-bold underline">Hello world!</h1>}
+      <Router />
     </MantineProvider>
   );
 }
