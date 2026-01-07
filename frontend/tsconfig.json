@@ -9,7 +9,8 @@
     "strictNullChecks": true,
     "forceConsistentCasingInFileNames": true,
     "allowSyntheticDefaultImports": true,
-    "target": "es6",
+    "target": "ES2020",
+    "module": "ESNext",
     "jsx": "react-jsx",
     "allowJs": true,
     "moduleResolution": "node"
