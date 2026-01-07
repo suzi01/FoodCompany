@@ -14,11 +14,6 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// add to make work on vercel deployment
-// connectToDB()
-//   .then(() => console.log('✅ MongoDB connected'))
-//   .catch((err) => console.error('❌ MongoDB connection failed', err));
-
 app.use('/api/v1/products', productRouter);
 app.use('/api/v1/suppliers', supplierRouter);
 app.use('/api/v1/branches', branchRouter);
@@ -35,12 +30,24 @@ app.use(globalErrorHandler);
 
 console.log('config port:', config.port);
 
-app.listen(config.port, async () => {
-  console.log(`🚀 Server running on http://localhost:${config.port}`);
-  // if (process.env.NODE_ENV !== 'test') {
-  //   console.log('🌱 Connecting to MongoDB...');
-  //   await connectToDB();
-  // }
-});
+// Start server with proper database connection
+const startServer = async () => {
+  try {
+    if (process.env.NODE_ENV !== 'test') {
+      console.log('🌱 Connecting to MongoDB...');
+      await connectToDB();
+      console.log('✅ MongoDB connected');
+    }
+
+    app.listen(config.port, () => {
+      console.log(`🚀 Server running on http://localhost:${config.port}`);
+    });
+  } catch (err) {
+    console.error('❌ Failed to start server:', err);
+    process.exit(1);
+  }
+};
+
+startServer();
 
 export default app;
