@@ -1,5 +1,6 @@
 import { ISupplier } from '../../suppliers/supplier.model';
 import { SupplierDto } from '../../suppliers/dtos/supplier.dto';
+import { Types } from 'mongoose';
 
 export const toSupplierResponseDTO = (supplier: ISupplier): SupplierDto => ({
   id: supplier._id.toString(),
@@ -9,8 +10,11 @@ export const toSupplierResponseDTO = (supplier: ISupplier): SupplierDto => ({
   email: supplier.email,
   phoneNumber: supplier.phoneNumber ?? '',
   status: supplier.status as 'Active' | 'Inactive' | 'Pending',
-  productsProvided: supplier.productsProvided.map((product) =>
-    product.toString(),
+  productsProvided: supplier.productsProvided.map(
+    (product: Types.ObjectId | { name: string }) =>
+      typeof product === 'object' && 'name' in product
+        ? product.name
+        : product.toString(),
   ),
   branches: supplier.branches.map((branch) => branch.toString()),
   createdAt: supplier.createdAt.toISOString(),

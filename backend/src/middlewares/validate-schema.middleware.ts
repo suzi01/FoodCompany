@@ -2,9 +2,8 @@ import { NextFunction, Request, Response } from 'express';
 import { ZodError, ZodType } from 'zod';
 
 export const validateSchema =
-  (schema: ZodType<any>) =>
+  (schema: ZodType<unknown>) =>
   (req: Request, res: Response, next: NextFunction) => {
-    
     const result = schema.safeParse(req.body);
 
     if (!result.success) {
