@@ -2,6 +2,7 @@ import request from 'supertest';
 import app from '../../../src/app';
 
 import * as supplierService from '../../../src/suppliers/supplier.service';
+import mongoose from 'mongoose';
 
 jest.mock('../../../src/suppliers/supplier.service');
 
@@ -153,7 +154,7 @@ describe('supplier Controller', () => {
       ]);
 
       const response = await request(app).get(
-        '/api/v1/suppliers/search?companyName=Test&product=widgets&code=ABC123&sort=companyName&order=Descending',
+        '/api/v1/suppliers/search?companyName=Test&product=widgets&status=active&sort=companyName&order=Descending',
       );
 
       expect(response.status).toBe(200);
@@ -161,7 +162,7 @@ describe('supplier Controller', () => {
       expect(supplierService.searchSuppliers).toHaveBeenCalledWith(
         'Test',
         'widgets',
-        'ABC123',
+        'active',
         'companyName',
         'Descending',
       );
@@ -182,18 +183,34 @@ describe('supplier Controller', () => {
     });
 
     it('POST / should not add an invalid supplier', async () => {
-      const validationError = new Error('Validation Error');
-      (validationError as any).name = 'ValidationError';
-      (validationError as any).errors = {
+      const validationError = new Error(
+        'Validation Error',
+      ) as mongoose.Error.ValidationError;
+      validationError.name = 'ValidationError';
+      validationError.errors = {
         email: {
           message: 'Email is required',
           kind: 'required',
           path: 'email',
+          name: 'ValidatorError',
+          properties: {
+            message: 'Email is required',
+            type: 'required',
+            path: 'email',
+          },
+          value: undefined,
         },
         companyName: {
           message: 'Company name is required',
           kind: 'required',
           path: 'companyName',
+          name: 'ValidatorError',
+          properties: {
+            message: 'Company name is required',
+            type: 'required',
+            path: 'companyName',
+          },
+          value: undefined,
         },
       };
       (supplierService.createSupplier as jest.Mock).mockRejectedValue(
@@ -262,13 +279,22 @@ describe('supplier Controller', () => {
     });
 
     it('PUT / should handle validation errors during update', async () => {
-      const validationError = new Error('Validation Error');
-      (validationError as any).name = 'ValidationError';
-      (validationError as any).errors = {
+      const validationError = new Error(
+        'Validation Error',
+      ) as mongoose.Error.ValidationError;
+      validationError.name = 'ValidationError';
+      validationError.errors = {
         email: {
           message: 'Please provide a valid email',
           kind: 'invalid',
           path: 'email',
+          name: 'ValidatorError',
+          properties: {
+            message: 'Email is required',
+            type: 'required',
+            path: 'email',
+          },
+          value: undefined,
         },
       };
 

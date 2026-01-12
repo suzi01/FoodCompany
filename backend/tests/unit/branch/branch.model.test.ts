@@ -4,15 +4,16 @@ describe('Branch Model Test', () => {
   it('should throw validation error when email is missing', async () => {
     const branch = new Branch({ email: '' });
 
-    try {
-      await branch.validate();
-    } catch (error: any) {
-      expect(error.errors.branchEmail).toBeDefined();
-      expect(error.errors.branchEmail.message).toMatch(
-        /Branch email is required/,
-      );
-    }
+    await expect(branch.validate()).rejects.toMatchObject({
+      name: 'ValidationError',
+      errors: expect.objectContaining({
+        branchEmail: expect.objectContaining({
+          message: expect.stringMatching(/Branch email is required/),
+        }),
+      }),
+    });
   });
+
   it('should throw validation error when email is not valid', async () => {
     const branch = new Branch({
       id: '68d3d624eb3b2060dcc384f8',
@@ -29,25 +30,25 @@ describe('Branch Model Test', () => {
       updatedAt: '2025-09-24T11:36:17.456Z',
     });
 
-    try {
-      await branch.validate();
-    } catch (error: any) {
-      expect(error.errors.branchEmail).toBeDefined();
-      expect(error.errors.branchEmail.message).toMatch(
-        /Please fill a valid email address/,
-      );
-    }
+    await expect(branch.validate()).rejects.toMatchObject({
+      name: 'ValidationError',
+      errors: expect.objectContaining({
+        branchEmail: expect.objectContaining({
+          message: expect.stringMatching(/Please fill a valid email address/),
+        }),
+      }),
+    });
   });
   it('should throw validation error when branch name is missing', async () => {
     const branch = new Branch({ branchName: '' });
 
-    try {
-      await branch.validate();
-    } catch (error: any) {
-      expect(error.errors.branchName).toBeDefined();
-      expect(error.errors.branchName.message).toMatch(
-        'Branch name is required',
-      );
-    }
+    await expect(branch.validate()).rejects.toMatchObject({
+      name: 'ValidationError',
+      errors: expect.objectContaining({
+        branchName: expect.objectContaining({
+          message: expect.stringMatching(/Branch name is required/),
+        }),
+      }),
+    });
   });
 });

@@ -1,5 +1,5 @@
 import Branch from '../../../src/branches/branch.model';
-import Supplier from '../../../src/branches/branch.model';
+
 import {
   createBranch,
   getAllBranches,
@@ -246,7 +246,7 @@ describe('Branch Service', () => {
 
     beforeEach(() => {
       mockSort = jest.fn().mockResolvedValue(mockSearchResults);
-      (Supplier.find as jest.Mock).mockReturnValue({ sort: mockSort });
+      (Branch.find as jest.Mock).mockReturnValue({ sort: mockSort });
     });
 
     it('should search branches with all parameters', async () => {
@@ -295,7 +295,7 @@ describe('Branch Service', () => {
         'asc',
       );
 
-      expect(Supplier.find).toHaveBeenCalledWith({
+      expect(Branch.find).toHaveBeenCalledWith({
         branchName: { $regex: 'Test.Corp', $options: 'i' },
         branchEmail: { $regex: 'james@horizon.com', $options: 'i' },
         supplierName: { $regex: 'ABC[123]', $options: 'i' },

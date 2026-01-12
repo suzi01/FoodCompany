@@ -1,4 +1,3 @@
-
 import Product from '../../../src/products/product.model';
 import { toProductResponseDTO } from '../../../src/utils/mappers/product.mapper';
 

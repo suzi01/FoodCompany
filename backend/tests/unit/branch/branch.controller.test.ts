@@ -2,6 +2,7 @@ import request from 'supertest';
 import app from '../../../src/app';
 
 import * as branchService from '../../../src/branches/branch.service';
+import mongoose from 'mongoose';
 
 jest.mock('../../../src/branches/branch.service');
 
@@ -183,18 +184,34 @@ describe('branch Controller', () => {
     });
 
     it('POST / should not add an invalid supplier', async () => {
-      const validationError = new Error('Validation Error');
-      (validationError as any).name = 'ValidationError';
-      (validationError as any).errors = {
+      const validationError = new Error(
+        'Validation Error',
+      ) as mongoose.Error.ValidationError;
+      validationError.name = 'ValidationError';
+      validationError.errors = {
         email: {
           message: 'Email is required',
           kind: 'required',
           path: 'email',
+          name: 'ValidatorError',
+          properties: {
+            message: 'Email is required',
+            type: 'required',
+            path: 'email',
+          },
+          value: undefined,
         },
         companyName: {
           message: 'Company name is required',
           kind: 'required',
           path: 'companyName',
+          name: 'ValidatorError',
+          properties: {
+            message: 'Company name is required',
+            type: 'required',
+            path: 'companyName',
+          },
+          value: undefined,
         },
       };
       (branchService.createBranch as jest.Mock).mockRejectedValue(
@@ -235,7 +252,6 @@ describe('branch Controller', () => {
 
   describe('updateBranch', () => {
     it('PUT / should update an existing branch with valid data', async () => {
-      
       (branchService.updateBranch as jest.Mock).mockResolvedValue({
         ...mockBranches[1],
         branchName: 'updated Name',
@@ -262,13 +278,22 @@ describe('branch Controller', () => {
     });
 
     it('PUT / should handle validation errors during update', async () => {
-      const validationError = new Error('Validation Error');
-      (validationError as any).name = 'ValidationError';
-      (validationError as any).errors = {
+      const validationError = new Error(
+        'Validation Error',
+      ) as mongoose.Error.ValidationError;
+      validationError.name = 'ValidationError';
+      validationError.errors = {
         email: {
           message: 'Please provide a valid email',
           kind: 'invalid',
           path: 'email',
+          name: 'ValidatorError',
+          properties: {
+            message: 'Please provide a valid email',
+            type: 'invalid',
+            path: 'email',
+          },
+          value: undefined,
         },
       };
 

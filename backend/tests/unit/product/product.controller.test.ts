@@ -1,9 +1,22 @@
 import request from 'supertest';
 import app from '../../../src/app';
+import mongoose from 'mongoose';
 
 import * as productService from '../../../src/products/product.service';
 
 jest.mock('../../../src/products/product.service');
+jest.mock('../../../src/suppliers/supplier.model');
+
+// Mock only the startSession method
+jest.spyOn(mongoose, 'startSession').mockImplementation(
+  () =>
+    ({
+      startTransaction: jest.fn(),
+      commitTransaction: jest.fn(),
+      abortTransaction: jest.fn(),
+      endSession: jest.fn(),
+    }) as any,
+);
 
 const mockProducts = [
   {
@@ -142,16 +155,16 @@ describe('Product Controller', () => {
         mockProducts[0],
       ]);
       const response = await request(app).get(
-        '/api/v1/products/search?name=Test&barcode=Fruit&sortBy=name&order=desc',
+        '/api/v1/products/search?name=Test&barcode=123456789&supplier=SupplierName&sortBy=name&category=Fruit&order=desc',
       );
       expect(response.status).toBe(200);
       expect(response.body.data).toEqual([mockProductsDto[0]]);
       expect(productService.searchProducts).toHaveBeenCalledWith(
         'Test',
-        'Fruit',
-        '',
+        '123456789',
+        'SupplierName',
         'name',
-        '',
+        'Fruit',
         'desc',
       );
     });
@@ -170,18 +183,34 @@ describe('Product Controller', () => {
     });
 
     it('POST / should not add an invalid product', async () => {
-      const validationError = new Error('Validation Error');
-      (validationError as any).name = 'ValidationError';
-      (validationError as any).errors = {
+      const validationError = new Error(
+        'Validation Error',
+      ) as mongoose.Error.ValidationError;
+      validationError.name = 'ValidationError';
+      validationError.errors = {
         name: {
+          name: 'ValidatorError',
           message: 'Name is required',
           kind: 'required',
           path: 'name',
+          properties: {
+            message: 'Please provide a valid name',
+            type: 'invalid',
+            path: 'name',
+          },
+          value: undefined,
         },
         idOrBarcode: {
           message: 'Barcode is required',
           kind: 'required',
           path: 'idOrBarcode',
+          name: 'ValidatorError',
+          properties: {
+            message: 'Please provide a valid id or barcode',
+            type: 'invalid',
+            path: 'idOrBarcode',
+          },
+          value: undefined,
         },
       };
       (productService.createProduct as jest.Mock).mockRejectedValue(
@@ -194,14 +223,14 @@ describe('Product Controller', () => {
 
     it('POST / should handle server errors', async () => {
       (productService.createProduct as jest.Mock).mockRejectedValue(
-        new Error('Database connection failed'),
+        new Error(''),
       );
       const validProductData = mockProducts[0];
       const response = await request(app)
         .post('/api/v1/products')
         .send(validProductData);
       expect(response.status).toBe(500);
-      expect(response.body.message).toBe('Database connection failed');
+      expect(response.body.message).toBe('Failed to create product');
     });
   });
 
@@ -234,13 +263,21 @@ describe('Product Controller', () => {
     });
 
     it('PUT / should handle validation errors during update', async () => {
-      const validationError = new Error('Validation Error');
-      (validationError as any).name = 'ValidationError';
-      (validationError as any).errors = {
+      const validationError = new Error(
+        'Validation Error',
+      ) as mongoose.Error.ValidationError;
+      validationError.name = 'ValidationError';
+      validationError.errors = {
         price: {
           message: 'Please provide a valid price',
           kind: 'invalid',
           path: 'price',
+          name: 'ValidatorError',
+          properties: {
+            message: 'Price must be a positive number',
+            type: 'min',
+          },
+          value: undefined,
         },
       };
       (productService.updateProduct as jest.Mock).mockRejectedValue(
