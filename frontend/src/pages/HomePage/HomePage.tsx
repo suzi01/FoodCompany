@@ -3,9 +3,9 @@ import { ButtonLink } from '@/components/common/ButtonLink';
 import { Image } from '@/components/common/Image';
 import { Heading } from '@/components/common/Heading';
 import Fruits from '@/assets/FruitsAndVeg.jpg';
-import Branch from '@/assets/Branches.png';
-import FreshProduce from '@/assets/FreshProduce.png';
-import SupplierIcon from '@/assets/Suppliers.png';
+import Branch from '@/assets/icons/Branches.png';
+import FreshProduce from '@/assets/icons/FreshProduce.png';
+import SupplierIcon from '@/assets/icons/Suppliers.png';
 
 export const HomePage = () => {
   return (
