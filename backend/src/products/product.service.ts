@@ -1,6 +1,10 @@
 import Product from './product.model';
+import Supplier from '../suppliers/supplier.model';
 import { CreateProductDto } from './dtos/create-product.dto';
 import { EditProductDto } from './dtos/edit-product.dto';
+import { ProductSearchParams } from '../types/SearchParams/ProductSearchParams';
+
+import { ClientSession, FilterQuery } from 'mongoose';
 
 export const getAllProducts = async () => {
   return Product.find();
@@ -10,8 +14,26 @@ export const getProduct = async (id: string) => {
   return Product.findById(id);
 };
 
-export const createProduct = async (data: CreateProductDto) => {
-  return Product.create(data);
+export const createProduct = async (
+  data: CreateProductDto,
+  session?: ClientSession,
+) => {
+  const [newProduct] = await Product.create([data], { session });
+
+  await Supplier.findByIdAndUpdate(
+    data.supplier,
+    { $addToSet: { productsProvided: newProduct._id } },
+    { session },
+  );
+
+  // 3. Update Branches
+  // await Branch.updateMany(
+  //   { _id: { $in: data.branches } },
+  //   { $addToSet: { products: newProduct._id } },
+  //   { session },
+  // );
+
+  return newProduct;
 };
 
 export const updateProduct = async (id: string, data: EditProductDto) => {
@@ -27,32 +49,18 @@ export const searchProducts = async (
   barcode: string,
   supplier: string,
   category: string,
-  sortBy: string = 'name',
-  order: string = 'asc',
+  sortBy: string,
+  order: string,
 ) => {
-  const query: any = {};
+  const query: FilterQuery<ProductSearchParams> = {};
 
-  if (name) {
-    query.name = { $regex: name, $options: 'i' };
-  }
+  query.name = { $regex: name, $options: 'i' };
+  if (name !== '') query.name = { $regex: name, $options: 'i' };
+  if (category !== '') query.category = { $regex: category, $options: 'i' };
+  if (barcode !== '') query.barcode = { $regex: barcode, $options: 'i' };
+  if (supplier !== '') query.supplier = { $regex: supplier, $options: 'i' };
 
-  if (category) {
-    query.category = { $regex: category, $options: 'i' };
-  }
-
-  if (barcode) {
-    query.barcode = { $regex: barcode, $options: 'i' };
-  }
-
-  if (supplier) {
-    query.supplier = { $regex: supplier, $options: 'i' };
-  }
-
-  const sortOrder = order === 'asc' ? 1 : -1;
-  const sortObject: any = {};
-  sortObject[sortBy] = sortOrder;
-
-  return Product.find(query).sort(sortObject);
+  return Product.find(query).sort({ [sortBy]: order === 'asc' ? 1 : -1 });
 };
 
 export const getProductsByPriceRange = async (

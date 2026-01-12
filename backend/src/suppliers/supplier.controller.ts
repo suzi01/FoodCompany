@@ -34,16 +34,18 @@ export const createSupplier = catchAsync(async (req, res, next) => {
 
 // - **Search**: Filter suppliers by name, items they provide (through a product search), or unique code (which you could add, such as a supplier ID).
 export const searchSuppliers = catchAsync(async (req, res, next) => {
-  const { companyName, product, code, sort, order } = req.query;
+  const { companyName, product, status, sort, order } = req.query;
   const suppliers = await supplierService.searchSuppliers(
     typeof companyName === 'string' ? companyName : '',
     typeof product === 'string' ? product : '',
-    typeof code === 'string' ? code : '',
+    typeof status === 'string' ? status : '',
     typeof sort === 'string' ? sort : 'CompanyName',
     typeof order === 'string' ? order : 'asc',
   );
 
+
   const mappedSuppliers = suppliers.map(toSupplierResponseDTO);
+
 
   res.status(200).json({ success: true, data: mappedSuppliers });
 });

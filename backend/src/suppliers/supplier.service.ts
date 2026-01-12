@@ -1,9 +1,13 @@
 import { CreateSupplierDto } from './dtos/create-supplier.dto';
 import { EditSupplierDto } from './dtos/edit-supplier.dto';
 import Supplier from './supplier.model';
+import Product from '../products/product.model';
+import { SupplierSearchParams } from '../types/SearchParams/SupplierSearchParams';
+
+import { FilterQuery } from 'mongoose';
 
 export const getAllSuppliers = async () => {
-  return Supplier.find();
+  return Supplier.find().populate('productsProvided', 'name -_id');
 };
 
 export const createSupplier = async (data: CreateSupplierDto) => {
@@ -21,22 +25,32 @@ export const updateSupplier = async (id: string, data: EditSupplierDto) => {
 export const deleteSupplier = async (id: string) => {
   return Supplier.findByIdAndDelete(id);
 };
+
 export const searchSuppliers = async (
   companyName: string,
   product: string,
-  code: string,
+  status: string,
   sort: string,
   order: string,
 ) => {
-  const query: any = {};
+  const query: FilterQuery<SupplierSearchParams> = {};
 
   query.companyName = { $regex: companyName, $options: 'i' };
-  if (product !== '') query.products = { $regex: product, $options: 'i' };
-  if (code !== '') query.code = { $regex: code, $options: 'i' };
 
-  return Supplier.find(query).sort({ [sort]: order === 'asc' ? 1 : -1 });
+  if (product !== '') {
+    const products = await Product.find({
+      name: { $regex: product, $options: 'i' },
+    }).select('_id');
+    const productIds = products.map((p) => p._id);
+    query.productsProvided = { $in: productIds };
+  }
+  if (status !== '') query.status = { $regex: status, $options: 'i' };
+
+  return Supplier.find(query)
+    .sort({ [sort]: order === 'asc' ? 1 : -1 })
+    .populate('productsProvided', 'name -_id');
 };
 
 export const getSupplier = async (id: string) => {
-  return Supplier.findById(id);
+  return Supplier.findById(id).populate('productsProvided', 'name -_id');
 };

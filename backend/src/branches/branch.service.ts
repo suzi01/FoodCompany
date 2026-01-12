@@ -1,6 +1,9 @@
+import { FilterQuery } from 'mongoose';
 import Branch, { IBranch } from './branch.model';
 import { CreateBranchDto } from './dtos/create-branch.dto';
 import { EditBranchDto } from './dtos/edit-branch.dto';
+
+import { BranchSearchParams } from '../types/SearchParams/BranchSearchParams';
 
 export const getAllBranches = async () => {
   return Branch.find();
@@ -17,7 +20,7 @@ export const searchBranches = async (
   sort: string,
   order: string,
 ) => {
-  const query: any = {};
+  const query: FilterQuery<BranchSearchParams> = {};
   query.branchName = { $regex: branchName, $options: 'i' };
 
   if (email !== '') query.branchEmail = { $regex: email, $options: 'i' };

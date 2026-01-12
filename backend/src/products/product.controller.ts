@@ -3,6 +3,8 @@ import { HttpError } from '../utils/app-error';
 import { catchAsync } from '../utils/catch-async';
 import { toProductResponseDTO } from '../utils/mappers/product.mapper';
 
+import mongoose from 'mongoose';
+
 // Get all products
 export const getAllProducts = catchAsync(async (req, res, next) => {
   const products = await productService.getAllProducts();
@@ -24,10 +26,21 @@ export const getProduct = catchAsync(async (req, res, next) => {
 
 // Create a new product
 export const createProduct = catchAsync(async (req, res, next) => {
-  const newProduct = await productService.createProduct(req.body);
-  res
-    .status(201)
-    .json({ success: true, data: toProductResponseDTO(newProduct) });
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    const newProduct = await productService.createProduct(req.body, session);
+    await session.commitTransaction();
+    session.endSession();
+    res
+      .status(201)
+      .json({ success: true, data: toProductResponseDTO(newProduct) });
+  } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+    return next(new HttpError(500, 'Failed to create product'));
+  }
 });
 
 // Update an existing product
@@ -62,21 +75,14 @@ export const deleteProduct = catchAsync(async (req, res, next) => {
 
 // Search products
 export const searchProducts = catchAsync(async (req, res, next) => {
-  const {
-    name = '',
-    barcode = '',
-    supplier = '',
-    sortBy = '',
-    category = '',
-    order = '',
-  } = req.query;
+  const { name, barcode, supplier, sortBy, category, order } = req.query;
   const products = await productService.searchProducts(
-    String(name),
-    String(barcode),
-    String(supplier),
-    String(sortBy),
-    String(category),
-    String(order),
+    typeof name === 'string' ? name : '',
+    typeof barcode === 'string' ? barcode : '',
+    typeof supplier === 'string' ? supplier : '',
+    typeof sortBy === 'string' ? sortBy : 'name',
+    typeof category === 'string' ? category : '',
+    typeof order === 'string' ? order : 'asc',
   );
   res
     .status(200)
