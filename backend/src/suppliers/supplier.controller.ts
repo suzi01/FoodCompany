@@ -13,7 +13,7 @@ export const getAllSuppliers = catchAsync(async (req, res, next) => {
 
 // Display a supplier.
 export const getSupplier = catchAsync(async (req, res, next) => {
-  const supplier = await supplierService.getSupplier(req.params.id);
+  const supplier = await supplierService.getSupplier(req.params.id as string);
   if (!supplier) {
     return next(
       new HttpError(404, `No supplier found with ID ${req.params.id}`),
@@ -54,7 +54,7 @@ export const searchSuppliers = catchAsync(async (req, res, next) => {
 
 export const updateSupplier = catchAsync(async (req, res, next) => {
   const updatedSupplier = await supplierService.updateSupplier(
-    req.params.id,
+    req.params.id as string,
     req.body,
   );
   if (!updatedSupplier) {
@@ -69,7 +69,9 @@ export const updateSupplier = catchAsync(async (req, res, next) => {
 // Remove a supplier.
 
 export const deleteSupplier = catchAsync(async (req, res, next) => {
-  const deletedSupplier = await supplierService.deleteSupplier(req.params.id);
+  const deletedSupplier = await supplierService.deleteSupplier(
+    req.params.id as string,
+  );
   if (!deletedSupplier) {
     return next(
       new HttpError(404, `Supplier with ID ${req.params.id} not found`),

@@ -15,7 +15,7 @@ export const getAllProducts = catchAsync(async (req, res, next) => {
 
 // Get a single product by ID
 export const getProduct = catchAsync(async (req, res, next) => {
-  const product = await productService.getProduct(req.params.id);
+  const product = await productService.getProduct(req.params.id as string);
   if (!product) {
     return next(
       new HttpError(404, `No product found with ID ${req.params.id}`),
@@ -46,7 +46,7 @@ export const createProduct = catchAsync(async (req, res, next) => {
 // Update an existing product
 export const updateProduct = catchAsync(async (req, res, next) => {
   const updatedProduct = await productService.updateProduct(
-    req.params.id,
+    req.params.id as string,
     req.body,
   );
   if (!updatedProduct) {
@@ -61,7 +61,9 @@ export const updateProduct = catchAsync(async (req, res, next) => {
 
 // Delete a product
 export const deleteProduct = catchAsync(async (req, res, next) => {
-  const deletedProduct = await productService.deleteProduct(req.params.id);
+  const deletedProduct = await productService.deleteProduct(
+    req.params.id as string,
+  );
   if (!deletedProduct) {
     return next(
       new HttpError(404, `Product with ID ${req.params.id} not found`),
@@ -122,7 +124,7 @@ export const getProductsOutOfStock = catchAsync(async (req, res, next) => {
 export const updateProductStock = catchAsync(async (req, res, next) => {
   const { quantity } = req.body;
   const updatedProduct = await productService.updateProductStock(
-    req.params.id,
+    req.params.id as string,
     quantity,
   );
   if (!updatedProduct) {

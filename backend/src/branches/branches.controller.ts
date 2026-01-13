@@ -11,7 +11,7 @@ export const getAllBranches = catchAsync(async (req, res, next) => {
 });
 
 export const getBranch = catchAsync(async (req, res, next) => {
-  const branch = await branchService.getBranch(req.params.id);
+  const branch = await branchService.getBranch(req.params.id as string);
   if (!branch) {
     return next(
       new HttpError(404, `Branch with ID ${req.params.id} not found`),
@@ -37,7 +37,7 @@ export const searchBranches = catchAsync(async (req, res, next) => {
 
 export const updateBranch = catchAsync(async (req, res, next) => {
   const updateBranch = await branchService.updateBranch(
-    req.params.id,
+    req.params.id as string,
     req.body,
   );
   if (!updateBranch) {
@@ -56,7 +56,9 @@ export const createBranch = catchAsync(async (req, res, next) => {
 });
 
 export const deleteBranch = catchAsync(async (req, res, next) => {
-  const deleteBranch = await branchService.deleteBranch(req.params.id);
+  const deleteBranch = await branchService.deleteBranch(
+    req.params.id as string,
+  );
   if (!deleteBranch) {
     return next(
       new HttpError(404, `Branch with ID ${req.params.id} not found`),
