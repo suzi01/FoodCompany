@@ -1,12 +1,12 @@
-import express from 'express';
 import cors from 'cors';
+import express from 'express';
+import branchRouter from './branches/branch.routes';
 import config from './config/env.config';
 import { connectToDB } from './config/mongoose.config';
-import supplierRouter from './suppliers/supplier.routes';
 import { globalErrorHandler } from './error/error.controller';
-import { HttpError } from './utils/app-error';
-import branchRouter from './branches/branch.routes';
 import productRouter from './products/product.routes';
+import supplierRouter from './suppliers/supplier.routes';
+import { HttpError } from './utils/app-error';
 
 const app = express();
 app.use(cors());

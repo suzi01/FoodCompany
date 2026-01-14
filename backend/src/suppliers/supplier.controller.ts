@@ -1,7 +1,7 @@
-import * as supplierService from './supplier.service';
 import { HttpError } from '../utils/app-error';
 import { catchAsync } from '../utils/catch-async';
 import { toSupplierResponseDTO } from '../utils/mappers/supplier.mapper';
+import * as supplierService from './supplier.service';
 
 // Display a list of all suppliers.
 export const getAllSuppliers = catchAsync(async (req, res, next) => {
@@ -42,10 +42,7 @@ export const searchSuppliers = catchAsync(async (req, res, next) => {
     typeof sort === 'string' ? sort : 'CompanyName',
     typeof order === 'string' ? order : 'asc',
   );
-
-
   const mappedSuppliers = suppliers.map(toSupplierResponseDTO);
-
 
   res.status(200).json({ success: true, data: mappedSuppliers });
 });
