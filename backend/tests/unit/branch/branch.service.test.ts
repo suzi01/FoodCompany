@@ -8,34 +8,15 @@ import {
   updateBranch,
   searchBranches,
 } from '../../../src/branches/branch.service';
+import { buildBranch } from '../../factories/domin/branchFactory';
+import { buildBranchDTO } from '../../factories/dto/branchDTOFactory';
 
 jest.mock('../../../src/branches/branch.model');
 
 describe('Branch Service', () => {
-  const mockBranch = {
-    _id: '507f1f77bcf86cd799439011',
-    branchName: 'Test Branch',
-    branchEmail: 'test.email@gmail.com',
-    mainContactName: 'test contact',
-    phoneNumber: '123-456-7890',
-    address: '123 Test St, Test City, TX 12345',
-    mainContactPhoneNumber: '123-456-7891',
-    mainContactEmail: 'maintest.contact@gmail.com',
-    suppliers: [],
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  };
+  const mockBranch = buildBranch();
 
-  const branchData = {
-    branchName: 'Error Branch',
-    branchEmail: 'error.branch@test.com',
-    mainContactName: 'Error User',
-    phoneNumber: '123-456-7890',
-    address: '123 Error St, Error City, TX 12345',
-    mainContactPhoneNumber: '123-456-7891',
-    mainContactEmail: 'main.error.branch@test.com',
-    suppliers: [],
-  };
+  const mockBranches = [...Array(10).keys()].map(() => buildBranch());
 
   afterEach(() => {
     jest.clearAllMocks();
@@ -43,39 +24,25 @@ describe('Branch Service', () => {
 
   describe('createBranch', () => {
     it('createBranch calls Branch.create with correct data', async () => {
-      const newBranch = {
+      const { id, createdAt, updatedAt, ...branchData } = buildBranchDTO({
         branchName: 'Test Branch',
-        branchEmail: 'test.email@gmail.com',
-        mainContactName: 'test contact',
-        phoneNumber: '123-456-7890',
-        address: '123 Test St, Test City, TX 12345',
-        mainContactPhoneNumber: '123-456-7891',
-        mainContactEmail: 'maintest.contact@gmail.com',
-        suppliers: [],
-      };
-
-      (Branch.create as jest.Mock).mockResolvedValue({
-        ...newBranch,
-        _id: '123',
       });
 
-      const result = await createBranch(newBranch);
+      (Branch.create as jest.Mock).mockResolvedValue({
+        ...branchData,
+        _id: '123',
+      });
+      const result = await createBranch(branchData);
 
-      expect(Branch.create).toHaveBeenCalledWith(newBranch);
-      expect(result.branchName).toBe('Test Branch');
+      expect(Branch.create).toHaveBeenCalledWith(branchData);
+
+      expect(result.branchName).toBe(branchData.branchName);
     });
 
     it('should handle creation errors', async () => {
-      const branchData = {
+      const { id, ...branchData } = buildBranchDTO({
         branchName: 'Error Branch',
-        branchEmail: 'error.branch@test.com',
-        mainContactName: 'Error User',
-        phoneNumber: '123-456-7890',
-        address: '123 Error St, Error City, TX 12345',
-        mainContactPhoneNumber: '123-456-7891',
-        mainContactEmail: 'main.error.branch@test.com',
-        suppliers: [],
-      };
+      });
 
       const error = new Error('Database connection failed');
       (Branch.create as jest.Mock).mockRejectedValue(error);
@@ -89,35 +56,12 @@ describe('Branch Service', () => {
 
   describe('getAllBranches', () => {
     it('should return all branches', async () => {
-      const branches = [
-        {
-          _id: '123',
-          branchName: 'Acme Branch',
-          branchEmail: 'acme.branch@test.com',
-          mainContactName: 'John Doe',
-          phoneNumber: '123-456-7890',
-          address: '123 Acme St, Acme City, TX 12345',
-          mainContactPhoneNumber: '123-456-7891',
-          mainContactEmail: 'main.acme.branch@test.com',
-          suppliers: [],
-        },
-        {
-          _id: '1234',
-          branchName: 'Acme Branch2',
-          branchEmail: 'acme.branch2@test.com',
-          mainContactName: 'Jane Dive',
-          phoneNumber: '122-456-7890',
-          mainContactPhoneNumber: '123-456-7891',
-          mainContactEmail: 'main.acme.branch2@test.com',
-          suppliers: [],
-        },
-      ];
-      (Branch.find as jest.Mock).mockResolvedValue(branches);
+      (Branch.find as jest.Mock).mockResolvedValue(mockBranches);
 
       const result = await getAllBranches();
 
       expect(Branch.find).toHaveBeenCalled();
-      expect(result).toEqual(branches);
+      expect(result).toEqual(mockBranches);
     });
     it('should return empty array when no branches exist', async () => {
       (Branch.find as jest.Mock).mockResolvedValue([]);
@@ -140,23 +84,12 @@ describe('Branch Service', () => {
 
   describe('getBranch', () => {
     it('should return branch', async () => {
-      const branch = [
-        {
-          _id: '123',
-          branchName: 'Acme Branch',
-          mainContactName: 'John Doe',
-          email: 'test@example.com',
-          phoneNumber: '123-456-7890',
-          productsProvided: [],
-          branches: [],
-        },
-      ];
-      (Branch.findById as jest.Mock).mockResolvedValue(branch);
+      (Branch.findById as jest.Mock).mockResolvedValue(mockBranch);
 
       const result = await getBranch('123');
 
       expect(Branch.findById).toHaveBeenCalled();
-      expect(result).toEqual(branch);
+      expect(result).toEqual(mockBranch);
     });
     it('should return empty array when branch does not exist', async () => {
       (Branch.findById as jest.Mock).mockResolvedValue([]);

@@ -1,4 +1,5 @@
 import Branch from '../../../src/branches/branch.model';
+import { buildBranchDTO } from '../../factories/dto/branchDTOFactory';
 
 describe('Branch Model Test', () => {
   it('should throw validation error when email is missing', async () => {
@@ -16,18 +17,7 @@ describe('Branch Model Test', () => {
 
   it('should throw validation error when email is not valid', async () => {
     const branch = new Branch({
-      id: '68d3d624eb3b2060dcc384f8',
-      branchName: 'Test Branch',
-      branchEmail: 'test email',
-      mainContactName: 'test contact',
-      phoneNumber: '123-456-7890',
-      address: '123 Test St, Test City, TX 12345',
-      mainContactPhoneNumber: '123-456-7891',
-      mainContactEmail: 'maintest.contact@gmail.com',
-      yearsActive: 0,
-      suppliers: [],
-      createdAt: '2025-09-24T11:29:40.851Z',
-      updatedAt: '2025-09-24T11:36:17.456Z',
+      ...buildBranchDTO({ branchEmail: 'invalid-email' }),
     });
 
     await expect(branch.validate()).rejects.toMatchObject({

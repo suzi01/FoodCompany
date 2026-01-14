@@ -14,21 +14,7 @@ jest.mock('../../../src/products/product.model');
 jest.mock('../../../src/suppliers/supplier.model');
 
 describe('Product Service', () => {
-  // const mockProduct = {
-  // _id: '507f1f77bcf86cd799439011',
-  // name: 'Test Product',
-  // idOrBarcode: '123456789',
-  // category: 'Fruit',
-  // supplier: '507f191e810c19729de860ea',
-  // price: 2.99,
-  // quantityInStock: 100,
-  // description: 'A test product',
-  // createdAt: new Date(),
-  // updatedAt: new Date(),
-  // };
-
   const mockProduct = buildProduct();
-  console.log('mock product:', mockProduct);
 
   afterEach(() => {
     jest.clearAllMocks();
@@ -49,9 +35,8 @@ describe('Product Service', () => {
         ...newProduct,
         _id: '507f1f77bcf86cd799439011',
       };
-      // Mock Product.create to return an array (it's called with [data])
+     
       (Product.create as jest.Mock).mockResolvedValue([createdProduct]);
-      // Mock Supplier.findByIdAndUpdate
       (Supplier.findByIdAndUpdate as jest.Mock).mockResolvedValue({});
 
       const result = await createProduct(newProduct);

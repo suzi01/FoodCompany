@@ -3,64 +3,17 @@ import app from '../../../src/app';
 
 import * as supplierService from '../../../src/suppliers/supplier.service';
 import mongoose from 'mongoose';
+import { buildSupplier } from '../../factories/domin/supplierFactory';
+import { toSupplierResponseDTO } from '../../../src/utils/mappers/supplier.mapper';
 
 jest.mock('../../../src/suppliers/supplier.service');
 
-const mockSuppliers = [
-  {
-    _id: '68d3d624eb3b2060dcc384f8',
-    companyName: 'Test company',
-    email: 'test.email@gmail.com',
-    mainContactName: 'test contact',
-    phoneNumber: '123-456-7890',
-    address: '123 Test St, Test City, TX 12345',
-    status: 'Pending',
-    productsProvided: [],
-    branches: [],
-    createdAt: new Date('2025-09-24T11:29:40.851Z'),
-    updatedAt: new Date('2025-09-24T11:36:17.456Z'),
-  },
-  {
-    _id: '60c72b2f9b1d8c1e8c8b4567',
-    companyName: 'Test company2',
-    email: 'test2.email@gmail.com',
-    mainContactName: 'test2 contact',
-    status: 'Active',
-    productsProvided: [],
-    branches: [],
-    createdAt: new Date('2025-10-24T11:29:40.851Z'),
-    updatedAt: new Date('2025-10-24T11:36:17.456Z'),
-  },
-];
+const mockSuppliers = [...Array(2).keys()].map(() => buildSupplier());
 
-const mockSuppliersDto = [
-  {
-    id: '68d3d624eb3b2060dcc384f8',
-    companyName: 'Test company',
-    email: 'test.email@gmail.com',
-    mainContactName: 'test contact',
-    phoneNumber: '123-456-7890',
-    address: '123 Test St, Test City, TX 12345',
-    status: 'Pending',
-    productsProvided: [],
-    branches: [],
-    createdAt: '2025-09-24T11:29:40.851Z',
-    updatedAt: '2025-09-24T11:36:17.456Z',
-  },
-  {
-    id: '60c72b2f9b1d8c1e8c8b4567',
-    companyName: 'Test company2',
-    email: 'test2.email@gmail.com',
-    mainContactName: 'test2 contact',
-    phoneNumber: '',
-    address: '',
-    status: 'Active',
-    productsProvided: [],
-    branches: [],
-    createdAt: '2025-10-24T11:29:40.851Z',
-    updatedAt: '2025-10-24T11:36:17.456Z',
-  },
-];
+const mockSuppliersDto = mockSuppliers.map((supplier) =>
+  toSupplierResponseDTO(supplier),
+);
+
 
 describe('supplier Controller', () => {
   beforeEach(() => {

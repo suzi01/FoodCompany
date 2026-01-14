@@ -8,23 +8,15 @@ import {
   deleteSupplier,
   updateSupplier,
 } from '../../../src/suppliers/supplier.service';
+import { buildSupplier } from '../../factories/domin/supplierFactory';
 
 jest.mock('../../../src/suppliers/supplier.model');
 jest.mock('../../../src/products/product.model');
 
 describe('Supplier Service', () => {
-  const mockSupplier = {
-    _id: '507f1f77bcf86cd799439011',
-    companyName: 'Acme Corp',
-    mainContactName: 'John Doe',
-    email: 'test@example.com',
-    phoneNumber: '123-456-7890',
-    status: 'Active',
-    productsProvided: [],
-    branches: [],
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  };
+  const mockSupplier = buildSupplier();
+
+  const mockSuppliers = [...Array(2).keys()].map(() => buildSupplier());
 
   afterEach(() => {
     jest.clearAllMocks();
@@ -73,26 +65,7 @@ describe('Supplier Service', () => {
 
   describe('getAllSuppliers', () => {
     it('should return all suppliers', async () => {
-      const suppliers = [
-        {
-          _id: '123',
-          companyName: 'Acme Corp',
-          mainContactName: 'John Doe',
-          email: 'test@example.com',
-          phoneNumber: '123-456-7890',
-          productsProvided: [],
-          branches: [],
-        },
-        {
-          _id: '1234',
-          companyName: 'Acme Corp2',
-          mainContactName: 'Jane Dive',
-          email: 'test2@example.com',
-          phoneNumber: '122-456-7890',
-          productsProvided: [],
-          branches: [],
-        },
-      ];
+      const suppliers = mockSuppliers;
       const mockPopulate = jest.fn().mockResolvedValue(suppliers);
       (Supplier.find as jest.Mock).mockReturnValue({
         populate: mockPopulate,
@@ -134,15 +107,7 @@ describe('Supplier Service', () => {
 
   describe('getSupplier', () => {
     it('should return supplier', async () => {
-      const supplier = {
-        _id: '123',
-        companyName: 'Acme Corp',
-        mainContactName: 'John Doe',
-        email: 'test@example.com',
-        phoneNumber: '123-456-7890',
-        productsProvided: [],
-        branches: [],
-      };
+      const supplier = mockSupplier;
 
       const mockPopulate = jest.fn().mockResolvedValue(supplier);
       (Supplier.findById as jest.Mock).mockReturnValue({
@@ -154,7 +119,7 @@ describe('Supplier Service', () => {
       expect(Supplier.findById).toHaveBeenCalledWith('123');
       expect(mockPopulate).toHaveBeenCalledWith(
         'productsProvided',
-        'name -_id',
+        '-_id -__v',
       );
       expect(result).toEqual(supplier);
     });
@@ -270,7 +235,7 @@ describe('Supplier Service', () => {
       expect(mockSort).toHaveBeenCalledWith({ companyName: 1 });
       expect(mockPopulate).toHaveBeenCalledWith(
         'productsProvided',
-        'name -_id',
+        '-_id -__v',
       );
       expect(result).toEqual(mockSearchResults);
     });
