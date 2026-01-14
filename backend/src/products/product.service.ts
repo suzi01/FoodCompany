@@ -1,8 +1,8 @@
-import Product from './product.model';
 import Supplier from '../suppliers/supplier.model';
+import { ProductSearchParams } from '../types/SearchParams/ProductSearchParams';
 import { CreateProductDto } from './dtos/create-product.dto';
 import { EditProductDto } from './dtos/edit-product.dto';
-import { ProductSearchParams } from '../types/SearchParams/ProductSearchParams';
+import Product from './product.model';
 
 import { ClientSession, FilterQuery } from 'mongoose';
 
@@ -37,11 +37,11 @@ export const createProduct = async (
 };
 
 export const updateProduct = async (id: string, data: EditProductDto) => {
-  return Product.findByIdAndUpdate(id, data, { new: true });
+  return await Product.findByIdAndUpdate(id, data, { new: true });
 };
 
 export const deleteProduct = async (id: string) => {
-  return Product.findByIdAndDelete(id);
+  return await Product.findByIdAndDelete(id);
 };
 
 export const searchProducts = async (
@@ -60,29 +60,29 @@ export const searchProducts = async (
   if (barcode !== '') query.barcode = { $regex: barcode, $options: 'i' };
   if (supplier !== '') query.supplier = { $regex: supplier, $options: 'i' };
 
-  return Product.find(query).sort({ [sortBy]: order === 'asc' ? 1 : -1 });
+  return await Product.find(query).sort({ [sortBy]: order === 'asc' ? 1 : -1 });
 };
 
 export const getProductsByPriceRange = async (
   minPrice: number,
   maxPrice: number,
 ) => {
-  return Product.find({
+  return await Product.find({
     price: { $gte: minPrice, $lte: maxPrice },
   });
 };
 
 export const getProductsInStock = async () => {
-  return Product.find({ quantityInStock: { $gt: 0 } });
+  return await Product.find({ quantityInStock: { $gt: 0 } });
 };
 
 export const getProductsOutOfStock = async () => {
-  return Product.find({ quantityInStock: 0 });
+  return await Product.find({ quantityInStock: 0 });
 };
 
 export const updateProductStock = async (id: string, quantity: number) => {
   // Only allow updating quantityInStock
-  return Product.findByIdAndUpdate(
+  return await Product.findByIdAndUpdate(
     id,
     { quantityInStock: quantity },
     { new: true },
@@ -95,15 +95,15 @@ export const bulkUpdateProducts = async (
   const promises = updates.map((update) =>
     Product.findByIdAndUpdate(update.id, update.data, { new: true }),
   );
-  return Promise.all(promises);
+  return await Promise.all(promises);
 };
 
 export const getProductCount = async () => {
-  return Product.countDocuments();
+  return await Product.countDocuments();
 };
 
 export const getProductCountByCategory = async () => {
-  return Product.aggregate([
+  return await Product.aggregate([
     {
       $group: {
         _id: '$category',

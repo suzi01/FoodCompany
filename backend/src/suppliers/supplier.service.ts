@@ -1,13 +1,13 @@
+import Product from '../products/product.model';
+import { SupplierSearchParams } from '../types/SearchParams/SupplierSearchParams';
 import { CreateSupplierDto } from './dtos/create-supplier.dto';
 import { EditSupplierDto } from './dtos/edit-supplier.dto';
 import Supplier from './supplier.model';
-import Product from '../products/product.model';
-import { SupplierSearchParams } from '../types/SearchParams/SupplierSearchParams';
 
 import { FilterQuery } from 'mongoose';
 
 export const getAllSuppliers = async () => {
-  return Supplier.find().populate('productsProvided', 'name -_id');
+  return await Supplier.find().populate('productsProvided', 'name -_id');
 };
 
 export const createSupplier = async (data: CreateSupplierDto) => {
@@ -16,14 +16,14 @@ export const createSupplier = async (data: CreateSupplierDto) => {
 
 export const updateSupplier = async (id: string, data: EditSupplierDto) => {
   try {
-    return Supplier.findByIdAndUpdate(id, data, { new: true });
+    return await Supplier.findByIdAndUpdate(id, data, { new: true });
   } catch (error) {
     throw new Error('Database query failed');
   }
 };
 
 export const deleteSupplier = async (id: string) => {
-  return Supplier.findByIdAndDelete(id);
+  return await Supplier.findByIdAndDelete(id);
 };
 
 export const searchSuppliers = async (
@@ -46,11 +46,11 @@ export const searchSuppliers = async (
   }
   if (status !== '') query.status = { $regex: status, $options: 'i' };
 
-  return Supplier.find(query)
+  return await Supplier.find(query)
     .sort({ [sort]: order === 'asc' ? 1 : -1 })
-    .populate('productsProvided', 'name -_id');
+    .populate('productsProvided', '-_id -__v');
 };
 
 export const getSupplier = async (id: string) => {
-  return Supplier.findById(id).populate('productsProvided', 'name -_id');
+  return await Supplier.findById(id).populate('productsProvided', '-_id -__v');
 };

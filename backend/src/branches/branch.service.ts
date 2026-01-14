@@ -1,16 +1,16 @@
 import { FilterQuery } from 'mongoose';
-import Branch, { IBranch } from './branch.model';
+import Branch from './branch.model';
 import { CreateBranchDto } from './dtos/create-branch.dto';
 import { EditBranchDto } from './dtos/edit-branch.dto';
 
 import { BranchSearchParams } from '../types/SearchParams/BranchSearchParams';
 
 export const getAllBranches = async () => {
-  return Branch.find();
+  return await Branch.find();
 };
 
 export const getBranch = async (id: string) => {
-  return Branch.findById(id);
+  return await Branch.findById(id);
 };
 
 export const searchBranches = async (
@@ -28,17 +28,17 @@ export const searchBranches = async (
   if (supplierName !== '')
     query.supplierName = { $regex: supplierName, $options: 'i' };
 
-  return Branch.find(query).sort({ [sort]: order === 'asc' ? 1 : -1 });
+  return await Branch.find(query).sort({ [sort]: order === 'asc' ? 1 : -1 });
 };
 
 export const createBranch = async (data: CreateBranchDto) => {
-  return Branch.create(data);
+  return await Branch.create(data);
 };
 
 export const updateBranch = async (id: string, data: EditBranchDto) => {
-  return Branch.findByIdAndUpdate(id, data, { new: true });
+  return await Branch.findByIdAndUpdate(id, data, { new: true });
 };
 
 export const deleteBranch = async (id: string) => {
-  return Branch.findByIdAndDelete(id);
+  return await Branch.findByIdAndDelete(id);
 };
