@@ -24,6 +24,7 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'jsdom',
+    setupFiles: ['./vitest.setup.ts'],
     // or 'jsdom' for browser-like testing
     exclude: [...configDefaults.exclude, 'e2e/**', '**/*.stories.*'],
     // projects: [
