@@ -9,7 +9,6 @@ describe('StatusBadge', () => {
 
   it('applies the correct class for active status', () => {
     renderStatusBadge({ value: 'active' });
-    screen.logTestingPlaygroundURL();
     const badge = screen.getByTestId('status-badge');
     expect(badge).toHaveClass('bg-green-500');
   });
