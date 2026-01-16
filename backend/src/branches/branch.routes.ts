@@ -10,13 +10,20 @@ import {
 } from './branches.controller';
 import { createBranchSchema } from './dtos/create-branch.dto';
 import { editBranchSchema } from './dtos/edit-branch.dto';
+
 const branchRouter = Router();
 
-branchRouter.post('/', validateSchema(createBranchSchema), createBranch);
-branchRouter.get('/', getAllBranches);
+branchRouter
+  .route('/')
+  .post(validateSchema(createBranchSchema), createBranch)
+  .get(getAllBranches);
+
 branchRouter.get('/search', searchBranches);
-branchRouter.get('/:id', getBranch);
-branchRouter.put('/:id', validateSchema(editBranchSchema), updateBranch);
-branchRouter.delete('/:id', deleteBranch);
+
+branchRouter
+  .route('/:id')
+  .get(getBranch)
+  .put(validateSchema(editBranchSchema), updateBranch)
+  .delete(deleteBranch);
 
 export default branchRouter;

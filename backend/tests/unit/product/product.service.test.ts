@@ -1,4 +1,5 @@
 import Product from '../../../src/products/product.model';
+import Supplier from '../../../src/suppliers/supplier.model';
 import {
   createProduct,
   getAllProducts,
@@ -7,22 +8,13 @@ import {
   deleteProduct,
   searchProducts,
 } from '../../../src/products/product.service';
+import { buildProduct } from '../../factories/domin/productFactory';
 
 jest.mock('../../../src/products/product.model');
+jest.mock('../../../src/suppliers/supplier.model');
 
 describe('Product Service', () => {
-  const mockProduct = {
-    _id: '507f1f77bcf86cd799439011',
-    name: 'Test Product',
-    idOrBarcode: '123456789',
-    category: 'Fruit',
-    supplier: '507f191e810c19729de860ea',
-    price: 2.99,
-    quantityInStock: 100,
-    description: 'A test product',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  };
+  const mockProduct = buildProduct();
 
   afterEach(() => {
     jest.clearAllMocks();
@@ -39,13 +31,25 @@ describe('Product Service', () => {
         quantityInStock: 100,
         description: 'A test product',
       };
-      (Product.create as jest.Mock).mockResolvedValue({
+      const createdProduct = {
         ...newProduct,
-        _id: '123',
-      });
+        _id: '507f1f77bcf86cd799439011',
+      };
+     
+      (Product.create as jest.Mock).mockResolvedValue([createdProduct]);
+      (Supplier.findByIdAndUpdate as jest.Mock).mockResolvedValue({});
+
       const result = await createProduct(newProduct);
-      expect(Product.create).toHaveBeenCalledWith(newProduct);
-      expect(result.name).toBe('Test Product');
+
+      expect(Product.create).toHaveBeenCalledWith([newProduct], {
+        session: undefined,
+      });
+      expect(Supplier.findByIdAndUpdate).toHaveBeenCalledWith(
+        newProduct.supplier,
+        { $addToSet: { productsProvided: createdProduct._id } },
+        { session: undefined },
+      );
+      expect(result).toEqual(createdProduct);
     });
     it('should handle creation errors', async () => {
       const productData = {
@@ -62,7 +66,9 @@ describe('Product Service', () => {
       await expect(createProduct(productData)).rejects.toThrow(
         'Database connection failed',
       );
-      expect(Product.create).toHaveBeenCalledWith(productData);
+      expect(Product.create).toHaveBeenCalledWith([productData], {
+        session: undefined,
+      });
     });
   });
 
@@ -237,7 +243,7 @@ describe('Product Service', () => {
       const error = new Error('Search failed');
       mockSort.mockRejectedValue(error);
       await expect(
-        searchProducts('Test', '', '', 'name', 'asc'),
+        searchProducts('Test', '', '', '', 'name', 'asc'),
       ).rejects.toThrow('Search failed');
     });
     it('should handle special regex characters in search terms', async () => {

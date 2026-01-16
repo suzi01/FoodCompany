@@ -1,68 +1,18 @@
+import mongoose from 'mongoose';
 import request from 'supertest';
-import app from '../../../src/app';
 
+import app from '../../../src/app';
 import * as branchService from '../../../src/branches/branch.service';
+import { toBranchesResponseDTO } from '../../../src/utils/mappers/branches.mapper';
+import { buildBranch } from '../../factories/domin/branchFactory';
 
 jest.mock('../../../src/branches/branch.service');
 
-const mockBranches = [
-  {
-    _id: '68d3d624eb3b2060dcc384f8',
-    branchName: 'Test Branch',
-    branchEmail: 'test.email@gmail.com',
-    mainContactName: 'test contact',
-    phoneNumber: '123-456-7890',
-    address: '123 Test St, Test City, TX 12345',
-    mainContactPhoneNumber: '123-456-7891',
-    mainContactEmail: 'maintest.contact@gmail.com',
-    yearsActive: 5,
-    suppliers: [],
-    createdAt: new Date('2025-09-24T11:29:40.851Z'),
-    updatedAt: new Date('2025-09-24T11:36:17.456Z'),
-  },
-  {
-    _id: '60c72b2f9b1d8c1e8c8b4567',
-    branchName: 'Test Branch 2',
-    branchEmail: 'maintest2.email@gmail.com',
-    address: '123 Test St, Test City, TX 12345',
-    mainContactEmail: 'maintest.contact@gmail.com',
-    suppliers: [],
-    yearsActive: 3,
-    createdAt: new Date('2025-09-24T11:29:40.851Z'),
-    updatedAt: new Date('2025-09-24T11:36:17.456Z'),
-  },
-];
+const mockBranches = [...Array(2).keys()].map(() => buildBranch());
 
-const mockBranchesDto = [
-  {
-    id: '68d3d624eb3b2060dcc384f8',
-    branchName: 'Test Branch',
-    branchEmail: 'test.email@gmail.com',
-    mainContactName: 'test contact',
-    phoneNumber: '123-456-7890',
-    address: '123 Test St, Test City, TX 12345',
-    mainContactPhoneNumber: '123-456-7891',
-    mainContactEmail: 'maintest.contact@gmail.com',
-    yearsActive: 5,
-    suppliers: [],
-    createdAt: '2025-09-24T11:29:40.851Z',
-    updatedAt: '2025-09-24T11:36:17.456Z',
-  },
-  {
-    id: '60c72b2f9b1d8c1e8c8b4567',
-    branchName: 'Test Branch 2',
-    mainContactName: '',
-    mainContactPhoneNumber: '',
-    phoneNumber: '',
-    branchEmail: 'maintest2.email@gmail.com',
-    address: '123 Test St, Test City, TX 12345',
-    mainContactEmail: 'maintest.contact@gmail.com',
-    suppliers: [],
-    yearsActive: 3,
-    createdAt: '2025-09-24T11:29:40.851Z',
-    updatedAt: '2025-09-24T11:36:17.456Z',
-  },
-];
+const mockBranchesDto = mockBranches.map((branch) =>
+  toBranchesResponseDTO(branch),
+);
 
 describe('branch Controller', () => {
   beforeEach(() => {
@@ -171,30 +121,35 @@ describe('branch Controller', () => {
 
   describe('createBranch', () => {
     it('POST / should add a new valid branch', async () => {
+      const { id, createdAt, updatedAt, ...branchData } = mockBranchesDto[0];
       (branchService.createBranch as jest.Mock).mockResolvedValue(
         mockBranches[0],
       );
 
       const response = await request(app)
         .post('/api/v1/branches/')
-        .send(mockBranchesDto[0]);
+        .send(branchData);
       expect(response.status).toBe(201);
       expect(response.body.data).toEqual(mockBranchesDto[0]);
     });
 
     it('POST / should not add an invalid supplier', async () => {
-      const validationError = new Error('Validation Error');
-      (validationError as any).name = 'ValidationError';
-      (validationError as any).errors = {
+      const validationError = new Error(
+        'Validation Error',
+      ) as mongoose.Error.ValidationError;
+      validationError.name = 'ValidationError';
+      validationError.errors = {
         email: {
           message: 'Email is required',
           kind: 'required',
           path: 'email',
-        },
-        companyName: {
-          message: 'Company name is required',
-          kind: 'required',
-          path: 'companyName',
+          name: 'ValidatorError',
+          properties: {
+            message: 'Email is required',
+            type: 'required',
+            path: 'email',
+          },
+          value: undefined,
         },
       };
       (branchService.createBranch as jest.Mock).mockRejectedValue(
@@ -203,9 +158,8 @@ describe('branch Controller', () => {
 
       const response = await request(app)
         .post('/api/v1/branches/')
-        .send(mockBranchesDto[0]);
+        .send({ ...mockBranchesDto[0], email: 'invalid-email' });
       expect(response.status).toBe(400);
-
       expect(response.body.message).toBe('Validation Error');
     });
 
@@ -235,7 +189,6 @@ describe('branch Controller', () => {
 
   describe('updateBranch', () => {
     it('PUT / should update an existing branch with valid data', async () => {
-      
       (branchService.updateBranch as jest.Mock).mockResolvedValue({
         ...mockBranches[1],
         branchName: 'updated Name',
@@ -262,13 +215,22 @@ describe('branch Controller', () => {
     });
 
     it('PUT / should handle validation errors during update', async () => {
-      const validationError = new Error('Validation Error');
-      (validationError as any).name = 'ValidationError';
-      (validationError as any).errors = {
+      const validationError = new Error(
+        'Validation Error',
+      ) as mongoose.Error.ValidationError;
+      validationError.name = 'ValidationError';
+      validationError.errors = {
         email: {
           message: 'Please provide a valid email',
           kind: 'invalid',
           path: 'email',
+          name: 'ValidatorError',
+          properties: {
+            message: 'Please provide a valid email',
+            type: 'invalid',
+            path: 'email',
+          },
+          value: undefined,
         },
       };
 

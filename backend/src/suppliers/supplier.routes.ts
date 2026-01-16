@@ -12,11 +12,17 @@ import {
 
 const supplierRouter = Router();
 
-supplierRouter.post('/', validateSchema(createSupplierSchema), createSupplier);
-supplierRouter.get('/', getAllSuppliers);
+supplierRouter
+  .route('/')
+  .post(validateSchema(createSupplierSchema), createSupplier)
+  .get(getAllSuppliers);
+
 supplierRouter.get('/search', searchSuppliers);
-supplierRouter.get('/:id', getSupplier);
-supplierRouter.delete('/:id', deleteSupplier);
-supplierRouter.put('/:id', updateSupplier);
+
+supplierRouter
+  .route('/:id')
+  .get(getSupplier)
+  .delete(deleteSupplier)
+  .put(updateSupplier);
 
 export default supplierRouter;

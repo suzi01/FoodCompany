@@ -2,64 +2,18 @@ import request from 'supertest';
 import app from '../../../src/app';
 
 import * as supplierService from '../../../src/suppliers/supplier.service';
+import mongoose from 'mongoose';
+import { buildSupplier } from '../../factories/domin/supplierFactory';
+import { toSupplierResponseDTO } from '../../../src/utils/mappers/supplier.mapper';
 
 jest.mock('../../../src/suppliers/supplier.service');
 
-const mockSuppliers = [
-  {
-    _id: '68d3d624eb3b2060dcc384f8',
-    companyName: 'Test company',
-    email: 'test.email@gmail.com',
-    mainContactName: 'test contact',
-    phoneNumber: '123-456-7890',
-    address: '123 Test St, Test City, TX 12345',
-    status: 'Pending',
-    productsProvided: [],
-    branches: [],
-    createdAt: new Date('2025-09-24T11:29:40.851Z'),
-    updatedAt: new Date('2025-09-24T11:36:17.456Z'),
-  },
-  {
-    _id: '60c72b2f9b1d8c1e8c8b4567',
-    companyName: 'Test company2',
-    email: 'test2.email@gmail.com',
-    mainContactName: 'test2 contact',
-    status: 'Active',
-    productsProvided: [],
-    branches: [],
-    createdAt: new Date('2025-10-24T11:29:40.851Z'),
-    updatedAt: new Date('2025-10-24T11:36:17.456Z'),
-  },
-];
+const mockSuppliers = [...Array(2).keys()].map(() => buildSupplier());
 
-const mockSuppliersDto = [
-  {
-    id: '68d3d624eb3b2060dcc384f8',
-    companyName: 'Test company',
-    email: 'test.email@gmail.com',
-    mainContactName: 'test contact',
-    phoneNumber: '123-456-7890',
-    address: '123 Test St, Test City, TX 12345',
-    status: 'Pending',
-    productsProvided: [],
-    branches: [],
-    createdAt: '2025-09-24T11:29:40.851Z',
-    updatedAt: '2025-09-24T11:36:17.456Z',
-  },
-  {
-    id: '60c72b2f9b1d8c1e8c8b4567',
-    companyName: 'Test company2',
-    email: 'test2.email@gmail.com',
-    mainContactName: 'test2 contact',
-    phoneNumber: '',
-    address: '',
-    status: 'Active',
-    productsProvided: [],
-    branches: [],
-    createdAt: '2025-10-24T11:29:40.851Z',
-    updatedAt: '2025-10-24T11:36:17.456Z',
-  },
-];
+const mockSuppliersDto = mockSuppliers.map((supplier) =>
+  toSupplierResponseDTO(supplier),
+);
+
 
 describe('supplier Controller', () => {
   beforeEach(() => {
@@ -153,7 +107,7 @@ describe('supplier Controller', () => {
       ]);
 
       const response = await request(app).get(
-        '/api/v1/suppliers/search?companyName=Test&product=widgets&code=ABC123&sort=companyName&order=Descending',
+        '/api/v1/suppliers/search?companyName=Test&product=widgets&status=active&sort=companyName&order=Descending',
       );
 
       expect(response.status).toBe(200);
@@ -161,7 +115,7 @@ describe('supplier Controller', () => {
       expect(supplierService.searchSuppliers).toHaveBeenCalledWith(
         'Test',
         'widgets',
-        'ABC123',
+        'active',
         'companyName',
         'Descending',
       );
@@ -182,18 +136,34 @@ describe('supplier Controller', () => {
     });
 
     it('POST / should not add an invalid supplier', async () => {
-      const validationError = new Error('Validation Error');
-      (validationError as any).name = 'ValidationError';
-      (validationError as any).errors = {
+      const validationError = new Error(
+        'Validation Error',
+      ) as mongoose.Error.ValidationError;
+      validationError.name = 'ValidationError';
+      validationError.errors = {
         email: {
           message: 'Email is required',
           kind: 'required',
           path: 'email',
+          name: 'ValidatorError',
+          properties: {
+            message: 'Email is required',
+            type: 'required',
+            path: 'email',
+          },
+          value: undefined,
         },
         companyName: {
           message: 'Company name is required',
           kind: 'required',
           path: 'companyName',
+          name: 'ValidatorError',
+          properties: {
+            message: 'Company name is required',
+            type: 'required',
+            path: 'companyName',
+          },
+          value: undefined,
         },
       };
       (supplierService.createSupplier as jest.Mock).mockRejectedValue(
@@ -262,13 +232,22 @@ describe('supplier Controller', () => {
     });
 
     it('PUT / should handle validation errors during update', async () => {
-      const validationError = new Error('Validation Error');
-      (validationError as any).name = 'ValidationError';
-      (validationError as any).errors = {
+      const validationError = new Error(
+        'Validation Error',
+      ) as mongoose.Error.ValidationError;
+      validationError.name = 'ValidationError';
+      validationError.errors = {
         email: {
           message: 'Please provide a valid email',
           kind: 'invalid',
           path: 'email',
+          name: 'ValidatorError',
+          properties: {
+            message: 'Email is required',
+            type: 'required',
+            path: 'email',
+          },
+          value: undefined,
         },
       };
 

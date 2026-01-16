@@ -1,4 +1,5 @@
 import Supplier from '../../../src/suppliers/supplier.model';
+import Product from '../../../src/products/product.model';
 import {
   createSupplier,
   searchSuppliers,
@@ -7,22 +8,15 @@ import {
   deleteSupplier,
   updateSupplier,
 } from '../../../src/suppliers/supplier.service';
+import { buildSupplier } from '../../factories/domin/supplierFactory';
 
 jest.mock('../../../src/suppliers/supplier.model');
+jest.mock('../../../src/products/product.model');
 
 describe('Supplier Service', () => {
-  const mockSupplier = {
-    _id: '507f1f77bcf86cd799439011',
-    companyName: 'Acme Corp',
-    mainContactName: 'John Doe',
-    email: 'test@example.com',
-    phoneNumber: '123-456-7890',
-    status: 'Active',
-    productsProvided: [],
-    branches: [],
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  };
+  const mockSupplier = buildSupplier();
+
+  const mockSuppliers = [...Array(2).keys()].map(() => buildSupplier());
 
   afterEach(() => {
     jest.clearAllMocks();
@@ -71,35 +65,26 @@ describe('Supplier Service', () => {
 
   describe('getAllSuppliers', () => {
     it('should return all suppliers', async () => {
-      const suppliers = [
-        {
-          _id: '123',
-          companyName: 'Acme Corp',
-          mainContactName: 'John Doe',
-          email: 'test@example.com',
-          phoneNumber: '123-456-7890',
-          productsProvided: [],
-          branches: [],
-        },
-        {
-          _id: '1234',
-          companyName: 'Acme Corp2',
-          mainContactName: 'Jane Dive',
-          email: 'test2@example.com',
-          phoneNumber: '122-456-7890',
-          productsProvided: [],
-          branches: [],
-        },
-      ];
-      (Supplier.find as jest.Mock).mockResolvedValue(suppliers);
+      const suppliers = mockSuppliers;
+      const mockPopulate = jest.fn().mockResolvedValue(suppliers);
+      (Supplier.find as jest.Mock).mockReturnValue({
+        populate: mockPopulate,
+      });
 
       const result = await getAllSuppliers();
 
       expect(Supplier.find).toHaveBeenCalled();
+      expect(mockPopulate).toHaveBeenCalledWith(
+        'productsProvided',
+        'name -_id',
+      );
       expect(result).toEqual(suppliers);
     });
     it('should return empty array when no suppliers exist', async () => {
-      (Supplier.find as jest.Mock).mockResolvedValue([]);
+      const mockPopulate = jest.fn().mockResolvedValue([]);
+      (Supplier.find as jest.Mock).mockReturnValue({
+        populate: mockPopulate,
+      });
 
       const result = await getAllSuppliers();
 
@@ -110,7 +95,10 @@ describe('Supplier Service', () => {
 
     it('should handle database errors', async () => {
       const error = new Error('Database query failed');
-      (Supplier.find as jest.Mock).mockRejectedValue(error);
+      const mockPopulate = jest.fn().mockRejectedValue(error);
+      (Supplier.find as jest.Mock).mockReturnValue({
+        populate: mockPopulate,
+      });
 
       await expect(getAllSuppliers()).rejects.toThrow('Database query failed');
       expect(Supplier.find).toHaveBeenCalled();
@@ -119,37 +107,40 @@ describe('Supplier Service', () => {
 
   describe('getSupplier', () => {
     it('should return supplier', async () => {
-      const supplier = [
-        {
-          _id: '123',
-          companyName: 'Acme Corp',
-          mainContactName: 'John Doe',
-          email: 'test@example.com',
-          phoneNumber: '123-456-7890',
-          productsProvided: [],
-          branches: [],
-        },
-      ];
-      (Supplier.findById as jest.Mock).mockResolvedValue(supplier);
+      const supplier = mockSupplier;
 
-      const result = await getSupplier('123');
-
-      expect(Supplier.findById).toHaveBeenCalled();
-      expect(result).toEqual(supplier);
-    });
-    it('should return empty array when supplier does not exist', async () => {
-      (Supplier.findById as jest.Mock).mockResolvedValue([]);
+      const mockPopulate = jest.fn().mockResolvedValue(supplier);
+      (Supplier.findById as jest.Mock).mockReturnValue({
+        populate: mockPopulate,
+      });
 
       const result = await getSupplier('123');
 
       expect(Supplier.findById).toHaveBeenCalledWith('123');
-      expect(result).toEqual([]);
-      expect(result).toHaveLength(0);
+      expect(mockPopulate).toHaveBeenCalledWith(
+        'productsProvided',
+        '-_id -__v',
+      );
+      expect(result).toEqual(supplier);
+    });
+    it('should return null when supplier does not exist', async () => {
+      const mockPopulate = jest.fn().mockResolvedValue(null);
+      (Supplier.findById as jest.Mock).mockReturnValue({
+        populate: mockPopulate,
+      });
+
+      const result = await getSupplier('123');
+
+      expect(Supplier.findById).toHaveBeenCalledWith('123');
+      expect(result).toBeNull();
     });
 
     it('should handle database errors', async () => {
       const error = new Error('Database query failed');
-      (Supplier.findById as jest.Mock).mockRejectedValue(error);
+      const mockPopulate = jest.fn().mockRejectedValue(error);
+      (Supplier.findById as jest.Mock).mockReturnValue({
+        populate: mockPopulate,
+      });
 
       await expect(getSupplier('123')).rejects.toThrow('Database query failed');
       expect(Supplier.findById).toHaveBeenCalledWith('123');
@@ -219,83 +210,104 @@ describe('Supplier Service', () => {
   });
 
   describe('searchSuppliers', () => {
-    const mockSearchResults = [
-      mockSupplier,
-      {
-        ...mockSupplier,
-        _id: '507f1f77bcf86cd799439012',
-        companyName: 'Beta Corp',
-      },
-    ];
-
+    const mockSearchResults = [mockSupplier];
     let mockSort: jest.Mock;
+    let mockPopulate: jest.Mock;
 
     beforeEach(() => {
-      mockSort = jest.fn().mockResolvedValue(mockSearchResults);
+      mockPopulate = jest.fn().mockResolvedValue(mockSearchResults);
+      mockSort = jest.fn().mockReturnValue({ populate: mockPopulate });
       (Supplier.find as jest.Mock).mockReturnValue({ sort: mockSort });
     });
 
-    it('should search suppliers with all parameters', async () => {
+    it('should search suppliers with company name only', async () => {
       const result = await searchSuppliers(
         'Acme',
-        'widgets',
-        'ABC123',
+        '',
+        '',
         'companyName',
         'asc',
       );
 
       expect(Supplier.find).toHaveBeenCalledWith({
         companyName: { $regex: 'Acme', $options: 'i' },
-        products: { $regex: 'widgets', $options: 'i' },
-        code: { $regex: 'ABC123', $options: 'i' },
       });
       expect(mockSort).toHaveBeenCalledWith({ companyName: 1 });
+      expect(mockPopulate).toHaveBeenCalledWith(
+        'productsProvided',
+        '-_id -__v',
+      );
       expect(result).toEqual(mockSearchResults);
     });
 
-    it('should search suppliers with only company name', async () => {
+    it('should search suppliers with product name', async () => {
+      const mockProducts = [{ _id: 'prod1' }, { _id: 'prod2' }];
+      (Product.find as jest.Mock).mockReturnValue({
+        select: jest.fn().mockResolvedValue(mockProducts),
+      });
+
+      const result = await searchSuppliers(
+        'Acme',
+        'widget',
+        '',
+        'companyName',
+        'asc',
+      );
+
+      expect(Product.find).toHaveBeenCalledWith({
+        name: { $regex: 'widget', $options: 'i' },
+      });
+      expect(Supplier.find).toHaveBeenCalledWith({
+        companyName: { $regex: 'Acme', $options: 'i' },
+        productsProvided: { $in: ['prod1', 'prod2'] },
+      });
+    });
+
+    it('should search suppliers with status filter', async () => {
       const result = await searchSuppliers(
         'Acme',
         '',
-        '',
+        'Active',
         'companyName',
         'desc',
       );
 
       expect(Supplier.find).toHaveBeenCalledWith({
         companyName: { $regex: 'Acme', $options: 'i' },
+        status: { $regex: 'Active', $options: 'i' },
       });
       expect(mockSort).toHaveBeenCalledWith({ companyName: -1 });
-      expect(result).toEqual(mockSearchResults);
     });
 
-    it('should handle case-insensitive search', async () => {
+    it('should search with all parameters', async () => {
+      const mockProducts = [{ _id: 'prod1' }];
+      (Product.find as jest.Mock).mockReturnValue({
+        select: jest.fn().mockResolvedValue(mockProducts),
+      });
+
       const result = await searchSuppliers(
-        'ACME',
-        'WIDGETS',
-        'abc123',
-        'companyName',
+        'Acme',
+        'widget',
+        'Active',
+        'status',
         'asc',
       );
 
       expect(Supplier.find).toHaveBeenCalledWith({
-        companyName: { $regex: 'ACME', $options: 'i' },
-        products: { $regex: 'WIDGETS', $options: 'i' },
-        code: { $regex: 'abc123', $options: 'i' },
+        companyName: { $regex: 'Acme', $options: 'i' },
+        productsProvided: { $in: ['prod1'] },
+        status: { $regex: 'Active', $options: 'i' },
       });
-      expect(result).toEqual(mockSearchResults);
+      expect(mockSort).toHaveBeenCalledWith({ status: 1 });
     });
 
-    it('should sort in ascending order when order is asc', async () => {
-      await searchSuppliers('Test', '', '', 'companyName', 'asc');
+    it('should handle case-insensitive search', async () => {
+      await searchSuppliers('ACME', '', 'ACTIVE', 'companyName', 'asc');
 
-      expect(mockSort).toHaveBeenCalledWith({ companyName: 1 });
-    });
-
-    it('should sort in descending order when order is not asc', async () => {
-      await searchSuppliers('Test', '', '', 'companyName', 'desc');
-
-      expect(mockSort).toHaveBeenCalledWith({ companyName: -1 });
+      expect(Supplier.find).toHaveBeenCalledWith({
+        companyName: { $regex: 'ACME', $options: 'i' },
+        status: { $regex: 'ACTIVE', $options: 'i' },
+      });
     });
 
     it('should sort by different fields', async () => {
@@ -305,7 +317,7 @@ describe('Supplier Service', () => {
     });
 
     it('should return empty results when no matches found', async () => {
-      mockSort.mockResolvedValue([]);
+      mockPopulate.mockResolvedValue([]);
 
       const result = await searchSuppliers(
         'NonExistent',
@@ -320,26 +332,29 @@ describe('Supplier Service', () => {
 
     it('should handle search errors', async () => {
       const error = new Error('Search failed');
-      mockSort.mockRejectedValue(error);
+      mockPopulate.mockRejectedValue(error);
 
       await expect(
         searchSuppliers('Test', '', '', 'companyName', 'asc'),
       ).rejects.toThrow('Search failed');
     });
 
-    it('should handle special regex characters in search terms', async () => {
-      await searchSuppliers(
-        'Test.Corp',
-        'widget+',
-        'ABC[123]',
+    it('should handle no products found for product search', async () => {
+      (Product.find as jest.Mock).mockReturnValue({
+        select: jest.fn().mockResolvedValue([]),
+      });
+
+      const result = await searchSuppliers(
+        '',
+        'nonexistent',
+        '',
         'companyName',
         'asc',
       );
 
       expect(Supplier.find).toHaveBeenCalledWith({
-        companyName: { $regex: 'Test.Corp', $options: 'i' },
-        products: { $regex: 'widget+', $options: 'i' },
-        code: { $regex: 'ABC[123]', $options: 'i' },
+        companyName: { $regex: '', $options: 'i' },
+        productsProvided: { $in: [] },
       });
     });
   });

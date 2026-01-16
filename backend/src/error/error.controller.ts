@@ -15,7 +15,12 @@ const handleDuplicateFieldsDB = (err: GlobalError) => {
 
 const handleValidationErrorDB = (err: GlobalError) => {
   const errors = err.errors
-    ? Object.values(err.errors).map((el: any) => el.message)
+    ? Object.values(err.errors).map((el: unknown) => {
+        if (typeof el === 'object' && el !== null && 'message' in el) {
+          return String((el as { message: unknown }).message);
+        }
+        return 'Validation error';
+      })
     : [];
   const message = `Invalid input data. ${errors.join('. ')}`;
   return new HttpError(400, message);
@@ -53,10 +58,6 @@ export const globalErrorHandler = (
 ) => {
   err.statusCode = err.name === 'ValidationError' ? 400 : err.statusCode || 500;
   err.status = err.status || 'error';
-
-  console.log('Error:', err.status);
-  console.log('Message:', err.message);
-
   if (
     process.env.NODE_ENV === 'development' ||
     process.env.NODE_ENV === 'test'
@@ -64,7 +65,7 @@ export const globalErrorHandler = (
     sendErrorDev(err, res);
   } else {
     if (err.name === 'CastError') err = handleCastErrorDB(err);
-    if ((err as any).code === 11000) err = handleDuplicateFieldsDB(err);
+    if (err.code === 11000) err = handleDuplicateFieldsDB(err);
     if (err.name === 'ValidationError') err = handleValidationErrorDB(err);
 
     sendErrorProd(err, res);

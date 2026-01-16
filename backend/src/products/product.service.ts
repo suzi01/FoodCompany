@@ -1,6 +1,10 @@
-import Product from './product.model';
+import Supplier from '../suppliers/supplier.model';
+import { ProductSearchParams } from '../types/SearchParams/ProductSearchParams';
 import { CreateProductDto } from './dtos/create-product.dto';
 import { EditProductDto } from './dtos/edit-product.dto';
+import Product from './product.model';
+
+import { ClientSession, FilterQuery } from 'mongoose';
 
 export const getAllProducts = async () => {
   return Product.find();
@@ -10,16 +14,34 @@ export const getProduct = async (id: string) => {
   return Product.findById(id);
 };
 
-export const createProduct = async (data: CreateProductDto) => {
-  return Product.create(data);
+export const createProduct = async (
+  data: CreateProductDto,
+  session?: ClientSession,
+) => {
+  const [newProduct] = await Product.create([data], { session });
+
+  await Supplier.findByIdAndUpdate(
+    data.supplier,
+    { $addToSet: { productsProvided: newProduct._id } },
+    { session },
+  );
+
+  // 3. Update Branches
+  // await Branch.updateMany(
+  //   { _id: { $in: data.branches } },
+  //   { $addToSet: { products: newProduct._id } },
+  //   { session },
+  // );
+
+  return newProduct;
 };
 
 export const updateProduct = async (id: string, data: EditProductDto) => {
-  return Product.findByIdAndUpdate(id, data, { new: true });
+  return await Product.findByIdAndUpdate(id, data, { new: true });
 };
 
 export const deleteProduct = async (id: string) => {
-  return Product.findByIdAndDelete(id);
+  return await Product.findByIdAndDelete(id);
 };
 
 export const searchProducts = async (
@@ -27,54 +49,40 @@ export const searchProducts = async (
   barcode: string,
   supplier: string,
   category: string,
-  sortBy: string = 'name',
-  order: string = 'asc',
+  sortBy: string,
+  order: string,
 ) => {
-  const query: any = {};
+  const query: FilterQuery<ProductSearchParams> = {};
 
-  if (name) {
-    query.name = { $regex: name, $options: 'i' };
-  }
+  query.name = { $regex: name, $options: 'i' };
+  if (name !== '') query.name = { $regex: name, $options: 'i' };
+  if (category !== '') query.category = { $regex: category, $options: 'i' };
+  if (barcode !== '') query.barcode = { $regex: barcode, $options: 'i' };
+  if (supplier !== '') query.supplier = { $regex: supplier, $options: 'i' };
 
-  if (category) {
-    query.category = { $regex: category, $options: 'i' };
-  }
-
-  if (barcode) {
-    query.barcode = { $regex: barcode, $options: 'i' };
-  }
-
-  if (supplier) {
-    query.supplier = { $regex: supplier, $options: 'i' };
-  }
-
-  const sortOrder = order === 'asc' ? 1 : -1;
-  const sortObject: any = {};
-  sortObject[sortBy] = sortOrder;
-
-  return Product.find(query).sort(sortObject);
+  return await Product.find(query).sort({ [sortBy]: order === 'asc' ? 1 : -1 });
 };
 
 export const getProductsByPriceRange = async (
   minPrice: number,
   maxPrice: number,
 ) => {
-  return Product.find({
+  return await Product.find({
     price: { $gte: minPrice, $lte: maxPrice },
   });
 };
 
 export const getProductsInStock = async () => {
-  return Product.find({ quantityInStock: { $gt: 0 } });
+  return await Product.find({ quantityInStock: { $gt: 0 } });
 };
 
 export const getProductsOutOfStock = async () => {
-  return Product.find({ quantityInStock: 0 });
+  return await Product.find({ quantityInStock: 0 });
 };
 
 export const updateProductStock = async (id: string, quantity: number) => {
   // Only allow updating quantityInStock
-  return Product.findByIdAndUpdate(
+  return await Product.findByIdAndUpdate(
     id,
     { quantityInStock: quantity },
     { new: true },
@@ -87,15 +95,15 @@ export const bulkUpdateProducts = async (
   const promises = updates.map((update) =>
     Product.findByIdAndUpdate(update.id, update.data, { new: true }),
   );
-  return Promise.all(promises);
+  return await Promise.all(promises);
 };
 
 export const getProductCount = async () => {
-  return Product.countDocuments();
+  return await Product.countDocuments();
 };
 
 export const getProductCountByCategory = async () => {
-  return Product.aggregate([
+  return await Product.aggregate([
     {
       $group: {
         _id: '$category',

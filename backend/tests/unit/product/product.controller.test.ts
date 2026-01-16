@@ -1,63 +1,30 @@
 import request from 'supertest';
 import app from '../../../src/app';
+import mongoose from 'mongoose';
 
 import * as productService from '../../../src/products/product.service';
+import { buildProduct } from '../../factories/domin/productFactory';
+import { toProductResponseDTO } from '../../../src/utils/mappers/product.mapper';
 
 jest.mock('../../../src/products/product.service');
+jest.mock('../../../src/suppliers/supplier.model');
 
-const mockProducts = [
-  {
-    _id: '507f1f77bcf86cd799439011',
-    name: 'Test Product',
-    idOrBarcode: '123456789',
-    category: 'Fruit',
-    supplier: '507f191e810c19729de860ea',
-    price: 2.99,
-    quantityInStock: 100,
-    description: 'A test product',
-    createdAt: new Date('2025-09-24T11:29:40.851Z'),
-    updatedAt: new Date('2025-09-24T11:36:17.456Z'),
-  },
-  {
-    _id: '507f1f77bcf86cd799439012',
-    name: 'Another Product',
-    idOrBarcode: '987654321',
-    category: 'Fruit',
-    supplier: '507f191e810c19729de860eb',
-    price: 5.99,
-    quantityInStock: 50,
-    description: 'Another test product',
-    createdAt: new Date('2025-10-24T11:29:40.851Z'),
-    updatedAt: new Date('2025-10-24T11:36:17.456Z'),
-  },
-];
+// Mock only the startSession method
+jest.spyOn(mongoose, 'startSession').mockImplementation(
+  () =>
+    ({
+      startTransaction: jest.fn(),
+      commitTransaction: jest.fn(),
+      abortTransaction: jest.fn(),
+      endSession: jest.fn(),
+    }) as any,
+);
 
-const mockProductsDto = [
-  {
-    id: '507f1f77bcf86cd799439011',
-    name: 'Test Product',
-    idOrBarcode: '123456789',
-    category: 'Fruit',
-    supplier: '507f191e810c19729de860ea',
-    price: 2.99,
-    quantityInStock: 100,
-    description: 'A test product',
-    createdAt: '2025-09-24T11:29:40.851Z',
-    updatedAt: '2025-09-24T11:36:17.456Z',
-  },
-  {
-    id: '507f1f77bcf86cd799439012',
-    name: 'Another Product',
-    idOrBarcode: '987654321',
-    category: 'Fruit',
-    supplier: '507f191e810c19729de860eb',
-    price: 5.99,
-    quantityInStock: 50,
-    description: 'Another test product',
-    createdAt: '2025-10-24T11:29:40.851Z',
-    updatedAt: '2025-10-24T11:36:17.456Z',
-  },
-];
+const mockProducts = [...Array(2).keys()].map(() => buildProduct());
+
+const mockProductsDto = mockProducts.map((product) =>
+  toProductResponseDTO(product),
+);
 
 describe('Product Controller', () => {
   beforeEach(() => {
@@ -142,16 +109,16 @@ describe('Product Controller', () => {
         mockProducts[0],
       ]);
       const response = await request(app).get(
-        '/api/v1/products/search?name=Test&barcode=Fruit&sortBy=name&order=desc',
+        '/api/v1/products/search?name=Test&barcode=123456789&supplier=SupplierName&sortBy=name&category=Fruit&order=desc',
       );
       expect(response.status).toBe(200);
       expect(response.body.data).toEqual([mockProductsDto[0]]);
       expect(productService.searchProducts).toHaveBeenCalledWith(
         'Test',
-        'Fruit',
-        '',
+        '123456789',
+        'SupplierName',
         'name',
-        '',
+        'Fruit',
         'desc',
       );
     });
@@ -170,18 +137,34 @@ describe('Product Controller', () => {
     });
 
     it('POST / should not add an invalid product', async () => {
-      const validationError = new Error('Validation Error');
-      (validationError as any).name = 'ValidationError';
-      (validationError as any).errors = {
+      const validationError = new Error(
+        'Validation Error',
+      ) as mongoose.Error.ValidationError;
+      validationError.name = 'ValidationError';
+      validationError.errors = {
         name: {
+          name: 'ValidatorError',
           message: 'Name is required',
           kind: 'required',
           path: 'name',
+          properties: {
+            message: 'Please provide a valid name',
+            type: 'invalid',
+            path: 'name',
+          },
+          value: undefined,
         },
         idOrBarcode: {
           message: 'Barcode is required',
           kind: 'required',
           path: 'idOrBarcode',
+          name: 'ValidatorError',
+          properties: {
+            message: 'Please provide a valid id or barcode',
+            type: 'invalid',
+            path: 'idOrBarcode',
+          },
+          value: undefined,
         },
       };
       (productService.createProduct as jest.Mock).mockRejectedValue(
@@ -194,14 +177,14 @@ describe('Product Controller', () => {
 
     it('POST / should handle server errors', async () => {
       (productService.createProduct as jest.Mock).mockRejectedValue(
-        new Error('Database connection failed'),
+        new Error(''),
       );
       const validProductData = mockProducts[0];
       const response = await request(app)
         .post('/api/v1/products')
         .send(validProductData);
       expect(response.status).toBe(500);
-      expect(response.body.message).toBe('Database connection failed');
+      expect(response.body.message).toBe('Failed to create product');
     });
   });
 
@@ -234,13 +217,21 @@ describe('Product Controller', () => {
     });
 
     it('PUT / should handle validation errors during update', async () => {
-      const validationError = new Error('Validation Error');
-      (validationError as any).name = 'ValidationError';
-      (validationError as any).errors = {
+      const validationError = new Error(
+        'Validation Error',
+      ) as mongoose.Error.ValidationError;
+      validationError.name = 'ValidationError';
+      validationError.errors = {
         price: {
           message: 'Please provide a valid price',
           kind: 'invalid',
           path: 'price',
+          name: 'ValidatorError',
+          properties: {
+            message: 'Price must be a positive number',
+            type: 'min',
+          },
+          value: undefined,
         },
       };
       (productService.updateProduct as jest.Mock).mockRejectedValue(

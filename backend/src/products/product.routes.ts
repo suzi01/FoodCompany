@@ -3,29 +3,29 @@ import { validateSchema } from '../middlewares/validate-schema.middleware';
 import { createProductSchema } from './dtos/create-product.dto';
 import { editProductSchema } from './dtos/edit-product.dto';
 import {
+  bulkUpdateProducts,
   createProduct,
   deleteProduct,
   getAllProducts,
   getProduct,
-  searchProducts,
-  updateProduct,
+  getProductCount,
+  getProductCountByCategory,
   getProductsByPriceRange,
   getProductsInStock,
   getProductsOutOfStock,
+  searchProducts,
+  updateProduct,
   updateProductStock,
-  bulkUpdateProducts,
-  getProductCount,
-  getProductCountByCategory,
 } from './product.controller';
 
 const productRouter = Router();
 
-productRouter.post('/', validateSchema(createProductSchema), createProduct);
-productRouter.get('/', getAllProducts);
-productRouter.get('/search', searchProducts);
+productRouter
+  .route('/')
+  .post(validateSchema(createProductSchema), createProduct)
+  .get(getAllProducts);
 
-productRouter.put('/:id', validateSchema(editProductSchema), updateProduct);
-productRouter.delete('/:id', deleteProduct);
+productRouter.get('/search', searchProducts);
 
 // Additional routes for extended service methods
 productRouter.get('/stats/count', getProductCount);
@@ -36,5 +36,10 @@ productRouter.patch('/:id/stock', updateProductStock);
 productRouter.post('/bulk-update', bulkUpdateProducts);
 productRouter.get('/price-range', getProductsByPriceRange);
 
-productRouter.get('/:id', getProduct);
+productRouter
+  .route('/:id')
+  .put(validateSchema(editProductSchema), updateProduct)
+  .delete(deleteProduct)
+  .get(getProduct);
+
 export default productRouter;

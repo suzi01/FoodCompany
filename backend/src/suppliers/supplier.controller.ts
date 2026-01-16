@@ -1,7 +1,7 @@
-import * as supplierService from './supplier.service';
 import { HttpError } from '../utils/app-error';
 import { catchAsync } from '../utils/catch-async';
 import { toSupplierResponseDTO } from '../utils/mappers/supplier.mapper';
+import * as supplierService from './supplier.service';
 
 // Display a list of all suppliers.
 export const getAllSuppliers = catchAsync(async (req, res, next) => {
@@ -13,7 +13,7 @@ export const getAllSuppliers = catchAsync(async (req, res, next) => {
 
 // Display a supplier.
 export const getSupplier = catchAsync(async (req, res, next) => {
-  const supplier = await supplierService.getSupplier(req.params.id);
+  const supplier = await supplierService.getSupplier(req.params.id as string);
   if (!supplier) {
     return next(
       new HttpError(404, `No supplier found with ID ${req.params.id}`),
@@ -34,15 +34,14 @@ export const createSupplier = catchAsync(async (req, res, next) => {
 
 // - **Search**: Filter suppliers by name, items they provide (through a product search), or unique code (which you could add, such as a supplier ID).
 export const searchSuppliers = catchAsync(async (req, res, next) => {
-  const { companyName, product, code, sort, order } = req.query;
+  const { companyName, product, status, sort, order } = req.query;
   const suppliers = await supplierService.searchSuppliers(
     typeof companyName === 'string' ? companyName : '',
     typeof product === 'string' ? product : '',
-    typeof code === 'string' ? code : '',
+    typeof status === 'string' ? status : '',
     typeof sort === 'string' ? sort : 'CompanyName',
     typeof order === 'string' ? order : 'asc',
   );
-
   const mappedSuppliers = suppliers.map(toSupplierResponseDTO);
 
   res.status(200).json({ success: true, data: mappedSuppliers });
@@ -52,7 +51,7 @@ export const searchSuppliers = catchAsync(async (req, res, next) => {
 
 export const updateSupplier = catchAsync(async (req, res, next) => {
   const updatedSupplier = await supplierService.updateSupplier(
-    req.params.id,
+    req.params.id as string,
     req.body,
   );
   if (!updatedSupplier) {
@@ -67,7 +66,9 @@ export const updateSupplier = catchAsync(async (req, res, next) => {
 // Remove a supplier.
 
 export const deleteSupplier = catchAsync(async (req, res, next) => {
-  const deletedSupplier = await supplierService.deleteSupplier(req.params.id);
+  const deletedSupplier = await supplierService.deleteSupplier(
+    req.params.id as string,
+  );
   if (!deletedSupplier) {
     return next(
       new HttpError(404, `Supplier with ID ${req.params.id} not found`),
