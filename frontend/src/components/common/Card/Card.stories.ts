@@ -12,6 +12,7 @@ const meta = {
     borderColor: '',
     children: 'This is a card',
   },
+  
 } satisfies Meta<typeof Card>;
 
 export default meta;

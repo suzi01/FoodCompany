@@ -9,6 +9,9 @@ const meta: Meta<typeof ButtonLink> = {
   title: 'ButtonLink',
   component: ButtonLink,
   tags: ['autodocs'],
+  parameters: {
+    layout: 'centered',
+  },
   render: ({ ...args }) => (
     <MemoryRouter>
       <ButtonLink {...args} />
