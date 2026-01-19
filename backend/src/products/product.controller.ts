@@ -75,6 +75,9 @@ export const deleteProduct = catchAsync(async (req, res, next) => {
   });
 });
 
+// maybe worth incorporating getting products by price range, stock status
+// also need to add pagination
+
 // Search products
 export const searchProducts = catchAsync(async (req, res, next) => {
   const { name, barcode, supplier, sortBy, category, order } = req.query;
