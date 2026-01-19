@@ -1,14 +1,17 @@
-import React from 'react';
 import '@testing-library/jest-dom';
 
-import { render } from '@testing-library/react';
-import { screen } from '@testing-library/dom';
+import { screen, render } from '@/testUtils';
 
+import { MemoryRouter } from 'react-router-dom';
 import { Layout } from './Layout';
 
 describe('Layout.tsx', () => {
   it('renders Layout correctly', () => {
-    render(<Layout />);
+    render(
+      <MemoryRouter initialEntries={['/']}>
+        <Layout />
+      </MemoryRouter>,
+    );
     const mainTitle = screen.getAllByText(/naturalfoods/i);
     const headerUserName = screen.getByText('Janine Wilson');
     const contactTag = screen.getByText('Contact Us');
