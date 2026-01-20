@@ -2,7 +2,7 @@ import SearchIcon from '@/assets/icons/Search.png';
 import CloseIcon from '@/assets/icons/Close.png';
 import { Image } from '../Image';
 
-interface SearchBarProps {
+interface SearchBarProps extends React.HTMLAttributes<HTMLInputElement> {
   className?: string;
   text: string;
   onTextChange: (text: string) => void;
@@ -14,6 +14,7 @@ export const SearchBar = ({
   text,
   onTextChange,
   onClear,
+  ...props
 }: SearchBarProps) => {
   return (
     <label
@@ -35,11 +36,13 @@ export const SearchBar = ({
           className="text-md focus:outline-none w-full"
           value={text}
           onChange={(e) => onTextChange(e.target.value)}
+          {...props}
         />
       </div>
 
       {text && text.length > 1 && (
         <button
+          name="clear-button"
           onClick={() => onClear()}
           type="reset"
           aria-label="reset-search"
