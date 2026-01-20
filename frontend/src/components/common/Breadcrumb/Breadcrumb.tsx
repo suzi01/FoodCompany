@@ -31,7 +31,7 @@ export const Breadcrumb = () => {
   ];
 
   return (
-    <div className="capitalize text-xl pt-2 pb-2 mr-4 flex flex-row w-full">
+    <div className="capitalize text-xl pt-2 pb-2 mb-4 flex flex-row w-full">
       {breadcrumbs}
     </div>
   );
