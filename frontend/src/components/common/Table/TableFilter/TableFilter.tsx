@@ -1,4 +1,3 @@
-import Calendar from '@/assets/calendar.svg';
 import Export from '@/assets/export.svg';
 import Filter from '@/assets/filter.svg';
 
@@ -6,6 +5,7 @@ import { useState } from 'react';
 
 import { BasicMenu } from '../../BasicMenu';
 import { Drawer } from '../../Drawer';
+import { FilterAndSortForm } from '../../Form/FilterAndSortForm';
 import { Image } from '../../Image/Image';
 
 interface TableFilterProps {
@@ -13,13 +13,6 @@ interface TableFilterProps {
   setFilterStatus: (value: string) => void;
   filterItems: string[];
 }
-
-const sortMenuItems = [
-  { label: 'A-Z' },
-  { label: 'Z-A' },
-  { label: 'Newest' },
-  { label: 'Oldest' },
-];
 
 const exportMenuItems = [
   { label: 'CSV' },
@@ -75,27 +68,15 @@ export const TableFilter = ({
           onClick={() => setOpened(true)}
         >
           <div className="flex items-center gap-1.5">
-            <Image src={Calendar} alt="calendar icon" className="w-[15px]" />
-            <p className="hidden md:block">Filter</p>
+            <Image src={Filter} alt="filter icon" className="w-[15px]" />
+            <p className="hidden md:block">Filter & Sort</p>
           </div>
         </button>
 
         <Drawer
           opened={opened}
           setOpened={setOpened}
-          filterItems={filterItems}
-        />
-
-        <BasicMenu
-          target={
-            <button className="border border-[#bcbcbc] rounded-[8px] px-3 py-1.5">
-              <div className="flex items-center gap-1.5">
-                <Image src={Filter} alt="filter icon" className="w-[15px]" />
-                <p className="hidden md:block">Sort</p>
-              </div>
-            </button>
-          }
-          items={sortMenuItems}
+          children={<FilterAndSortForm filterItems={filterItems} />}
         />
 
         <BasicMenu

@@ -30,7 +30,6 @@ describe('TableFilter Component', () => {
       </MemoryRouter>,
     );
 
-    // Test desktop version - buttons should be visible
     const allButton = screen.getByRole('button', { name: 'All' });
     const pendingButton = screen.getByRole('button', { name: 'Pending' });
     const inactiveButton = screen.getByRole('button', { name: 'Inactive' });
@@ -116,5 +115,29 @@ describe('TableFilter Component', () => {
     filterItems.forEach((item) => {
       expect(screen.getByText(item)).toBeInTheDocument();
     });
+  });
+
+  it('renders filter and sort button and export button', () => {
+    Object.defineProperty(window, 'innerWidth', {
+      writable: true,
+      configurable: true,
+      value: 1024,
+    });
+    render(
+      <MemoryRouter>
+        <TableFilter
+          filteredStatus="All"
+          setFilterStatus={mockSetFilterStatus}
+          filterItems={filterItems}
+        />
+        ,
+      </MemoryRouter>,
+    );
+
+    const filterButton = screen.getByText(/filter & sort/i);
+    const exportButton = screen.getByText(/export/i);
+
+    expect(filterButton).toBeInTheDocument();
+    expect(exportButton).toBeInTheDocument();
   });
 });
