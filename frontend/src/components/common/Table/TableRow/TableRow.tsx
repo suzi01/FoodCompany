@@ -6,12 +6,14 @@ export interface TableRowProps {
   rowItems: Record<string, unknown>[];
   actions?: boolean;
   headers: string[];
+  otherActions?: React.ReactNode;
 }
 
 export const TableRow = ({
   rowItems,
   actions = false,
   headers,
+  otherActions,
 }: TableRowProps) => {
   return (
     <>
@@ -63,6 +65,14 @@ export const TableRow = ({
                 ]}
                 target={<p style={{ color: 'black' }}>•••</p>}
               />
+            </td>
+          )}
+          {otherActions && (
+            <td
+              key="actions-cell"
+              className="px-4 py-6 table-cell border-b border-[#DFDFDF] font-light text-[14px] text-wrap"
+            >
+              {otherActions}
             </td>
           )}
         </tr>

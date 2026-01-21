@@ -1,6 +1,6 @@
-import Calendar from '@/assets/calendar.svg';
-import Export from '@/assets/export.svg';
-import Filter from '@/assets/filter.svg';
+import Calendar from '@/assets/icons/calendar.svg';
+import Export from '@/assets/icons/export.svg';
+import Filter from '@/assets/icons/filter.svg';
 
 import { useState } from 'react';
 

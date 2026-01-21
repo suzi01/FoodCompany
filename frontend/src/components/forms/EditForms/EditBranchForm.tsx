@@ -92,7 +92,7 @@ export const EditBranchForm = () => {
       />
       <button
         type="submit"
-        className="border rounded p-2 col-span-2 bg-blue-700 text-white"
+        className="border rounded p-2 col-span-2 bg-blue-500 text-white"
       >
         Save
       </button>
