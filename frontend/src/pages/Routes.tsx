@@ -5,7 +5,7 @@ import { BranchSearch } from './BranchSearch';
 import { ProductSearch } from './ProductSearch';
 import { SupplierSearch } from './SuppliersSearch';
 import { ROUTES } from '@/contants/routes';
-import { EditBranchDetails } from './BranchDetails';
+// import { EditBranchDetails } from './BranchDetails';
 
 const router = createBrowserRouter([
   {
@@ -28,10 +28,10 @@ const router = createBrowserRouter([
         path: ROUTES.SUPPLIERS,
         element: <SupplierSearch />,
       },
-      {
-        path: ROUTES.BRANCH_EDIT,
-        element: <EditBranchDetails />,
-      },
+      // {
+      //   path: ROUTES.BRANCH_EDIT,
+      //   element: <EditBranchDetails />,
+      // },
       {
         path: ROUTES.BRANCH_TEST,
         element: <p>This is a test branch page</p>,
