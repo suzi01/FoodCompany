@@ -1,7 +1,9 @@
+import { useState } from 'react';
+import { useLocation } from 'react-router-dom';
+
 import { SearchBar } from '@/components/common/SearchBar';
 import { Table } from '@/components/common/Table/Table/Table';
 import { TableFilter } from '@/components/common/Table/TableFilter';
-import { useState } from 'react';
 
 const data = [
   {
@@ -79,6 +81,9 @@ const data = [
 export const BranchSearch = () => {
   const [searchText, setSearchText] = useState('');
   const [status, setStatus] = useState('All');
+
+  const location = useLocation();
+  console.log('Current Location:', location);
 
   const onStatusChange = (newStatus: string) => {
     setStatus(newStatus);
