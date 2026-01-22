@@ -15,18 +15,25 @@ export const getBranch = async (id: string) => {
 
 export const searchBranches = async (
   branchName: string,
-  email: string,
+  branchEmail: string,
+  contactName: string,
   supplierName: string,
   sort: string,
   order: string,
 ) => {
   const query: FilterQuery<BranchSearchParams> = {};
+
   query.branchName = { $regex: branchName, $options: 'i' };
 
-  if (email !== '') query.branchEmail = { $regex: email, $options: 'i' };
+  if (branchEmail !== '')
+    query.branchEmail = { $regex: branchEmail, $options: 'i' };
 
   if (supplierName !== '')
     query.supplierName = { $regex: supplierName, $options: 'i' };
+  if (contactName !== '')
+    query.mainContactName = { $regex: contactName, $options: 'i' };
+
+  console.log('Constructed Query:', query);
 
   return await Branch.find(query).sort({ [sort]: order === 'asc' ? 1 : -1 });
 };

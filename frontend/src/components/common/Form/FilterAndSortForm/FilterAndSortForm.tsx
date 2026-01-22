@@ -1,4 +1,6 @@
 import { useUrlFilters } from '@/hooks/useUrlFilters';
+import { toCamelCase } from '@/utils/toCamelCase';
+
 import React from 'react';
 
 // TODO: Refactor inputs with Input component
@@ -8,28 +10,28 @@ interface FilterAndSortFormProps {
 }
 
 const sortMenuItems = [
-  { label: 'A-Z' },
-  { label: 'Z-A' },
-  { label: 'Newest' },
-  { label: 'Oldest' },
+  { label: 'A-Z', value: 'asc' },
+  { label: 'Z-A', value: 'desc' },
+  { label: 'Newest', value: 'newest' },
+  { label: 'Oldest', value: 'oldest' },
 ];
 
 export const FilterAndSortForm = ({ filterItems }: FilterAndSortFormProps) => {
-  const { updateMultipleFilters } = useUrlFilters();
+  const { searchParams, updateMultipleFilters } = useUrlFilters();
+
+  const currentParams: Record<string, string> = Object.fromEntries(
+    searchParams.entries(),
+  );
 
   const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     const formData = new FormData(e.currentTarget);
-
     const filters: Record<string, string> = {};
-
     formData.forEach((value, key) => {
       if (value) {
-        filters[key] = value.toString();
+        filters[toCamelCase(key)] = value.toString();
       }
     });
-
     updateMultipleFilters(filters);
   };
 
@@ -48,22 +50,24 @@ export const FilterAndSortForm = ({ filterItems }: FilterAndSortFormProps) => {
             id={item.toLocaleLowerCase()}
             name={item.toLocaleLowerCase()}
             className="w-full border border-gray-300 rounded-md p-2"
+            defaultValue={currentParams[toCamelCase(item)] || ''}
           />
         </div>
       ))}
       <label
-        htmlFor="sortBy"
+        htmlFor="sort"
         className="block text-sm font-medium text-gray-700 mb-1"
       >
         Sort By
       </label>
       <select
-        name="sortBy"
-        id="sortBy"
+        name="sort"
+        id="sort"
         className="w-full border border-gray-300 rounded-md p-2 mb-4"
+        defaultValue={currentParams[toCamelCase('sort')] || ''}
       >
         <option value="branchName">Branch Name</option>
-        <option value="email">Email</option>
+        <option value="branchEmail">Email</option>
         <option value="supplierName">Supplier Name</option>
       </select>
 
@@ -77,15 +81,17 @@ export const FilterAndSortForm = ({ filterItems }: FilterAndSortFormProps) => {
         name="order"
         id="order"
         className="w-full border border-gray-300 rounded-md p-2 mb-4"
+        defaultValue={currentParams[toCamelCase('order')] || ''}
       >
         {sortMenuItems.map((item) => (
-          <option key={item.label} value={item.label.toLowerCase()}>
+          <option key={item.label} value={item.value}>
             {item.label}
           </option>
         ))}
       </select>
       <div className="flex justify-end">
         <button
+          //   disabled={}
           type="submit"
           className="bg-blue-500 text-white px-4 py-2 rounded-md"
         >
