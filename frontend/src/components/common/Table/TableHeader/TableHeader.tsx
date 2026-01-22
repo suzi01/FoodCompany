@@ -1,4 +1,5 @@
 import React from 'react';
+import { formatHeader } from '@/utils/formatHeader';
 
 interface TableHeaderProps {
   headers: string[];
@@ -15,7 +16,7 @@ export const TableHeader = ({ headers, actions }: TableHeaderProps) => {
             title={headerItem}
             className="px-2 py-6 font-light text-[18px] capitalize"
           >
-            {headerItem}
+            {formatHeader(headerItem)}
           </th>
         ))}
         {actions && (
