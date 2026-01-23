@@ -11,6 +11,16 @@ export interface Product {
   updatedAt: string;
 }
 
+export interface CreateProductPayload {
+  name: string;
+  category: string;
+  idOrBarcode: string;
+  supplier: string;
+  price: number;
+  quantityInStock: number;
+  description: string;
+}
+
 export interface GetProductsResponse {
   success: boolean;
   data: Product[];
