@@ -33,8 +33,6 @@ export const searchBranches = async (
   if (contactName !== '')
     query.mainContactName = { $regex: contactName, $options: 'i' };
 
-  console.log('Constructed Query:', query);
-
   return await Branch.find(query).sort({ [sort]: order === 'asc' ? 1 : -1 });
 };
 
