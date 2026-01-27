@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { FormEvent, useState } from 'react';
 import { useLocation, useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 
@@ -15,11 +15,13 @@ export const BranchSearch = () => {
   );
   const location = useLocation();
 
-  const { data: branches, isLoading } = useQuery(
-    useSearchBranches(location.search),
-  );
+  const {
+    data: branches,
+    isLoading,
+    error,
+  } = useQuery(useSearchBranches(location.search));
 
-  const onSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const onSearchSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSearchText(searchText);
     searchParams[1](`branchName=${searchText}`);
@@ -61,6 +63,11 @@ export const BranchSearch = () => {
             rows={branches?.data ?? []}
           />
         </>
+      )}
+      {error && (
+        <div className="mt-3 m-auto">
+          An error occured while fetching branches. Please try again
+        </div>
       )}
     </div>
   );
