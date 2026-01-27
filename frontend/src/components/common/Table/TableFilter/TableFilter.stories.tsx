@@ -29,6 +29,7 @@ const TableFilterWithHooks = () => {
 
   return (
     <TableFilter
+      hasStatusFilter={true}
       filteredStatus={selectedState}
       setFilterStatus={onStateChange}
       filterItems={filterItems}
