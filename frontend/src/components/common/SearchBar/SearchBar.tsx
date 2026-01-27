@@ -20,7 +20,7 @@ export const SearchBar = ({
   ...props
 }: SearchBarProps) => {
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} aria-label="form">
       <label
         data-testid="search-label"
         htmlFor="search-input"

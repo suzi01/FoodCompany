@@ -60,12 +60,12 @@ export const TableFilter = ({
   const [opened, setOpened] = useState(false);
 
   return (
-    <div className="flex justify-between mb-4 pb-4 border-b border-gray-[#ccc]">
+    <div className="flex mb-4 pb-4 border-b border-gray-[#ccc]">
       {hasStatusFilter &&
         filteredStatus !== undefined &&
         setFilterStatus !== undefined && (
           <>
-            <div className="hidden md:flex ">
+            <div className="hidden md:flex place-items-start">
               <StatusButton
                 status="All"
                 isActive={filteredStatus === 'All'}
@@ -96,7 +96,7 @@ export const TableFilter = ({
             </div>
           </>
         )}
-      <div className="flex gap-[12px]">
+      <div className="flex gap-[12px] place-items-end ml-auto">
         <button
           className="border border-[#bcbcbc] rounded-[8px] px-3 py-1.5"
           onClick={() => setOpened(true)}

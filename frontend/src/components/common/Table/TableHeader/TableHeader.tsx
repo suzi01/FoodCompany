@@ -14,7 +14,7 @@ export const TableHeader = ({ headers, actions }: TableHeaderProps) => {
           <th
             key={`${headerItem}-${index}`}
             title={headerItem}
-            className="px-2 py-6 font-light text-[18px] capitalize"
+            className="px-2 py-3 font-light text-[18px] capitalize"
           >
             {formatHeader(headerItem)}
           </th>
@@ -23,7 +23,7 @@ export const TableHeader = ({ headers, actions }: TableHeaderProps) => {
           <th
             key="actions-header"
             title="Actions"
-            className="font-light text-[18px] capitalize px-2"
+            className="font-light text-[18px] capitalize px-2 py-3"
           >
             Actions
           </th>
