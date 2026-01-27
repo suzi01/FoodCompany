@@ -13,7 +13,6 @@ describe('TableFilter Component', () => {
   });
 
   it('renders filter buttons correctly on desktop', () => {
-    // Mock large screen size for desktop view
     Object.defineProperty(window, 'innerWidth', {
       writable: true,
       configurable: true,
@@ -24,6 +23,7 @@ describe('TableFilter Component', () => {
       <MemoryRouter>
         <TableFilter
           filteredStatus="All"
+          hasStatusFilter={true}
           setFilterStatus={mockSetFilterStatus}
           filterItems={filterItems}
         />
@@ -49,6 +49,7 @@ describe('TableFilter Component', () => {
     render(
       <MemoryRouter>
         <TableFilter
+          hasStatusFilter={true}
           filteredStatus="All"
           setFilterStatus={mockSetFilterStatus}
           filterItems={filterItems}
@@ -75,6 +76,7 @@ describe('TableFilter Component', () => {
     render(
       <MemoryRouter>
         <TableFilter
+          hasStatusFilter={true}
           filteredStatus="All"
           setFilterStatus={mockSetFilterStatus}
           filterItems={filterItems}
@@ -101,12 +103,7 @@ describe('TableFilter Component', () => {
     });
     render(
       <MemoryRouter>
-        <TableFilter
-          filteredStatus="All"
-          setFilterStatus={mockSetFilterStatus}
-          filterItems={filterItems}
-        />
-        ,
+        <TableFilter hasStatusFilter={false} filterItems={filterItems} />,
       </MemoryRouter>,
     );
 
@@ -125,12 +122,7 @@ describe('TableFilter Component', () => {
     });
     render(
       <MemoryRouter>
-        <TableFilter
-          filteredStatus="All"
-          setFilterStatus={mockSetFilterStatus}
-          filterItems={filterItems}
-        />
-        ,
+        <TableFilter hasStatusFilter={false} filterItems={filterItems} />
       </MemoryRouter>,
     );
 

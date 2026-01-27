@@ -70,8 +70,8 @@ describe('FilterAndSortForm', () => {
       name: 'Test Name',
       location: 'Test Location',
       status: 'Active',
-      sortBy: 'email',
-      order: 'a-z',
+      sort: 'branchEmail',
+      order: 'asc',
     });
   });
 });
