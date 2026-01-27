@@ -13,7 +13,6 @@ describe('TableFilter Component', () => {
   });
 
   it('renders filter buttons correctly on desktop', () => {
-    // Mock large screen size for desktop view
     Object.defineProperty(window, 'innerWidth', {
       writable: true,
       configurable: true,
@@ -24,13 +23,13 @@ describe('TableFilter Component', () => {
       <MemoryRouter>
         <TableFilter
           filteredStatus="All"
+          hasStatusFilter={true}
           setFilterStatus={mockSetFilterStatus}
           filterItems={filterItems}
         />
       </MemoryRouter>,
     );
 
-    // Test desktop version - buttons should be visible
     const allButton = screen.getByRole('button', { name: 'All' });
     const pendingButton = screen.getByRole('button', { name: 'Pending' });
     const inactiveButton = screen.getByRole('button', { name: 'Inactive' });
@@ -50,6 +49,7 @@ describe('TableFilter Component', () => {
     render(
       <MemoryRouter>
         <TableFilter
+          hasStatusFilter={true}
           filteredStatus="All"
           setFilterStatus={mockSetFilterStatus}
           filterItems={filterItems}
@@ -76,6 +76,7 @@ describe('TableFilter Component', () => {
     render(
       <MemoryRouter>
         <TableFilter
+          hasStatusFilter={true}
           filteredStatus="All"
           setFilterStatus={mockSetFilterStatus}
           filterItems={filterItems}
@@ -102,12 +103,7 @@ describe('TableFilter Component', () => {
     });
     render(
       <MemoryRouter>
-        <TableFilter
-          filteredStatus="All"
-          setFilterStatus={mockSetFilterStatus}
-          filterItems={filterItems}
-        />
-        ,
+        <TableFilter hasStatusFilter={false} filterItems={filterItems} />,
       </MemoryRouter>,
     );
 
@@ -116,5 +112,24 @@ describe('TableFilter Component', () => {
     filterItems.forEach((item) => {
       expect(screen.getByText(item)).toBeInTheDocument();
     });
+  });
+
+  it('renders filter and sort button and export button', () => {
+    Object.defineProperty(window, 'innerWidth', {
+      writable: true,
+      configurable: true,
+      value: 1024,
+    });
+    render(
+      <MemoryRouter>
+        <TableFilter hasStatusFilter={false} filterItems={filterItems} />
+      </MemoryRouter>,
+    );
+
+    const filterButton = screen.getByText(/filter & sort/i);
+    const exportButton = screen.getByText(/export/i);
+
+    expect(filterButton).toBeInTheDocument();
+    expect(exportButton).toBeInTheDocument();
   });
 });

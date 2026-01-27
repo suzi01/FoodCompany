@@ -23,6 +23,7 @@ export const BasicSearchBar: Story = {
     onTextChange: () => {},
     onClear: () => {},
     text: 'This is an SearchBar',
+    handleSubmit: () => {},
   },
 };
 
@@ -32,5 +33,6 @@ export const StyledSearchBar: Story = {
     onTextChange: () => {},
     onClear: () => {},
     text: 'This is a styled SearchBar',
+    handleSubmit: () => {},
   },
 };
