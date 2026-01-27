@@ -104,7 +104,7 @@ describe('branch Controller', () => {
       ]);
 
       const response = await request(app).get(
-        '/api/v1/branches/search?branchName=Test&email=widgets&supplierName=ABC123&sort=companyName&order=Descending',
+        '/api/v1/branches/search?branchName=Test&branchEmail=widgets&supplierName=ABC123&sort=companyName&order=Descending',
       );
 
       expect(response.status).toBe(200);
@@ -112,6 +112,7 @@ describe('branch Controller', () => {
       expect(branchService.searchBranches).toHaveBeenCalledWith(
         'Test',
         'widgets',
+        '',
         'ABC123',
         'companyName',
         'Descending',

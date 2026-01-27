@@ -2,11 +2,11 @@
 
 // import { useState } from 'react';
 
-export const SuppliersPage = () => {
+export const SupplierSearch = () => {
   // const [searchText, setSearchText] = useState('');
   return (
     <div>
-      SuppliersPage
+      SupplierSearch
       {/* <SearchBar
         text={searchText}
         onTextChange={setSearchText}

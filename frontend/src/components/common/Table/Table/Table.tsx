@@ -10,8 +10,11 @@ interface TableProps {
 
 export const Table = ({ headers, rows, actions = false }: TableProps) => {
   return (
-    <div>
-      <table className="table w-full border-collapse table-fixed">
+    <div
+      className="overflow-x-auto w-full"
+      style={{ maxWidth: 'calc(100vw - 2rem)' }}
+    >
+      <table className="table w-full border-collapse table-auto">
         <TableHeader headers={headers} actions={actions} />
         <tbody>
           <TableRow rowItems={rows} actions={actions} headers={headers} />

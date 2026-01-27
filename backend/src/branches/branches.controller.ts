@@ -22,11 +22,13 @@ export const getBranch = catchAsync(async (req, res, next) => {
 });
 
 export const searchBranches = catchAsync(async (req, res, next) => {
-  const { branchName, email, supplierName, sort, order } = req.query;
+  const { branchName, branchEmail, contactName, supplierName, sort, order } =
+    req.query;
 
   const branches = await branchService.searchBranches(
     typeof branchName === 'string' ? branchName : '',
-    typeof email === 'string' ? email : '',
+    typeof branchEmail === 'string' ? branchEmail : '',
+    typeof contactName === 'string' ? contactName : '',
     typeof supplierName === 'string' ? supplierName : '',
     typeof sort === 'string' ? sort : 'BranchName',
     typeof order === 'string' ? order : 'asc',

@@ -23,7 +23,7 @@ export const TableRow = ({
                 <td
                   key={`cell-${cellIndex}`}
                   title={String(value)}
-                  className="px-2 py-6 table-cell border-b border-[#DFDFDF] font-light text-[16px]"
+                  className="px-2 py-6 table-cell border-b border-[#DFDFDF] font-light text-[14px] text-nowrap"
                 >
                   <>
                     <StatusBadge
@@ -38,7 +38,7 @@ export const TableRow = ({
               <td
                 key={`cell-${cellIndex}`}
                 title={String(value)}
-                className="px-2 py-6 table-cell border-b border-[#DFDFDF] font-light text-[16px]"
+                className="px-2 py-6 table-cell border-b border-[#DFDFDF] font-light text-[14px] break-words"
               >
                 {Array.isArray(rowItem[value])
                   ? rowItem[value].join(', ')
@@ -49,15 +49,15 @@ export const TableRow = ({
           {actions && (
             <td
               key="actions-cell"
-              className="px-4 py-6 table-cell border-b border-[#DFDFDF] font-light text-[16px]"
+              className="px-4 py-6 table-cell border-b border-[#DFDFDF] font-light text-[14px] text-wrap"
             >
               <ActionMenu
                 items={[
-                  { label: 'View', href: `view/${rowItem.id}` },
-                  { label: 'Edit', href: `edit/${rowItem.id}` },
+                  { label: 'View', href: `${rowItem.id}/view` },
+                  { label: 'Edit', href: `${rowItem.id}/edit` },
                   {
                     label: 'Delete',
-                    href: `delete/${rowItem.id}`,
+                    href: `${rowItem.id}/delete`,
                     color: 'red',
                   },
                 ]}
