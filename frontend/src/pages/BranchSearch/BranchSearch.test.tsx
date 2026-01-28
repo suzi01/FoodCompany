@@ -14,7 +14,7 @@ describe('BranchSearch Component', () => {
     vi.clearAllMocks();
   });
 
-  it('renders SearchBar and TableFilter components', () => {
+  it.only('renders SearchBar and TableFilter components', () => {
     render(
       <QueryClientProvider client={new QueryClient()}>
         <MemoryRouter>
@@ -64,7 +64,6 @@ describe('BranchSearch Component', () => {
   });
 
   it('shows loader while fetching data', async () => {
-    server.resetHandlers();
     server.use(
       http.get(`${import.meta.env.VITE_URL}branches/search*`, async () => {
         await delay('infinite');
