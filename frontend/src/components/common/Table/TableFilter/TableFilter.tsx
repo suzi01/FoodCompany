@@ -5,7 +5,7 @@ import { useState } from 'react';
 
 import { BasicMenu } from '../../BasicMenu';
 import { Drawer } from '../../Drawer';
-import { FilterAndSortForm } from '../../Form/FilterAndSortForm';
+import { FilterAndSortForm } from '../../../Forms/FilterAndSortForm';
 import { Image } from '../../Image/Image';
 
 interface TablePropsWithFilter {
