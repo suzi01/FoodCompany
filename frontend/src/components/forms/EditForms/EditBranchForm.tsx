@@ -1,38 +1,25 @@
 import { Input } from '@/components/common/Input';
 
-import { useForm } from 'react-hook-form';
+import { SubmitHandler, useForm } from 'react-hook-form';
+import { IFormInput } from './IFormInput';
 
-interface IFormInput {
-  id: string;
-  branchName: string;
-  yearsActive: string;
-  phoneNumber: string;
-  address: string;
-  branchEmail: string;
-  mainContactName: string;
-  mainContactPhoneNumber: string;
-  mainContactEmail: string;
+interface EditBranchFormProps {
+  branch: IFormInput;
+  onSubmit: SubmitHandler<IFormInput>;
 }
 
-export const EditBranchForm = () => {
-  const { register, handleSubmit } = useForm<IFormInput>({
+export const EditBranchForm = ({ branch, onSubmit }: EditBranchFormProps) => {
+  const {
+    register,
+    handleSubmit,
+    formState: { isDirty, isValid },
+  } = useForm<IFormInput>({
     defaultValues: {
-      id: '1',
-      branchName: 'Downtown Branch',
-      yearsActive: '5',
-      phoneNumber: '555-1234',
-      address: '123 Main St, Cityville',
-      branchEmail: 'downtown@example.com',
-      mainContactName: 'John Doe',
-      mainContactPhoneNumber: '555-5678',
-      mainContactEmail: 'john.doe@example.com',
+      ...branch,
     },
   });
   return (
-    <form
-      onSubmit={handleSubmit((data) => console.log(data))}
-      className="grid grid-cols-2 gap-2"
-    >
+    <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-2 gap-2">
       <Input
         label="Branch Name"
         id="branchName"
@@ -43,6 +30,7 @@ export const EditBranchForm = () => {
       <Input
         label="Years Active"
         id="yearsActive"
+        disabled
         {...register('yearsActive')}
       />
       <Input
@@ -56,6 +44,7 @@ export const EditBranchForm = () => {
           Address
         </label>
         <textarea
+          id="address"
           rows={5}
           className="col-span-2 border-2 border-gray-200 p-2 mb-4 rounded focus:border-black outline-none text-black"
           {...register('address')}
@@ -92,7 +81,8 @@ export const EditBranchForm = () => {
       />
       <button
         type="submit"
-        className="border rounded p-2 col-span-2 bg-blue-700 text-white"
+        disabled={!isDirty || !isValid}
+        className="border rounded p-2 col-span-2 bg-blue-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
       >
         Save
       </button>
