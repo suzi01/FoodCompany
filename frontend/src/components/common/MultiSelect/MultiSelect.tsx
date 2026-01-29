@@ -38,9 +38,10 @@ export const MultiSelect = ({
   }, []);
 
   const toggleOption = (id: string) => {
-    setSelectedIds((prev) =>
-      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id],
-    );
+    const newSelectedIds = selectedIds.includes(id)
+      ? selectedIds.filter((item) => item !== id)
+      : [...selectedIds, id];
+    setSelectedIds(newSelectedIds);
   };
 
   const removeOption = (e: React.MouseEvent, id: string) => {
@@ -52,10 +53,10 @@ export const MultiSelect = ({
 
   return (
     <div
-      className={`relative w-full max-w-md border p-2 bg-gray-100 rounded-md ${className}`}
+      className={`relative w-full border p-2 bg-gray-100 rounded-md ${className ? className : ''}`}
       ref={containerRef}
     >
-      <div className="flex flex-wrap gap-1.5 items-center">
+      <div className="flex flex-wrap gap-1.5 items-center ">
         {selectedLabels.length > 0 &&
           selectedLabels.map((opt) => (
             <span
