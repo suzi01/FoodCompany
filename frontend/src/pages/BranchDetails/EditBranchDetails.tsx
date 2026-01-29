@@ -1,5 +1,5 @@
 import CompanyIcon from '@/assets/icons/ApprovedDelivery.png';
-import AddSupplier from '@/assets/icons/store.png';
+import AddSupplier from '@/assets/icons/Store.png';
 import { Accordion } from '@/components/common/Accordion';
 import { ButtonLink } from '@/components/common/ButtonLink';
 import { Image } from '@/components/common/Image';
