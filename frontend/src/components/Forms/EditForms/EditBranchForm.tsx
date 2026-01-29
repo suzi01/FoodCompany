@@ -19,7 +19,11 @@ export const EditBranchForm = ({ branch, onSubmit }: EditBranchFormProps) => {
     },
   });
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-2 gap-2">
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="grid grid-cols-2 gap-2 bg-white p-4 rounded-md shadow-md"
+    >
+      <h2 className="text-lg font-bold mt-4 mb-4">General Information</h2>
       <Input
         label="Branch Name"
         id="branchName"
@@ -59,6 +63,9 @@ export const EditBranchForm = ({ branch, onSubmit }: EditBranchFormProps) => {
       />
 
       <hr className="col-span-2" />
+      <h2 className="col-span-2 text-lg font-bold mt-4 mb-4">
+        Main Contact Information
+      </h2>
 
       <Input
         label="Contact Name"

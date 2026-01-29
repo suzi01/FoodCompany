@@ -1,9 +1,7 @@
-// generate tests for EditBranchForm component
-import React from 'react';
 import { render, screen, userEvent } from '@/testUtils';
+import { vi } from 'vitest';
 import { EditBranchForm } from './EditBranchForm';
 import { IFormInput } from './IFormInput';
-import { vi } from 'vitest';
 
 describe('EditBranchForm', () => {
   const mockBranch: IFormInput = {
