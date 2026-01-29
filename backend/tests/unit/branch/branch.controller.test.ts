@@ -129,7 +129,7 @@ describe('branch Controller', () => {
 
       const response = await request(app)
         .post('/api/v1/branches/')
-        .send(branchData);
+        .send({ ...branchData, suppliers: [] });
       expect(response.status).toBe(201);
       expect(response.body.data).toEqual(mockBranchesDto[0]);
     });

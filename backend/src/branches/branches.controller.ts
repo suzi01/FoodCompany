@@ -17,6 +17,7 @@ export const getBranch = catchAsync(async (req, res, next) => {
       new HttpError(404, `Branch with ID ${req.params.id} not found`),
     );
   }
+
   const mappedBranch = toBranchesResponseDTO(branch);
   res.status(200).json({ success: true, data: mappedBranch });
 });
@@ -70,3 +71,21 @@ export const deleteBranch = catchAsync(async (req, res, next) => {
     .status(200)
     .json({ success: true, message: 'Branch deleted successfully' });
 });
+
+// export const addSupplierToBranch = catchAsync(async (req, res, next) => {
+//   const { branchId, supplierId } = req.params;
+
+//   const updatedBranch = await branchService.addSupplierToBranch(
+//     branchId as string,
+//     supplierId as string,
+//   );
+
+//   if (!updatedBranch) {
+//     return next(
+//       new HttpError(404, `Branch with ID ${branchId} not found`),
+//     );
+//   }
+
+//   const mappedBranch = toBranchesResponseDTO(updatedBranch);
+//   res.status(200).json({ success: true, data: mappedBranch });
+// });
