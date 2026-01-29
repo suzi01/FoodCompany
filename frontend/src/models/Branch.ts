@@ -8,9 +8,15 @@ export interface Branch {
   phoneNumber?: string;
   address?: string;
   yearsActive: number;
-  suppliers: string[];
+  suppliers: string[] | SupplierDetails[];
   createdAt: string;
   updatedAt: string;
+}
+
+export interface SupplierDetails {
+  id: string;
+  companyName: string;
+  status: string;
 }
 
 export interface GetBranchesResponse {

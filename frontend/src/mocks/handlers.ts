@@ -8,7 +8,10 @@ import { getProducts } from './endpoints/products';
 import { getBranches, getBranch } from './endpoints/branches';
 import { createSuppliers } from '@/testUtils/dataFactories/Supplier/Supplier';
 import { createProducts } from '@/testUtils/dataFactories/Product/Product';
-import { createBranches } from '@/testUtils/dataFactories/Branch/Branch';
+import {
+  createBranches,
+  createBranchWithSupplier,
+} from '@/testUtils/dataFactories/Branch/Branch';
 
 type Handler = ({
   suppliers,
@@ -24,7 +27,7 @@ type Handler = ({
 const defaultSuppliers: Supplier[] = createSuppliers(5);
 const defaultProducts: Product[] = createProducts(5);
 const defaultBranches: Branch[] = createBranches(5);
-const defaultBranch: Branch = createBranches(1)[0];
+const defaultBranch: Branch = createBranchWithSupplier();
 
 export const testHandlers: Handler = ({
   suppliers = defaultSuppliers,
