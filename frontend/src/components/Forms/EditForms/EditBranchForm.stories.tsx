@@ -4,7 +4,7 @@ import { EditBranchForm } from './EditBranchForm';
 type Story = StoryObj<typeof EditBranchForm>;
 
 const meta: Meta<typeof EditBranchForm> = {
-  title: 'EditBranchForm',
+  title: 'Forms/EditBranchForm',
   component: EditBranchForm,
   tags: ['autodocs'],
   render: ({ ...args }) => <EditBranchForm {...args} />,
