@@ -5,7 +5,7 @@ import { MemoryRouter } from 'react-router-dom';
 type Story = StoryObj<typeof FilterAndSortForm>;
 
 const meta: Meta<typeof FilterAndSortForm> = {
-  title: 'FilterAndSortForm',
+  title: 'Forms/FilterAndSortForm',
   component: FilterAndSortForm,
   tags: ['autodocs'],
   render: ({ ...args }) => (

@@ -14,7 +14,7 @@ describe('BranchSearch Component', () => {
     vi.clearAllMocks();
   });
 
-  it.only('renders SearchBar and TableFilter components', () => {
+  it('renders SearchBar and TableFilter components', () => {
     render(
       <QueryClientProvider client={new QueryClient()}>
         <MemoryRouter>
