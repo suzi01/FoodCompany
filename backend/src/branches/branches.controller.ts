@@ -17,16 +17,19 @@ export const getBranch = catchAsync(async (req, res, next) => {
       new HttpError(404, `Branch with ID ${req.params.id} not found`),
     );
   }
+
   const mappedBranch = toBranchesResponseDTO(branch);
   res.status(200).json({ success: true, data: mappedBranch });
 });
 
 export const searchBranches = catchAsync(async (req, res, next) => {
-  const { branchName, email, supplierName, sort, order } = req.query;
+  const { branchName, branchEmail, contactName, supplierName, sort, order } =
+    req.query;
 
   const branches = await branchService.searchBranches(
     typeof branchName === 'string' ? branchName : '',
-    typeof email === 'string' ? email : '',
+    typeof branchEmail === 'string' ? branchEmail : '',
+    typeof contactName === 'string' ? contactName : '',
     typeof supplierName === 'string' ? supplierName : '',
     typeof sort === 'string' ? sort : 'BranchName',
     typeof order === 'string' ? order : 'asc',
@@ -68,3 +71,21 @@ export const deleteBranch = catchAsync(async (req, res, next) => {
     .status(200)
     .json({ success: true, message: 'Branch deleted successfully' });
 });
+
+// export const addSupplierToBranch = catchAsync(async (req, res, next) => {
+//   const { branchId, supplierId } = req.params;
+
+//   const updatedBranch = await branchService.addSupplierToBranch(
+//     branchId as string,
+//     supplierId as string,
+//   );
+
+//   if (!updatedBranch) {
+//     return next(
+//       new HttpError(404, `Branch with ID ${branchId} not found`),
+//     );
+//   }
+
+//   const mappedBranch = toBranchesResponseDTO(updatedBranch);
+//   res.status(200).json({ success: true, data: mappedBranch });
+// });

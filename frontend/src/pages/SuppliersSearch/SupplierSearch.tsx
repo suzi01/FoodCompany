@@ -17,7 +17,7 @@ const data: CreateSupplier = {
   productsProvided: [] as CreateProductPayload[],
 };
 
-export const SuppliersPage = () => {
+export const SuppliersSearch = () => {
   const [active, setActive] = useState(0);
 
   const [formData, setFormData] = useState<CreateSupplier>(data);

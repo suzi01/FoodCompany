@@ -24,8 +24,9 @@ describe('Branch Service', () => {
 
   describe('createBranch', () => {
     it('createBranch calls Branch.create with correct data', async () => {
-      const { id, createdAt, updatedAt, ...branchData } = buildBranchDTO({
+      const branchData = buildBranchDTO({
         branchName: 'Test Branch',
+        suppliers: [],
       });
 
       (Branch.create as jest.Mock).mockResolvedValue({
@@ -40,7 +41,7 @@ describe('Branch Service', () => {
     });
 
     it('should handle creation errors', async () => {
-      const { id, ...branchData } = buildBranchDTO({
+      const branchData = buildBranchDTO({
         branchName: 'Error Branch',
       });
 
@@ -84,7 +85,9 @@ describe('Branch Service', () => {
 
   describe('getBranch', () => {
     it('should return branch', async () => {
-      (Branch.findById as jest.Mock).mockResolvedValue(mockBranch);
+      (Branch.findById as jest.Mock).mockReturnValue({
+        populate: jest.fn().mockResolvedValue(mockBranch),
+      });
 
       const result = await getBranch('123');
 
@@ -92,18 +95,21 @@ describe('Branch Service', () => {
       expect(result).toEqual(mockBranch);
     });
     it('should return empty array when branch does not exist', async () => {
-      (Branch.findById as jest.Mock).mockResolvedValue([]);
+      (Branch.findById as jest.Mock).mockReturnValue({
+        populate: jest.fn().mockResolvedValue([]),
+      });
 
       const result = await getBranch('123');
 
       expect(Branch.findById).toHaveBeenCalled();
-      expect(result).toEqual([]);
-      expect(result).toHaveLength(0);
+      expect(result).toStrictEqual([]);
     });
 
     it('should handle database errors', async () => {
       const error = new Error('Database query failed');
-      (Branch.findById as jest.Mock).mockRejectedValue(error);
+      (Branch.findById as jest.Mock).mockReturnValue({
+        populate: jest.fn().mockRejectedValue(error),
+      });
 
       await expect(getBranch('123')).rejects.toThrow('Database query failed');
       expect(Branch.findById).toHaveBeenCalledWith('123');
@@ -137,8 +143,8 @@ describe('Branch Service', () => {
         expect(result.phoneNumber).toBe('987-654-3210');
       }
     });
-    it('should return null when no branches exist', async () => {
-      (Branch.findByIdAndUpdate as jest.Mock).mockResolvedValue(null);
+    it('should return empty array when no branches exist', async () => {
+      (Branch.findByIdAndUpdate as jest.Mock).mockResolvedValue([]);
 
       const result = await updateBranch('507f1f77bcf86cd799439011', updateData);
 
@@ -147,7 +153,7 @@ describe('Branch Service', () => {
         updateData,
         { new: true },
       );
-      expect(result).toBeNull();
+      expect(result).toStrictEqual([]);
     });
 
     it('should handle database errors', async () => {
@@ -186,6 +192,7 @@ describe('Branch Service', () => {
       const result = await searchBranches(
         'Acme',
         'something@domain.com',
+        '',
         'ABC123',
         'branchName',
         'asc',
@@ -201,7 +208,14 @@ describe('Branch Service', () => {
     });
 
     it('should search branches with only branch name', async () => {
-      const result = await searchBranches('Acme', '', '', 'branchName', 'desc');
+      const result = await searchBranches(
+        'Acme',
+        '',
+        '',
+        '',
+        'branchName',
+        'desc',
+      );
 
       expect(Branch.find).toHaveBeenCalledWith({
         branchName: { $regex: 'Acme', $options: 'i' },
@@ -215,7 +229,7 @@ describe('Branch Service', () => {
       mockSort.mockRejectedValue(error);
 
       await expect(
-        searchBranches('Test', '', '', 'branchName', 'asc'),
+        searchBranches('Test', '', '', '', 'branchName', 'asc'),
       ).rejects.toThrow('Search failed');
     });
 
@@ -224,6 +238,7 @@ describe('Branch Service', () => {
         'Test.Corp',
         'james@horizon.com',
         'ABC[123]',
+        '',
         'branchName',
         'asc',
       );
@@ -231,7 +246,7 @@ describe('Branch Service', () => {
       expect(Branch.find).toHaveBeenCalledWith({
         branchName: { $regex: 'Test.Corp', $options: 'i' },
         branchEmail: { $regex: 'james@horizon.com', $options: 'i' },
-        supplierName: { $regex: 'ABC[123]', $options: 'i' },
+        mainContactName: { $regex: 'ABC[123]', $options: 'i' },
       });
     });
   });

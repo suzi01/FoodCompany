@@ -1,12 +1,12 @@
 import { faker } from '@faker-js/faker';
+import { Types } from 'mongoose';
 
-import { BranchDto } from '../../../src/branches/dtos/branch.dto';
+import { CreateBranchDto } from '../../../src/branches/dtos/create-branch.dto';
 
-export function buildBranchDTO(overrides: Partial<BranchDto> = {}): BranchDto {
+export function buildBranchDTO(
+  overrides: Partial<CreateBranchDto> = {},
+): CreateBranchDto {
   return {
-    id: faker.string.uuid(),
-    createdAt: faker.date.past().toISOString(),
-    updatedAt: faker.date.recent().toISOString(),
     branchName: faker.company.name(),
     mainContactName: faker.person.fullName(),
     mainContactPhoneNumber: faker.phone.number(),
@@ -14,7 +14,6 @@ export function buildBranchDTO(overrides: Partial<BranchDto> = {}): BranchDto {
     branchEmail: faker.internet.email(),
     phoneNumber: faker.phone.number(),
     address: faker.location.streetAddress(),
-    yearsActive: faker.number.int({ min: 0, max: 100 }),
     suppliers: [],
     ...overrides,
   };

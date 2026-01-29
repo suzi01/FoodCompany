@@ -96,7 +96,6 @@ export const searchProducts = catchAsync(async (req, res, next) => {
 
 // Get products by price range
 export const getProductsByPriceRange = catchAsync(async (req, res, next) => {
-  console.log('Price Range Query:', req.query);
   const minPrice = Number(req.query.minPrice) || 0;
   const maxPrice = Number(req.query.maxPrice) || Number.MAX_SAFE_INTEGER;
   const products = await productService.getProductsByPriceRange(

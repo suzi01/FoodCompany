@@ -1,4 +1,11 @@
 import z from 'zod';
+import { supplierSchema } from '../../suppliers/dtos/supplier.dto';
+
+const supplierRefSchema = z.object({
+  id: z.string(),
+  companyName: z.string(),
+  status: z.enum(['Active', 'Inactive', 'Pending']),
+});
 
 export const branchSchema = z.object({
   id: z.string(),
@@ -25,7 +32,7 @@ export const branchSchema = z.object({
     .optional(),
   address: z.string().optional(),
   yearsActive: z.number().min(0),
-  suppliers: z.array(z.string()),
+  suppliers: z.array(z.union([z.string(), supplierRefSchema])),
   createdAt: z.string(),
   updatedAt: z.string(),
 });
