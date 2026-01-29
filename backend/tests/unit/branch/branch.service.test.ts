@@ -186,6 +186,7 @@ describe('Branch Service', () => {
       const result = await searchBranches(
         'Acme',
         'something@domain.com',
+        '',
         'ABC123',
         'branchName',
         'asc',
@@ -201,7 +202,14 @@ describe('Branch Service', () => {
     });
 
     it('should search branches with only branch name', async () => {
-      const result = await searchBranches('Acme', '', '', 'branchName', 'desc');
+      const result = await searchBranches(
+        'Acme',
+        '',
+        '',
+        '',
+        'branchName',
+        'desc',
+      );
 
       expect(Branch.find).toHaveBeenCalledWith({
         branchName: { $regex: 'Acme', $options: 'i' },
@@ -215,7 +223,7 @@ describe('Branch Service', () => {
       mockSort.mockRejectedValue(error);
 
       await expect(
-        searchBranches('Test', '', '', 'branchName', 'asc'),
+        searchBranches('Test', '', '', '', 'branchName', 'asc'),
       ).rejects.toThrow('Search failed');
     });
 
@@ -224,6 +232,7 @@ describe('Branch Service', () => {
         'Test.Corp',
         'james@horizon.com',
         'ABC[123]',
+        '',
         'branchName',
         'asc',
       );
@@ -231,7 +240,7 @@ describe('Branch Service', () => {
       expect(Branch.find).toHaveBeenCalledWith({
         branchName: { $regex: 'Test.Corp', $options: 'i' },
         branchEmail: { $regex: 'james@horizon.com', $options: 'i' },
-        supplierName: { $regex: 'ABC[123]', $options: 'i' },
+        mainContactName: { $regex: 'ABC[123]', $options: 'i' },
       });
     });
   });

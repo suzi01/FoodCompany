@@ -17,13 +17,12 @@ export const Input = ({
   const inputId = useId();
   return (
     <div className={`flex flex-col gap-1 ${className}`}>
-      <label htmlFor={name} className=" text-gray-500">
+      <label htmlFor={props.name} className="text-gray-500">
         {label}
       </label>
       <input
         type="text"
         id={inputId}
-        name={name}
         aria-invalid={error ? 'true' : 'false'}
         className="border-2 border-gray-200 p-2 mb-4 rounded focus:border-black outline-none text-black"
         {...props}

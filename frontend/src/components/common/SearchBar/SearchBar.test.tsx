@@ -3,18 +3,20 @@ import '@testing-library/jest-dom';
 
 import { render } from '@testing-library/react';
 import { screen } from '@testing-library/dom';
+import { vi } from 'vitest';
 
 import { SearchBar } from './SearchBar';
 
 const searchBarProps = {
   text: '',
-  onTextChange: () => {},
-  onClear: () => {},
+  onTextChange: () => vi.fn(),
+  onClear: () => vi.fn(),
+  handleSubmit: () => vi.fn(),
 };
 
 describe('SearchBar.tsx', () => {
   it('renders SearchBar', () => {
-    render(<SearchBar {...searchBarProps} />);
+    render(<SearchBar placeholder="Search..." {...searchBarProps} />);
     const searchPlaceholder = screen.getByPlaceholderText('Search...');
     const searchIcon = screen.getByAltText('search-icon');
     expect(searchIcon).toBeInTheDocument();
