@@ -2,25 +2,25 @@ import { BasicMenu as ActionMenu } from '../../BasicMenu';
 import { StatusBadge } from '../../StatusBadge';
 import { StatusType } from '../../StatusBadge/StatusBadge';
 
-export interface TableRowProps {
-  rowItems: Record<string, unknown>[];
+export interface TableRowProps<T extends object> {
+  rowItems: T[];
   actions?: boolean;
-  headers: string[];
+  headers: (keyof T)[];
   otherActions?: React.ReactNode;
 }
 
-export const TableRow = ({
+export const TableRow = <T extends object>({
   rowItems,
   actions = false,
   headers,
   otherActions,
-}: TableRowProps) => {
+}: TableRowProps<T>) => {
   return (
     <>
       {rowItems.map((rowItem, rowIndex) => (
         <tr className="table-row text-left" key={`row-${rowIndex}`}>
           {headers.map((value, cellIndex) => {
-            if (value.toLowerCase() === 'status') {
+            if (String(value).toLowerCase() === 'status') {
               return (
                 <td
                   key={`cell-${cellIndex}`}
@@ -48,15 +48,21 @@ export const TableRow = ({
               </td>
             );
           })}
-          {actions && (
+          {actions && 'id' in rowItem && (
             <td
               key="actions-cell"
               className="px-4 py-6 table-cell border-b border-[#DFDFDF] font-light text-[14px] text-wrap"
             >
               <ActionMenu
                 items={[
-                  { label: 'View', href: `${rowItem.id}/view` },
-                  { label: 'Edit', href: `${rowItem.id}/edit` },
+                  {
+                    label: 'View',
+                    href: `${rowItem.id}/view`,
+                  },
+                  {
+                    label: 'Edit',
+                    href: `${rowItem.id}/edit`,
+                  },
                   {
                     label: 'Delete',
                     href: `${rowItem.id}/delete`,

@@ -37,7 +37,7 @@ describe('TableRow', () => {
   });
 
   it('renders actions column when actions prop is true', async () => {
-    const rowItems = [{ name: 'Pear', status: 'inactive' }];
+    const rowItems = [{ id: 1, name: 'Pear', status: 'inactive' }];
     render(
       <MemoryRouter>
         <table>
@@ -56,7 +56,7 @@ describe('TableRow', () => {
   });
 
   it('does not render actions column when actions prop is false', () => {
-    const rowItems = [{ name: 'Pear', status: 'inactive' }];
+    const rowItems = [{ id: 1, name: 'Pear', status: 'inactive' }];
     render(
       <table>
         <tbody>
@@ -70,8 +70,8 @@ describe('TableRow', () => {
 
   it('renders multiple rows', () => {
     const rowItems = [
-      { name: 'Apple', status: 'active' },
-      { name: 'Banana', status: 'inactive' },
+      { id: 1, name: 'Apple', status: 'active' },
+      { id: 2, name: 'Banana', status: 'inactive' },
     ];
     render(
       <table>
