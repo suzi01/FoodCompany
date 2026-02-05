@@ -13,8 +13,8 @@ export interface ISupplier extends Document {
   email: string;
   phoneNumber?: string;
   status: SupplierStatusType;
-  productsProvided: Types.ObjectId[];
-  branches: Types.ObjectId[];
+  products?: Types.ObjectId[];
+  associatedBranches?: Types.ObjectId[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -56,23 +56,26 @@ const supplierSchema = new Schema<ISupplier>(
       type: String,
       match: /^(\()?\d{3}(\))?(-|\s)?\d{3}(-|\s)\d{4}$/,
     },
-    productsProvided: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: 'Product',
-        required: false,
-      },
-    ],
-    branches: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: 'Branch',
-        required: false,
-      },
-    ],
   },
-  { timestamps: true },
+  {
+    timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
+  },
 );
+
+supplierSchema.virtual('products', {
+  ref: 'Product', // Model to join
+  localField: '_id', // Supplier._id
+  foreignField: 'supplier', // Product.supplier
+});
+
+// VIRTUAL: Find all branches that list this supplier
+supplierSchema.virtual('associatedBranches', {
+  ref: 'Branch',
+  localField: '_id',
+  foreignField: 'suppliers',
+});
 
 const Supplier = model('Supplier', supplierSchema);
 

@@ -10,7 +10,6 @@ export interface IProduct extends Document {
   price: number;
   category: string;
   supplier: Types.ObjectId;
-  quantityInStock: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -41,11 +40,6 @@ const productSchema = new Schema<IProduct>(
     price: {
       type: Number,
       required: [true, 'Product price is required'],
-      min: 0,
-    },
-    quantityInStock: {
-      type: Number,
-      required: [true, 'Product quantity in stock is required'],
       min: 0,
     },
     supplier: {
