@@ -4,8 +4,9 @@ type ButtonVariant = 'primary' | 'secondary' | 'tertiary';
 
 const buttonColours = {
   primary:
-    'bg-blue-500 text-white hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed',
-  secondary: 'bg-gray-500 text-white hover:bg-gray-600',
+    'bg-blue-500 text-white hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed ',
+  secondary:
+    'bg-gray-500 text-white hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-gray-500',
   tertiary:
     'bg-white text-black hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed',
 };

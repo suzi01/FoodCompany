@@ -1,6 +1,7 @@
 import { Button } from '@/components/common/Button/Button';
 import { BasicInfo } from '@/components/Forms/Supplier/BasicInfo';
 import { ContactDetails } from '@/components/Forms/Supplier/ContactDetails';
+import { CreateProducts } from '@/components/Forms/Supplier/CreateProducts';
 import { Review } from '@/components/Forms/Supplier/Review';
 import { CreateProductPayload } from '@/models/Product';
 import { CreateSupplier } from '@/models/Supplier';
@@ -17,10 +18,12 @@ const data: CreateSupplier = {
   productsProvided: [] as CreateProductPayload[],
 };
 
-export const SuppliersSearch = () => {
+export const SupplierSearch = () => {
   const [active, setActive] = useState(0);
 
   const [formData, setFormData] = useState<CreateSupplier>(data);
+
+  console.log('formData', formData);
 
   return (
     <div className="w-full flex-1 bg-white py-5 px-3 md:p-6 rounded-md border mt-8 flex flex-col">
@@ -49,86 +52,12 @@ export const SuppliersSearch = () => {
           />
         </Stepper.Step>
         <Stepper.Step label="Products">
-          <form className="p-4 md:p-10">
-            <h2>Create new products to be added</h2>
-            <div className="grid md:grid-cols-4 gap-6 mt-4">
-              <div className={`flex flex-col gap-1 col-span-4 `}>
-                <label htmlFor="name" className=" text-gray-500">
-                  Product Name *
-                </label>
-                <input
-                  required
-                  id="name"
-                  type="text"
-                  name="name"
-                  className="border-2 border-gray-200 p-2 mb-4 rounded focus:border-black outline-none text-black"
-                />
-              </div>
-              <div className={`flex flex-col gap-1 col-span-2 `}>
-                <label htmlFor="category" className=" text-gray-500">
-                  Category *
-                </label>
-                <input
-                  required
-                  id="category"
-                  type="text"
-                  name="category"
-                  className="border-2 border-gray-200 p-2 mb-4 rounded focus:border-black outline-none text-black"
-                />
-              </div>
-              <div className={`flex flex-col gap-1 `}>
-                <label htmlFor="price" className=" text-gray-500">
-                  Price*
-                </label>
-                <input
-                  required
-                  id="price"
-                  type="text"
-                  name="price"
-                  className="border-2 border-gray-200 p-2 mb-4 rounded focus:border-black outline-none text-black"
-                />
-              </div>
-              <div className={`flex flex-col gap-1 `}>
-                <label htmlFor="quantityInStock" className=" text-gray-500">
-                  Quantity in stock
-                </label>
-                <input
-                  required
-                  id="quantityInStock"
-                  type="text"
-                  name="quantityInStock"
-                  className="border-2 border-gray-200 p-2 mb-4 rounded focus:border-black outline-none text-black"
-                />
-              </div>
-              <div className={`flex flex-col gap-1 col-span-2 `}>
-                <label htmlFor="idOrBarcode" className=" text-gray-500">
-                  ID or Barcode
-                </label>
-                <input
-                  required
-                  id="idOrBarcode"
-                  type="text"
-                  name="idOrBarcode"
-                  className="border-2 border-gray-200 p-2 mb-4 rounded focus:border-black outline-none text-black"
-                />
-              </div>
-              <div className={`flex flex-col gap-1 col-span-2 `}>
-                <label htmlFor="description" className=" text-gray-500">
-                  Description
-                </label>
-                <div className={`flex flex-col gap-1 col-span-2 `}>
-                  <textarea
-                    rows={4}
-                    required
-                    id="description"
-                    name="description"
-                    className="border-2 border-gray-200 p-2 mb-4 rounded focus:border-black outline-none text-black"
-                  />
-                </div>
-              </div>
-              {/* // TODO: Add Table to show created products */}
-            </div>
-          </form>
+          <CreateProducts
+            data={formData.productsProvided}
+            changedData={(field, value) => {
+              setFormData((prev) => ({ ...prev, [field]: value }));
+            }}
+          />
         </Stepper.Step>
         <Stepper.Step label="Review">
           <Review data={formData} setActive={setActive} />
@@ -140,6 +69,7 @@ export const SuppliersSearch = () => {
               {Array.isArray(value) ? value.join(', ') : value}
             </div>
           ))}
+          <p> create success/fail page</p>
         </Stepper.Completed>
       </Stepper>
 
