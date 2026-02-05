@@ -4,6 +4,7 @@ import { Button } from '@/components/common/Button/Button';
 import { Image } from '@/components/common/Image';
 import { CreateSupplier } from '@/models/Supplier';
 import { ChangeEvent, useRef } from 'react';
+import { Input } from '@/components/common/Input';
 
 interface BasicInfoProps {
   data: CreateSupplier;
@@ -32,21 +33,14 @@ export const BasicInfo = ({ data, changedData }: BasicInfoProps) => {
 
   return (
     <div className="p-4 md:p-10">
-      {/* TODO : Replace with input component */}
-      <div className={`flex flex-col gap-1 `}>
-        <label htmlFor="Supplier" className=" text-gray-500">
-          Supplier Name *
-        </label>
-        <input
-          required
-          id="supplier"
-          type="text"
-          name="companyName"
-          className="border-2 border-gray-200 p-2 mb-4 rounded focus:border-black outline-none text-black"
-          value={data.companyName}
-          onChange={(e) => changedData(e.target.name, e.target.value)}
-        />
-      </div>
+      <Input
+        required
+        className="flex flex-col gap-1"
+        label="Supplier Name *"
+        id="supplier"
+        value={data.companyName}
+        onChange={(e) => changedData(e.target.name, e.target.value)}
+      />
 
       <div className={`flex flex-col gap-1 `}>
         <label htmlFor="documentation" className=" text-gray-500">
