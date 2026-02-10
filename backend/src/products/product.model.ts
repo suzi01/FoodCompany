@@ -1,4 +1,4 @@
-import { Document, Schema, model } from 'mongoose';
+import mongoose, { Document, Schema, model } from 'mongoose';
 
 import { Types } from 'mongoose';
 
@@ -50,6 +50,15 @@ const productSchema = new Schema<IProduct>(
   },
   { timestamps: true },
 );
+
+productSchema.post('findOneAndDelete', async function (doc) {
+  if (doc) {
+    const Supplier = mongoose.model('Supplier');
+    await Supplier.findByIdAndUpdate(doc.supplier, {
+      $pull: { products: doc._id },
+    });
+  }
+});
 
 const Product = model<IProduct>('Product', productSchema);
 

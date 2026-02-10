@@ -19,7 +19,7 @@ export const supplierSchema = z.object({
   address: z.string().max(200).optional(),
   email: z.email(),
   phoneNumber: z.string().optional(),
-  productsProvided: z.array(z.union([z.string(), productRefSchema])),
+  products: z.array(z.union([z.string(), productRefSchema])),
   branches: z.array(z.string()),
   createdAt: z.string(),
   updatedAt: z.string(),

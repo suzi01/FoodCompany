@@ -1,4 +1,4 @@
-import { Document, Schema, model } from 'mongoose';
+import mongoose, { Document, Schema, model } from 'mongoose';
 
 import { Types } from 'mongoose';
 import { supplierStatusValues } from '../constants';
@@ -75,6 +75,15 @@ supplierSchema.virtual('associatedBranches', {
   ref: 'Branch',
   localField: '_id',
   foreignField: 'suppliers',
+});
+
+supplierSchema.post('findOneAndDelete', async function (doc) {
+  if (doc) {
+    const Branch = mongoose.model('Branch');
+    await Branch.findByIdAndUpdate(doc.branch, {
+      $pull: { suppliers: doc._id },
+    });
+  }
 });
 
 const Supplier = model('Supplier', supplierSchema);

@@ -342,7 +342,7 @@ describe('Supplier Service', () => {
 
     it('should handle search errors', async () => {
       const error = new Error('Search failed');
-      mockPopulate.mockRejectedValue(error);
+      mockPopulateBranches.mockRejectedValue(error);
 
       await expect(
         searchSuppliers('Test', '', '', 'companyName', 'asc'),
@@ -364,7 +364,7 @@ describe('Supplier Service', () => {
 
       expect(Supplier.find).toHaveBeenCalledWith({
         companyName: { $regex: '', $options: 'i' },
-        productsProvided: { $in: [] },
+        products: { $in: [] },
       });
     });
   });
