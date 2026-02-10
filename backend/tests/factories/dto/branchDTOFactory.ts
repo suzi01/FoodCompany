@@ -15,6 +15,14 @@ export function buildBranchDTO(
     phoneNumber: faker.phone.number(),
     address: faker.location.streetAddress(),
     suppliers: [],
+    yearsActive: faker.number.int({ min: 0, max: 50 }),
+    inventory: [
+      {
+        product: new Types.ObjectId().toString(),
+        quantity: faker.number.int({ min: 0, max: 100 }),
+        lastRestocked: faker.date.recent().toISOString(),
+      },
+    ],
     ...overrides,
   };
 }
