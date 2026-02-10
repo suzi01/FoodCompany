@@ -79,3 +79,7 @@ export const deleteSupplier = catchAsync(async (req, res, next) => {
     message: 'Supplier deleted successfully',
   });
 });
+
+// what about when a supplier is deleted? Should they not be set to inactive instead?
+
+// What about when a branch buys products from a supplier? The quanity of the products should decrease. Also, should there be a history of purchases from suppliers?

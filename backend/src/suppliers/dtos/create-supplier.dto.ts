@@ -14,8 +14,6 @@ export const createSupplierSchema = z.object({
   address: z.string().max(200).optional(),
   email: z.email(),
   phoneNumber: z.string().optional(),
-  productsProvided: z.array(z.string()),
-  branches: z.array(z.string()),
 });
 
 export type CreateSupplierDto = z.infer<typeof createSupplierSchema>;

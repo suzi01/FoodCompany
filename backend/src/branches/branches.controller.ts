@@ -1,11 +1,13 @@
 import { HttpError } from '../utils/app-error';
 import { catchAsync } from '../utils/catch-async';
-import { toBranchesResponseDTO } from '../utils/mappers/branches.mapper';
+import { toBranchResponseDTO } from '../utils/mappers/branches.mapper';
 import * as branchService from './branch.service';
 
 export const getAllBranches = catchAsync(async (req, res, next) => {
   const branches = await branchService.getAllBranches();
-  const mappedBranches = branches.map(toBranchesResponseDTO);
+  const mappedBranches = branches.map((branch) =>
+    toBranchResponseDTO({ branch, mode: 'multiple' }),
+  );
 
   res.status(200).json({ success: true, data: mappedBranches });
 });
@@ -18,7 +20,7 @@ export const getBranch = catchAsync(async (req, res, next) => {
     );
   }
 
-  const mappedBranch = toBranchesResponseDTO(branch);
+  const mappedBranch = toBranchResponseDTO({ branch, mode: 'single' });
   res.status(200).json({ success: true, data: mappedBranch });
 });
 
@@ -34,7 +36,9 @@ export const searchBranches = catchAsync(async (req, res, next) => {
     typeof sort === 'string' ? sort : 'BranchName',
     typeof order === 'string' ? order : 'asc',
   );
-  const mappedBranches = branches.map(toBranchesResponseDTO);
+  const mappedBranches = branches.map((branch) =>
+    toBranchResponseDTO({ branch, mode: 'multiple' }),
+  );
   res.status(200).json({ success: true, data: mappedBranches });
 });
 
@@ -47,14 +51,20 @@ export const updateBranch = catchAsync(async (req, res, next) => {
     return next(new HttpError(404, 'Branch not found'));
   }
 
-  const mappedBranch = toBranchesResponseDTO(updateBranch);
+  const mappedBranch = toBranchResponseDTO({
+    branch: updateBranch,
+    mode: 'single',
+  });
   res.status(200).json({ success: true, data: mappedBranch });
 });
 
 export const createBranch = catchAsync(async (req, res, next) => {
   const newBranch = await branchService.createBranch(req.body);
 
-  const mappedBranch = toBranchesResponseDTO(newBranch);
+  const mappedBranch = toBranchResponseDTO({
+    branch: newBranch,
+    mode: 'single',
+  });
   res.status(201).json({ success: true, data: mappedBranch });
 });
 

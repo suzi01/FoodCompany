@@ -13,7 +13,7 @@ export function buildProductDTO(
     email: faker.internet.email(),
     phoneNumber: faker.phone.number(),
     status: faker.helpers.arrayElement(['Active', 'Inactive', 'Pending']),
-    productsProvided: [faker.food.fruit()],
+    products: [faker.food.fruit()],
     branches: [],
     createdAt: faker.date.past().toISOString(),
     updatedAt: faker.date.recent().toISOString(),

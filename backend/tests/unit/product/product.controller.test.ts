@@ -245,22 +245,22 @@ describe('Product Controller', () => {
 
       expect(response.body.status).toBe(false);
     });
-
-    it('PUT / should handle partial updates correctly', async () => {
-      const partiallyUpdatedProduct = {
-        ...mockProducts[0],
-        quantityInStock: 200,
-      };
-      (productService.updateProduct as jest.Mock).mockResolvedValue(
-        partiallyUpdatedProduct,
-      );
-      const partialUpdateData = { quantityInStock: 200 };
-      const response = await request(app)
-        .put(`/api/v1/products/${mockProducts[0]._id}`)
-        .send(partialUpdateData);
-      expect(response.status).toBe(200);
-      expect(response.body.data.quantityInStock).toBe(200);
-    });
+    //  TODO: For branches
+    // it('PUT / should handle partial updates correctly', async () => {
+    //   const partiallyUpdatedProduct = {
+    //     ...mockProducts[0],
+    //     quantityInStock: 200,
+    //   };
+    //   (productService.updateProduct as jest.Mock).mockResolvedValue(
+    //     partiallyUpdatedProduct,
+    //   );
+    //   const partialUpdateData = { quantityInStock: 200 };
+    //   const response = await request(app)
+    //     .put(`/api/v1/products/${mockProducts[0]._id}`)
+    //     .send(partialUpdateData);
+    //   expect(response.status).toBe(200);
+    //   expect(response.body.data.quantityInStock).toBe(200);
+    // });
   });
 
   describe('deleteProduct', () => {
@@ -347,17 +347,18 @@ describe('Product Controller', () => {
     });
   });
 
-  describe('updateProductStock', () => {
-    it('PATCH / should update product stock', async () => {
-      const updatedStockProduct = { ...mockProducts[0], quantityInStock: 50 };
-      (productService.updateProductStock as jest.Mock).mockResolvedValue(
-        updatedStockProduct,
-      );
-      const response = await request(app)
-        .patch(`/api/v1/products/${mockProducts[0]._id}/stock`)
-        .send({ quantity: 50 });
-      expect(response.status).toBe(200);
-      expect(response.body.data.quantityInStock).toBe(50);
-    });
-  });
+  // TODO : Move to branch
+  // describe('updateProductStock', () => {
+  //   it('PATCH / should update product stock', async () => {
+  //     const updatedStockProduct = { ...mockProducts[0], quantityInStock: 50 };
+  //     (productService.updateProductStock as jest.Mock).mockResolvedValue(
+  //       updatedStockProduct,
+  //     );
+  //     const response = await request(app)
+  //       .patch(`/api/v1/products/${mockProducts[0]._id}/stock`)
+  //       .send({ quantity: 50 });
+  //     expect(response.status).toBe(200);
+  //     expect(response.body.data.quantityInStock).toBe(50);
+  //   });
+  // });
 });

@@ -17,6 +17,13 @@ export function buildBranch(overrides: Partial<IBranch> = {}): IBranch {
     suppliers: [new Types.ObjectId()],
     createdAt: faker.date.past().toISOString(),
     updatedAt: faker.date.recent().toISOString(),
+    inventory: [
+      {
+        product: new Types.ObjectId(),
+        quantity: faker.number.int({ min: 0, max: 100 }),
+        lastRestocked: faker.date.recent().toISOString(),
+      },
+    ],
     ...overrides,
   });
 
