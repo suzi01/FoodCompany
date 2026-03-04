@@ -39,6 +39,7 @@ export const BasicInfo = ({ data, changedData }: BasicInfoProps) => {
         label="Supplier Name *"
         id="supplier"
         value={data.companyName}
+        name="companyName"
         onChange={(e) => changedData(e.target.name, e.target.value)}
       />
 

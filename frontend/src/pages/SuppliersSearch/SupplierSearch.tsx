@@ -2,12 +2,13 @@ import { Button } from '@/components/common/Button/Button';
 import { BasicInfo } from '@/components/Forms/Supplier/BasicInfo';
 import { ContactDetails } from '@/components/Forms/Supplier/ContactDetails';
 import { CreateProducts } from '@/components/Forms/Supplier/CreateProducts';
-import { Review } from '@/components/Forms/Supplier/Review';
+import { CompanyCreationSuccess } from '@/components/Forms/Supplier/CompanyCreationSuccess';
 import { CreateProductPayload } from '@/models/Product';
 import { CreateSupplier } from '@/models/Supplier';
 
 import { Stepper } from '@mantine/core';
 import { useState } from 'react';
+import { ProductCreationSuccess } from '@/components/Forms/Supplier/ProductCreationSuccess/ProductCreationSuccess';
 
 const data: CreateSupplier = {
   companyName: '',
@@ -51,6 +52,18 @@ export const SupplierSearch = () => {
             }
           />
         </Stepper.Step>
+
+        <Stepper.Step label="Product creation">
+          <CompanyCreationSuccess
+            supplierName={formData.companyName}
+            contactName={formData.mainContactName}
+            contactEmail={formData.email}
+            // go to home page on skip
+            onSkip={() => setActive(5)}
+            onContinue={() => setActive(3)}
+          />
+        </Stepper.Step>
+
         <Stepper.Step label="Products">
           <CreateProducts
             data={formData.productsProvided}
@@ -59,45 +72,38 @@ export const SupplierSearch = () => {
             }}
           />
         </Stepper.Step>
-        <Stepper.Step label="Review">
-          <Review data={formData} setActive={setActive} />
-        </Stepper.Step>
         <Stepper.Completed>
-          {Object.entries(formData).map(([key, value]) => (
-            <div key={key} className="mb-2">
-              <strong>{key}:</strong>{' '}
-              {Array.isArray(value) ? value.join(', ') : value}
-            </div>
-          ))}
-          <p> create success/fail page</p>
+          <ProductCreationSuccess />
         </Stepper.Completed>
       </Stepper>
 
-      <div className="flex justify-between mt-auto pt-4 border-t">
-        <Button
-          variant="tertiary"
-          disabled={active === 0}
-          onClick={() =>
-            setActive((current) => (current > 0 ? current - 1 : current))
-          }
-        >
-          Go Back
-        </Button>
-        <div className="flex gap-4">
-          <Button variant="tertiary" onClick={() => console.log('Cancel')}>
-            Cancel
-          </Button>
+      {active !== 2 && (
+        <div className="flex justify-between mt-auto pt-4 border-t">
           <Button
-            disabled={active === 4}
-            variant="primary"
+            variant="tertiary"
+            disabled={active === 0}
             onClick={() =>
-              setActive((current) => (current < 4 ? current + 1 : current))
+              setActive((current) => (current > 0 ? current - 1 : current))
             }
           >
-            Next step
+            Go Back
           </Button>
+          <div className="flex gap-4">
+            <Button variant="tertiary" onClick={() => console.log('Cancel')}>
+              Cancel
+            </Button>
+            <Button
+              disabled={active === 5}
+              variant="primary"
+              onClick={() =>
+                setActive((current) => (current < 5 ? current + 1 : current))
+              }
+            >
+              Next step
+            </Button>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
