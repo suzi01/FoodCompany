@@ -14,8 +14,9 @@ export const createSupplierSchema = z.object({
   address: z.string().max(200).optional(),
   email: z.email(),
   phoneNumber: z.string().optional(),
-  productsProvided: z.array(z.string()),
-  branches: z.array(z.string()),
+  // made productsProvided and branches optional for now, as they will be added in separate steps after supplier creation
+  productsProvided: z.array(z.string()).optional(),
+  branches: z.array(z.string()).optional(),
 });
 
 export type CreateSupplierDto = z.infer<typeof createSupplierSchema>;
