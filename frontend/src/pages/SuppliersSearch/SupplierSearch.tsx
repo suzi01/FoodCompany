@@ -1,30 +1,39 @@
 import { Button } from '@/components/common/Button/Button';
 import { BasicInfo } from '@/components/Forms/Supplier/BasicInfo';
 import { ContactDetails } from '@/components/Forms/Supplier/ContactDetails';
-import { CreateProducts } from '@/components/Forms/Supplier/CreateProducts';
-import { CompanyCreationSuccess } from '@/components/Forms/Supplier/CompanyCreationSuccess';
-import { CreateProductPayload } from '@/models/Product';
+import { SupplierCreationSuccess } from '@/components/Forms/Supplier/SupplierCreationSuccess';
+
 import { CreateSupplier } from '@/models/Supplier';
+import { Review } from '@/components/Forms/Supplier/Review';
 
 import { Stepper } from '@mantine/core';
 import { useState } from 'react';
-import { ProductCreationSuccess } from '@/components/Forms/Supplier/ProductCreationSuccess/ProductCreationSuccess';
+import { useCreateSupplier } from '@/services/Suppliers';
+import { useMutation } from '@tanstack/react-query';
 
 const data: CreateSupplier = {
+  status: 'Active',
   companyName: '',
   mainContactName: '',
   address: '',
   email: '',
   phoneNumber: '',
-  productsProvided: [] as CreateProductPayload[],
 };
 
 export const SupplierSearch = () => {
   const [active, setActive] = useState(0);
-
   const [formData, setFormData] = useState<CreateSupplier>(data);
 
-  console.log('formData', formData);
+  const mutation = useMutation(useCreateSupplier(formData));
+
+  const handleSubmit = (current: number) => {
+    setActive((current) => (current < 3 ? current + 1 : current));
+    if (current === 2) {
+      mutation.mutate();
+    }
+  };
+
+  console.log('Form data:', formData);
 
   return (
     <div className="w-full flex-1 bg-white py-5 px-3 md:p-6 rounded-md border mt-8 flex flex-col">
@@ -36,7 +45,7 @@ export const SupplierSearch = () => {
         onStepClick={setActive}
         allowNextStepsSelect={false}
       >
-        <Stepper.Step label="Basic info">
+        <Stepper.Step label="Basic info" allowStepSelect={active !== 3}>
           <BasicInfo
             data={formData}
             changedData={(field, value) =>
@@ -44,7 +53,7 @@ export const SupplierSearch = () => {
             }
           />
         </Stepper.Step>
-        <Stepper.Step label="Contact Details">
+        <Stepper.Step label="Contact Details" allowStepSelect={active !== 3}>
           <ContactDetails
             data={formData}
             changedData={(field, value) =>
@@ -53,31 +62,27 @@ export const SupplierSearch = () => {
           />
         </Stepper.Step>
 
-        <Stepper.Step label="Product creation">
-          <CompanyCreationSuccess
-            supplierName={formData.companyName}
-            contactName={formData.mainContactName}
-            contactEmail={formData.email}
-            // go to home page on skip
-            onSkip={() => setActive(5)}
-            onContinue={() => setActive(3)}
-          />
+        <Stepper.Step label="Review" allowStepSelect={active !== 3}>
+          <Review data={formData} setActive={setActive} />
         </Stepper.Step>
 
-        <Stepper.Step label="Products">
-          <CreateProducts
-            data={formData.productsProvided}
-            changedData={(field, value) => {
-              setFormData((prev) => ({ ...prev, [field]: value }));
-            }}
-          />
-        </Stepper.Step>
         <Stepper.Completed>
-          <ProductCreationSuccess />
+          {mutation.isSuccess && (
+            <SupplierCreationSuccess
+              supplierId={mutation.data.data.id}
+              supplierName={formData.companyName}
+              contactName={formData.mainContactName}
+              contactEmail={formData.email}
+              // go to home page on skip
+              onSkip={() => setActive(5)}
+              // go to product creation form on continue
+              onContinue={() => setActive(3)}
+            />
+          )}
         </Stepper.Completed>
       </Stepper>
 
-      {active !== 2 && (
+      {active !== 3 && (
         <div className="flex justify-between mt-auto pt-4 border-t">
           <Button
             variant="tertiary"
@@ -93,13 +98,11 @@ export const SupplierSearch = () => {
               Cancel
             </Button>
             <Button
-              disabled={active === 5}
+              disabled={active === 3}
               variant="primary"
-              onClick={() =>
-                setActive((current) => (current < 5 ? current + 1 : current))
-              }
+              onClick={() => handleSubmit(active)}
             >
-              Next step
+              {active < 2 ? 'Next step' : 'Finish'}
             </Button>
           </div>
         </div>
