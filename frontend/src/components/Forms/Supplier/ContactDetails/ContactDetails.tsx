@@ -24,7 +24,7 @@ export const ContactDetails = ({ data, changedData }: ContactDetailsProps) => {
         <Input
           required
           className="flex flex-col gap-1 "
-          label="Email address"
+          label="Email Address"
           id="email"
           name="email"
           value={data.email}
@@ -32,9 +32,8 @@ export const ContactDetails = ({ data, changedData }: ContactDetailsProps) => {
         />
 
         <Input
-          required
           className="flex flex-col gap-1 "
-          label="Phone number"
+          label="Phone Number"
           id="phoneNumber"
           name="phoneNumber"
           value={data.phoneNumber}
