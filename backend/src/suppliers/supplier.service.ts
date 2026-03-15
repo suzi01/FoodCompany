@@ -7,7 +7,9 @@ import Supplier from './supplier.model';
 import { FilterQuery } from 'mongoose';
 
 export const getAllSuppliers = async () => {
-  return await Supplier.find().populate('productsProvided', 'name -_id');
+  return await Supplier.find()
+    .populate('products', 'name')
+    .populate('associatedBranches', 'branchName createdAt _id');
 };
 
 export const createSupplier = async (data: CreateSupplierDto) => {
@@ -42,15 +44,18 @@ export const searchSuppliers = async (
       name: { $regex: product, $options: 'i' },
     }).select('_id');
     const productIds = products.map((p) => p._id);
-    query.productsProvided = { $in: productIds };
+    query.products = { $in: productIds };
   }
   if (status !== '') query.status = { $regex: status, $options: 'i' };
 
   return await Supplier.find(query)
     .sort({ [sort]: order === 'asc' ? 1 : -1 })
-    .populate('productsProvided', '-_id -__v');
+    .populate('products', 'name')
+    .populate('associatedBranches', 'branchName createdAt');
 };
 
 export const getSupplier = async (id: string) => {
-  return await Supplier.findById(id).populate('productsProvided', '-_id -__v');
+  return await Supplier.findById(id)
+    .populate('products', 'name price category')
+    .populate('associatedBranches', 'branchName createdAt');
 };

@@ -13,6 +13,11 @@ export interface IBranch {
   suppliers: Types.ObjectId[];
   createdAt: Date;
   updatedAt: Date;
+  inventory: {
+    product: Types.ObjectId;
+    quantity: number;
+    lastRestocked: Date;
+  }[];
 }
 
 const branchSchema = new Schema<IBranch>(
@@ -57,6 +62,27 @@ const branchSchema = new Schema<IBranch>(
       type: String,
       match: /^(\()?\d{3}(\))?(-|\s)?\d{3}(-|\s)\d{4}$/,
     },
+    inventory: [
+      {
+        product: {
+          type: Schema.Types.ObjectId,
+          ref: 'Product',
+        },
+        quantity: {
+          type: Number,
+          min: 0,
+        },
+        lastRestocked: {
+          type: Date,
+          required: true,
+        },
+      },
+    ],
+    yearsActive: {
+      type: Number,
+      min: 0,
+      default: 0,
+    },
     suppliers: [
       {
         type: Schema.Types.ObjectId,
@@ -66,18 +92,6 @@ const branchSchema = new Schema<IBranch>(
   },
   { timestamps: true },
 );
-
-branchSchema.virtual('yearsActive').get(function (this: IBranch) {
-  const now = new Date();
-  const years = now.getFullYear() - this.createdAt.getFullYear();
-
-  const anniversaryPassed =
-    now.getMonth() > this.createdAt.getMonth() ||
-    (now.getMonth() === this.createdAt.getMonth() &&
-      now.getDate() >= this.createdAt.getDate());
-
-  return anniversaryPassed ? years : years - 1;
-});
 
 branchSchema.set('toJSON', { virtuals: true });
 branchSchema.set('toObject', { virtuals: true });

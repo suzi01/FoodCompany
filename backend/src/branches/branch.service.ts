@@ -8,7 +8,7 @@ import Supplier from '../suppliers/supplier.model';
 import { BranchSearchParams } from '../types/SearchParams/BranchSearchParams';
 
 export const getAllBranches = async () => {
-  return await Branch.find();
+  return await Branch.find().populate('suppliers', 'companyName -_id');
 };
 
 export const getBranch = async (id: string) => {
@@ -38,7 +38,9 @@ export const searchBranches = async (
   if (contactName !== '')
     query.mainContactName = { $regex: contactName, $options: 'i' };
 
-  return await Branch.find(query).sort({ [sort]: order === 'asc' ? 1 : -1 });
+  return await Branch.find(query)
+    .populate('suppliers', 'companyName -_id')
+    .sort({ [sort]: order === 'asc' ? 1 : -1 });
 };
 
 export const createBranch = async (data: CreateBranchDto) => {

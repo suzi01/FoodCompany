@@ -11,7 +11,6 @@ export const productSchema = z.object({
   idOrBarcode: z.string().min(2).max(50),
   supplier: z.string().min(2).max(50),
   price: z.number().min(0, 'Price must be a positive number'),
-  quantityInStock: z.number().int().min(0, 'Quantity must be zero or greater'),
   description: z.string().max(500),
   createdAt: z.string(),
   updatedAt: z.string(),

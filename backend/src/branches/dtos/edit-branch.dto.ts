@@ -19,6 +19,7 @@ export const editBranchSchema = z.object({
     .optional(),
   address: z.string().optional(),
   suppliers: z.array(z.string()).default([]),
+  yearsActive: z.number().min(0).optional(),
 });
 
 export type EditBranchDto = z.infer<typeof editBranchSchema>;

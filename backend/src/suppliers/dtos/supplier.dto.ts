@@ -1,6 +1,10 @@
 import { z } from 'zod';
 import { supplierStatusValues } from '../../constants';
 
+const productRefSchema = z.object({
+  name: z.string(),
+});
+
 export const supplierSchema = z.object({
   id: z.string(),
   status: z.enum(supplierStatusValues),
@@ -15,7 +19,7 @@ export const supplierSchema = z.object({
   address: z.string().max(200).optional(),
   email: z.email(),
   phoneNumber: z.string().optional(),
-  productsProvided: z.array(z.string()),
+  products: z.array(z.union([z.string(), productRefSchema])),
   branches: z.array(z.string()),
   createdAt: z.string(),
   updatedAt: z.string(),

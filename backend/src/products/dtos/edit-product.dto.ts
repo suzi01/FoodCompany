@@ -6,7 +6,6 @@ export const editProductSchema = z.object({
   supplier: z.string().min(2).max(50).optional(),
   idOrBarcode: z.string().min(2).max(50).optional(),
   price: z.number().min(0).optional(),
-  quantityInStock: z.number().int().min(0).optional(),
   description: z.string().max(500).optional(),
 });
 

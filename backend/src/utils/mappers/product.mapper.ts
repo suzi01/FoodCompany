@@ -9,7 +9,6 @@ export const toProductResponseDTO = (product: IProduct): ProductDto => {
     category: product.category,
     supplier: product.supplier.toString(),
     price: product.price,
-    quantityInStock: product.quantityInStock,
     description: product.description,
     createdAt: product.createdAt.toISOString(),
     updatedAt: product.updatedAt.toISOString(),

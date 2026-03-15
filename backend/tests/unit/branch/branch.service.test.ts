@@ -57,7 +57,8 @@ describe('Branch Service', () => {
 
   describe('getAllBranches', () => {
     it('should return all branches', async () => {
-      (Branch.find as jest.Mock).mockResolvedValue(mockBranches);
+      const mockPopulate = jest.fn().mockResolvedValue(mockBranches);
+      (Branch.find as jest.Mock).mockReturnValue({ populate: mockPopulate });
 
       const result = await getAllBranches();
 
@@ -65,7 +66,8 @@ describe('Branch Service', () => {
       expect(result).toEqual(mockBranches);
     });
     it('should return empty array when no branches exist', async () => {
-      (Branch.find as jest.Mock).mockResolvedValue([]);
+      const mockPopulate = jest.fn().mockResolvedValue([]);
+      (Branch.find as jest.Mock).mockReturnValue({ populate: mockPopulate });
 
       const result = await getAllBranches();
 
@@ -76,7 +78,8 @@ describe('Branch Service', () => {
 
     it('should handle database errors', async () => {
       const error = new Error('Database query failed');
-      (Branch.find as jest.Mock).mockRejectedValue(error);
+      const mockPopulate = jest.fn().mockRejectedValue(error);
+      (Branch.find as jest.Mock).mockReturnValue({ populate: mockPopulate });
 
       await expect(getAllBranches()).rejects.toThrow('Database query failed');
       expect(Branch.find).toHaveBeenCalled();
@@ -182,10 +185,12 @@ describe('Branch Service', () => {
     ];
 
     let mockSort: jest.Mock;
+    let mockPopulate: jest.Mock;
 
     beforeEach(() => {
       mockSort = jest.fn().mockResolvedValue(mockSearchResults);
-      (Branch.find as jest.Mock).mockReturnValue({ sort: mockSort });
+      mockPopulate = jest.fn().mockReturnValue({ sort: mockSort });
+      (Branch.find as jest.Mock).mockReturnValue({ populate: mockPopulate });
     });
 
     it('should search branches with all parameters', async () => {
@@ -203,6 +208,10 @@ describe('Branch Service', () => {
         branchEmail: { $regex: 'something@domain.com', $options: 'i' },
         supplierName: { $regex: 'ABC123', $options: 'i' },
       });
+      expect(mockPopulate).toHaveBeenCalledWith(
+        'suppliers',
+        'companyName -_id',
+      );
       expect(mockSort).toHaveBeenCalledWith({ branchName: 1 });
       expect(result).toEqual(mockSearchResults);
     });

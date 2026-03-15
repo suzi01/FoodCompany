@@ -1,13 +1,15 @@
 import z from 'zod';
-import { supplierSchema } from '../../suppliers/dtos/supplier.dto';
 
-const supplierRefSchema = z.object({
-  id: z.string(),
+const baseSupplierSchema = z.object({
   companyName: z.string(),
+});
+
+const extendedSupplierSchema = baseSupplierSchema.extend({
+  id: z.string(),
   status: z.enum(['Active', 'Inactive', 'Pending']),
 });
 
-export const branchSchema = z.object({
+export const baseBranchSchema = z.object({
   id: z.string(),
   branchName: z
     .string()
@@ -32,9 +34,25 @@ export const branchSchema = z.object({
     .optional(),
   address: z.string().optional(),
   yearsActive: z.number().min(0),
-  suppliers: z.array(z.union([z.string(), supplierRefSchema])),
+  inventory: z.array(
+    z.object({
+      product: z.string(),
+      quantity: z.number().min(0),
+      lastRestocked: z.string(),
+    }),
+  ),
   createdAt: z.string(),
   updatedAt: z.string(),
 });
 
+export const branchSchema = baseBranchSchema.extend({
+  suppliers: z.array(z.union([z.string(), extendedSupplierSchema])),
+});
+
 export type BranchDto = z.infer<typeof branchSchema>;
+
+export const branchesSchema = baseBranchSchema.extend({
+  suppliers: z.array(z.union([z.string(), baseSupplierSchema])),
+});
+
+export type BranchesDto = z.infer<typeof branchesSchema>;

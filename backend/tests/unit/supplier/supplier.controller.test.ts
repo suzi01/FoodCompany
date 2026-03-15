@@ -14,7 +14,6 @@ const mockSuppliersDto = mockSuppliers.map((supplier) =>
   toSupplierResponseDTO(supplier),
 );
 
-
 describe('supplier Controller', () => {
   beforeEach(() => {
     jest.clearAllMocks();

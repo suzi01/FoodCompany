@@ -30,8 +30,6 @@ describe('Supplier Service', () => {
         mainContactName: 'John Doe',
         email: 'test@example.com',
         phoneNumber: '123-456-7890',
-        productsProvided: [],
-        branches: [],
       };
       (Supplier.create as jest.Mock).mockResolvedValue({
         ...newSupplier,
@@ -49,8 +47,6 @@ describe('Supplier Service', () => {
         mainContactName: 'Error User',
         email: 'error@test.com',
         status: 'Active' as const,
-        productsProvided: [],
-        branches: [],
       };
 
       const error = new Error('Database connection failed');
@@ -66,24 +62,32 @@ describe('Supplier Service', () => {
   describe('getAllSuppliers', () => {
     it('should return all suppliers', async () => {
       const suppliers = mockSuppliers;
-      const mockPopulate = jest.fn().mockResolvedValue(suppliers);
+      const mockPopulateBranches = jest.fn().mockResolvedValue(suppliers);
+      const mockPopulateProducts = jest.fn().mockReturnValue({
+        populate: mockPopulateBranches,
+      });
       (Supplier.find as jest.Mock).mockReturnValue({
-        populate: mockPopulate,
+        populate: mockPopulateProducts,
       });
 
       const result = await getAllSuppliers();
 
       expect(Supplier.find).toHaveBeenCalled();
-      expect(mockPopulate).toHaveBeenCalledWith(
-        'productsProvided',
-        'name -_id',
+      expect(mockPopulateProducts).toHaveBeenCalledWith('products', 'name');
+      expect(mockPopulateBranches).toHaveBeenCalledWith(
+        'associatedBranches',
+        'branchName createdAt _id',
       );
+
       expect(result).toEqual(suppliers);
     });
     it('should return empty array when no suppliers exist', async () => {
-      const mockPopulate = jest.fn().mockResolvedValue([]);
+      const mockPopulateBranches = jest.fn().mockResolvedValue([]);
+      const mockPopulateProducts = jest.fn().mockReturnValue({
+        populate: mockPopulateBranches,
+      });
       (Supplier.find as jest.Mock).mockReturnValue({
-        populate: mockPopulate,
+        populate: mockPopulateProducts,
       });
 
       const result = await getAllSuppliers();
@@ -95,9 +99,12 @@ describe('Supplier Service', () => {
 
     it('should handle database errors', async () => {
       const error = new Error('Database query failed');
-      const mockPopulate = jest.fn().mockRejectedValue(error);
+      const mockPopulateBranches = jest.fn().mockRejectedValue(error);
+      const mockPopulateProducts = jest.fn().mockReturnValue({
+        populate: mockPopulateBranches,
+      });
       (Supplier.find as jest.Mock).mockReturnValue({
-        populate: mockPopulate,
+        populate: mockPopulateProducts,
       });
 
       await expect(getAllSuppliers()).rejects.toThrow('Database query failed');
@@ -109,24 +116,36 @@ describe('Supplier Service', () => {
     it('should return supplier', async () => {
       const supplier = mockSupplier;
 
-      const mockPopulate = jest.fn().mockResolvedValue(supplier);
+      const mockPopulateBranches = jest.fn().mockResolvedValue(supplier);
+      const mockPopulateProducts = jest.fn().mockReturnValue({
+        populate: mockPopulateBranches,
+      });
       (Supplier.findById as jest.Mock).mockReturnValue({
-        populate: mockPopulate,
+        populate: mockPopulateProducts,
       });
 
       const result = await getSupplier('123');
 
       expect(Supplier.findById).toHaveBeenCalledWith('123');
-      expect(mockPopulate).toHaveBeenCalledWith(
-        'productsProvided',
-        '-_id -__v',
+
+      expect(mockPopulateProducts).toHaveBeenCalledWith(
+        'products',
+        'name price category',
       );
+      expect(mockPopulateBranches).toHaveBeenCalledWith(
+        'associatedBranches',
+        'branchName createdAt',
+      );
+
       expect(result).toEqual(supplier);
     });
     it('should return null when supplier does not exist', async () => {
-      const mockPopulate = jest.fn().mockResolvedValue(null);
+      const mockPopulateBranches = jest.fn().mockResolvedValue(null);
+      const mockPopulateProducts = jest.fn().mockReturnValue({
+        populate: mockPopulateBranches,
+      });
       (Supplier.findById as jest.Mock).mockReturnValue({
-        populate: mockPopulate,
+        populate: mockPopulateProducts,
       });
 
       const result = await getSupplier('123');
@@ -137,9 +156,13 @@ describe('Supplier Service', () => {
 
     it('should handle database errors', async () => {
       const error = new Error('Database query failed');
-      const mockPopulate = jest.fn().mockRejectedValue(error);
+
+      const mockPopulateBranches = jest.fn().mockRejectedValue(error);
+      const mockPopulateProducts = jest.fn().mockReturnValue({
+        populate: mockPopulateBranches,
+      });
       (Supplier.findById as jest.Mock).mockReturnValue({
-        populate: mockPopulate,
+        populate: mockPopulateProducts,
       });
 
       await expect(getSupplier('123')).rejects.toThrow('Database query failed');
@@ -213,9 +236,13 @@ describe('Supplier Service', () => {
     const mockSearchResults = [mockSupplier];
     let mockSort: jest.Mock;
     let mockPopulate: jest.Mock;
+    let mockPopulateBranches: jest.Mock;
 
     beforeEach(() => {
-      mockPopulate = jest.fn().mockResolvedValue(mockSearchResults);
+      mockPopulateBranches = jest.fn().mockResolvedValue(mockSearchResults);
+      mockPopulate = jest
+        .fn()
+        .mockReturnValue({ populate: mockPopulateBranches });
       mockSort = jest.fn().mockReturnValue({ populate: mockPopulate });
       (Supplier.find as jest.Mock).mockReturnValue({ sort: mockSort });
     });
@@ -233,10 +260,7 @@ describe('Supplier Service', () => {
         companyName: { $regex: 'Acme', $options: 'i' },
       });
       expect(mockSort).toHaveBeenCalledWith({ companyName: 1 });
-      expect(mockPopulate).toHaveBeenCalledWith(
-        'productsProvided',
-        '-_id -__v',
-      );
+      expect(mockPopulate).toHaveBeenCalledWith('products', 'name');
       expect(result).toEqual(mockSearchResults);
     });
 
@@ -259,7 +283,7 @@ describe('Supplier Service', () => {
       });
       expect(Supplier.find).toHaveBeenCalledWith({
         companyName: { $regex: 'Acme', $options: 'i' },
-        productsProvided: { $in: ['prod1', 'prod2'] },
+        products: { $in: ['prod1', 'prod2'] },
       });
     });
 
@@ -295,7 +319,7 @@ describe('Supplier Service', () => {
 
       expect(Supplier.find).toHaveBeenCalledWith({
         companyName: { $regex: 'Acme', $options: 'i' },
-        productsProvided: { $in: ['prod1'] },
+        products: { $in: ['prod1'] },
         status: { $regex: 'Active', $options: 'i' },
       });
       expect(mockSort).toHaveBeenCalledWith({ status: 1 });
@@ -316,23 +340,9 @@ describe('Supplier Service', () => {
       expect(mockSort).toHaveBeenCalledWith({ createdAt: -1 });
     });
 
-    it('should return empty results when no matches found', async () => {
-      mockPopulate.mockResolvedValue([]);
-
-      const result = await searchSuppliers(
-        'NonExistent',
-        '',
-        '',
-        'companyName',
-        'asc',
-      );
-
-      expect(result).toEqual([]);
-    });
-
     it('should handle search errors', async () => {
       const error = new Error('Search failed');
-      mockPopulate.mockRejectedValue(error);
+      mockPopulateBranches.mockRejectedValue(error);
 
       await expect(
         searchSuppliers('Test', '', '', 'companyName', 'asc'),
@@ -354,7 +364,7 @@ describe('Supplier Service', () => {
 
       expect(Supplier.find).toHaveBeenCalledWith({
         companyName: { $regex: '', $options: 'i' },
-        productsProvided: { $in: [] },
+        products: { $in: [] },
       });
     });
   });

@@ -1,4 +1,4 @@
-import { Document, Schema, model } from 'mongoose';
+import mongoose, { Document, Schema, model } from 'mongoose';
 
 import { Types } from 'mongoose';
 
@@ -10,7 +10,6 @@ export interface IProduct extends Document {
   price: number;
   category: string;
   supplier: Types.ObjectId;
-  quantityInStock: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -43,11 +42,6 @@ const productSchema = new Schema<IProduct>(
       required: [true, 'Product price is required'],
       min: 0,
     },
-    quantityInStock: {
-      type: Number,
-      required: [true, 'Product quantity in stock is required'],
-      min: 0,
-    },
     supplier: {
       type: Schema.Types.ObjectId,
       ref: 'Supplier',
@@ -56,6 +50,15 @@ const productSchema = new Schema<IProduct>(
   },
   { timestamps: true },
 );
+
+productSchema.post('findOneAndDelete', async function (doc) {
+  if (doc) {
+    const Supplier = mongoose.model('Supplier');
+    await Supplier.findByIdAndUpdate(doc.supplier, {
+      $pull: { products: doc._id },
+    });
+  }
+});
 
 const Product = model<IProduct>('Product', productSchema);
 

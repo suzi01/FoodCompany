@@ -3,7 +3,7 @@ import request from 'supertest';
 
 import app from '../../../src/app';
 import * as branchService from '../../../src/branches/branch.service';
-import { toBranchesResponseDTO } from '../../../src/utils/mappers/branches.mapper';
+import { toBranchResponseDTO } from '../../../src/utils/mappers/branches.mapper';
 import { buildBranch } from '../../factories/domin/branchFactory';
 
 jest.mock('../../../src/branches/branch.service');
@@ -11,7 +11,7 @@ jest.mock('../../../src/branches/branch.service');
 const mockBranches = [...Array(2).keys()].map(() => buildBranch());
 
 const mockBranchesDto = mockBranches.map((branch) =>
-  toBranchesResponseDTO(branch),
+  toBranchResponseDTO({ branch, mode: 'multiple' }),
 );
 
 describe('branch Controller', () => {
