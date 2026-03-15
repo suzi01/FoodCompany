@@ -1,4 +1,4 @@
-import { InputHTMLAttributes, useId } from 'react';
+import { InputHTMLAttributes } from 'react';
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string;
@@ -7,7 +7,6 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
 }
 
 export const Input = ({ label, className, error, ...props }: InputProps) => {
-  const inputId = useId();
   return (
     <div className={`flex flex-col gap-1 ${className}`}>
       <label
@@ -18,7 +17,7 @@ export const Input = ({ label, className, error, ...props }: InputProps) => {
       </label>
       <input
         type="text"
-        id={inputId}
+        id={props.name}
         aria-invalid={error ? 'true' : 'false'}
         className="border-2 border-gray-200 p-2 mb-4 rounded focus:border-black outline-none text-black"
         {...props}

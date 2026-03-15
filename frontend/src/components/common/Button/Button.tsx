@@ -18,7 +18,7 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 export const Button = ({ variant = 'primary', ...props }: ButtonProps) => {
   return (
     <button
-      className={`border rounded-md p-4 ${buttonColours[variant]}`}
+      className={`md:p-2 border rounded-md p-4 ${buttonColours[variant]}`}
       {...props}
     />
   );
