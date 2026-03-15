@@ -3,11 +3,13 @@ import { render, screen } from '@/testUtils';
 import { Table } from './Table';
 import { MemoryRouter } from 'react-router-dom';
 
+type RowType = { id: number; name: string; age: number; city: string };
+
 describe('Table', () => {
-  const headers = ['Name', 'Age', 'Status'];
-  const rows = [
-    { Name: 'Alice', Age: 30, Status: 'Active' },
-    { Name: 'Bob', Age: 25, Status: 'Inactive' },
+  const headers = ['name', 'age', 'city'] as (keyof RowType)[];
+  const rows: RowType[] = [
+    { id: 1, name: 'Alice', age: 30, city: 'New York' },
+    { id: 2, name: 'Bob', age: 25, city: 'Los Angeles' },
   ];
 
   it('renders table with headers and rows correctly without actions', () => {
