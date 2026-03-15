@@ -1,4 +1,3 @@
-// generate unit tests for status badge component
 import { render, screen } from '@/testUtils';
 import { StatusBadge, StatusBadgeProps } from './StatusBadge';
 

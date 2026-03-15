@@ -1,4 +1,3 @@
-// create tests for BasicInfo component
 import { render, screen } from '@/testUtils';
 import { BasicInfo } from './BasicInfo';
 import { CreateSupplier } from '@/models/Supplier';

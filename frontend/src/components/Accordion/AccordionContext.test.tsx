@@ -1,4 +1,3 @@
-// test for AccordionContext
 import { render, screen, userEvent } from '@/testUtils';
 import { AccordionContext } from './AccordionContext';
 import { CompoundAccordion } from './AccordionProvider';

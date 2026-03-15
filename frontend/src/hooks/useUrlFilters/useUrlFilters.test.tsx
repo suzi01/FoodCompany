@@ -1,5 +1,3 @@
-// generate tests for useUrlFilters hook
-
 import { renderHook, act } from '@/testUtils';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { useUrlFilters } from './useUrlFilters';
