@@ -6,7 +6,6 @@ export const createSupplier = async (supplier: CreateSupplier) => {
   const response = await apiClient.post('suppliers', supplier, {
     responseType: 'json',
   });
-  console.log('API response:', response);
   return response.data;
 };
 
@@ -15,8 +14,6 @@ export const useCreateSupplier = (supplier: CreateSupplier) => {
     mutationFn: () => createSupplier(supplier),
     mutationKey: ['/suppliers', supplier],
     onSuccess: () => {
-      // Invalidate and refetch
-      // queryClient.invalidateQueries(['/suppliers']);
       console.log('Supplier created successfully');
     },
     onError: (error: AxiosError) => {

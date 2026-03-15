@@ -2,7 +2,7 @@ import React, { ReactNode } from 'react';
 import { TableHeader } from '../TableHeader';
 import { TableRow } from '../TableRow';
 
-interface TableProps<T extends object> {
+export interface TableProps<T extends object> {
   headers: (keyof T)[];
   rows: T[];
   actions?: boolean;
