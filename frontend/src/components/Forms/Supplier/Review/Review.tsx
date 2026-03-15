@@ -43,7 +43,7 @@ const ReviewSection = ({
 export const Review = ({ data, setActive }: ReviewProps) => {
   const basicInfoItems = [
     { label: 'Supplier Name', value: data.companyName },
-    { label: 'Years Active', value: '0 years' },
+    // { label: 'Years Active', value: '0 years' }, -- IGNORE FOR NOW--
     { label: 'Documentation', value: 'supplier_agreement.pdf' },
   ];
 
