@@ -1,23 +1,27 @@
 import { Button } from '@/components/common/Button';
+import Tick from '@/assets/icons/tick.svg';
+import { Image } from '@/components/common/Image';
 
-interface CompanyCreationSuccessProps {
+interface SupplierCreationSuccessProps {
   supplierName: string;
   contactName: string;
+  supplierId: string;
   contactEmail: string;
   onSkip: () => void;
   onContinue: () => void;
 }
 
-export const CompanyCreationSuccess = ({
+export const SupplierCreationSuccess = ({
   supplierName,
+  supplierId,
   contactName,
   contactEmail,
   onSkip,
   onContinue,
-}: CompanyCreationSuccessProps) => {
+}: SupplierCreationSuccessProps) => {
   return (
     <div className="flex flex-col gap-3 justify-center items-center py-8">
-      <p>tick</p>
+      <Image src={Tick} alt="Success" width={80} height={80} />
       <h1 className="text-3xl font-bold">
         Supplier <span className="text-green-500">{supplierName}</span> created
         successfully!
@@ -32,7 +36,7 @@ export const CompanyCreationSuccess = ({
         <div className="flex justify-between gap-6">
           <div>
             <p className="text-gray-500">Supplier ID</p>
-            <p>SUP-2023-234</p>
+            <p>{supplierId}</p>
           </div>
           <div>
             <p className="text-gray-500">Supplier Name</p>
