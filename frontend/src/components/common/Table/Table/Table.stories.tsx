@@ -1,11 +1,19 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { MemoryRouter } from 'react-router-dom';
 
-import { Table } from './Table';
+import { Table, TableProps } from './Table';
 
-type Story = StoryObj<typeof Table>;
+type RowType = { id: number; name: string; age: number; city: string };
 
-const meta: Meta<typeof Table> = {
+const data: RowType[] = [
+  { id: 1, name: 'Alice', age: 30, city: 'New York' },
+  { id: 2, name: 'Bob', age: 25, city: 'Los Angeles' },
+  { id: 3, name: 'Charlie', age: 35, city: 'Chicago' },
+];
+
+type Story = StoryObj<typeof Table<RowType>>;
+
+const meta: Meta<typeof Table<RowType>> = {
   title: 'Table',
   component: Table,
   tags: ['autodocs'],
@@ -17,27 +25,17 @@ const meta: Meta<typeof Table> = {
 };
 export default meta;
 
-const args = {
-  headers: ['Name', 'Age', 'Status'],
-  rows: [
-    {
-      Name: 'John Doe',
-      Age: 28,
-      Status: 'active',
-    },
-    {
-      Name: 'Jane Smith',
-      Age: 34,
-      Status: 'inactive',
-    },
-  ],
+const args: Partial<TableProps<RowType>> = {
+  headers: ['name', 'age', 'city'],
+  rows: data,
+  actions: false,
 };
 
 export const BasicTable: Story = {
   args,
 };
 
-export const StyledTable: Story = {
+export const TableWithAction: Story = {
   args: {
     ...args,
     actions: true,

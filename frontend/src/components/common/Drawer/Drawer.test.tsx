@@ -1,4 +1,3 @@
-// generate tests for Drawer compontent
 import React from 'react';
 import { render, screen } from '@/testUtils';
 import { Drawer } from './Drawer';

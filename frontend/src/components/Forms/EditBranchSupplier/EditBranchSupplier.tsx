@@ -46,23 +46,22 @@ export const EditBranchSupplier = ({
           disabled
           value={supplier.companyName}
         />
-
-        <div className="col-span-2 bg-white p-4 border border-gray-300 rounded-md shadow-sm gap-2">
-          <Table
-            otherActions={
-              <button className="">
-                <Image src={Bin} alt="Expand" width={16} height={16} />
-              </button>
-            }
-            headers={['Product name', 'Price/Unit']}
-            rows={[
-              { 'Product name': 'Apples', 'Price/Unit': '$2.00' },
-              { 'Product name': 'Bananas', 'Price/Unit': '$1.50' },
-              { 'Product name': 'Cherries', 'Price/Unit': '$3.00' },
-            ]}
-          />
-        </div>
       </form>
+      <div className="col-span-2 bg-white p-4 border border-gray-300 rounded-md shadow-sm gap-2">
+        <Table
+          otherActions={(rowIndex) => (
+            <button onClick={() => console.log('row index:', rowIndex)}>
+              <Image src={Bin} alt="Delete" width={16} height={16} />
+            </button>
+          )}
+          headers={['Product name', 'Price/Unit']}
+          rows={[
+            { 'Product name': 'Apples', 'Price/Unit': '$2.00' },
+            { 'Product name': 'Bananas', 'Price/Unit': '$1.50' },
+            { 'Product name': 'Cherries', 'Price/Unit': '$3.00' },
+          ]}
+        />
+      </div>
       <hr />
       <label
         htmlFor="products"
@@ -70,6 +69,7 @@ export const EditBranchSupplier = ({
       >
         Add new products
       </label>
+      {/* Replace with button that opens a modal with add product form */}
       <MultiSelectMemo
         options={options}
         selectedIds={selectedIds}
