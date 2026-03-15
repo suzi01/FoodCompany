@@ -6,7 +6,7 @@ export interface TableRowProps<T extends object> {
   rowItems: T[];
   actions?: boolean;
   headers: (keyof T)[];
-  otherActions?: React.ReactNode;
+  otherActions?: (rowIndex: number) => React.ReactNode;
 }
 
 export const TableRow = <T extends object>({
@@ -75,10 +75,10 @@ export const TableRow = <T extends object>({
           )}
           {otherActions && (
             <td
-              key="actions-cell"
+              key="other-actions-cell"
               className="px-4 py-6 table-cell border-b border-[#DFDFDF] font-light text-[14px] text-wrap"
             >
-              {otherActions}
+              {otherActions(rowIndex)}
             </td>
           )}
         </tr>

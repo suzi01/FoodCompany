@@ -6,7 +6,7 @@ interface TableProps<T extends object> {
   headers: (keyof T)[];
   rows: T[];
   actions?: boolean;
-  otherActions?: ReactNode;
+  otherActions?: (rowIndex: number) => ReactNode;
 }
 
 export const Table = <T extends object>({
