@@ -17,12 +17,13 @@ export interface Supplier {
 }
 
 export interface CreateSupplier {
+  status: supplierStatusValues;
   companyName: string;
   mainContactName: string;
   address?: string;
   email: string;
   phoneNumber?: string;
-  productsProvided: CreateProductPayload[];
+  productsProvided?: CreateProductPayload[];
 }
 
 export interface GetSuppliersResponse {

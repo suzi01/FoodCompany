@@ -26,6 +26,8 @@ export const EditBranchDetails = () => {
     isSuccess,
   } = useQuery(useGetBranchById(params.id || ''));
 
+  console.log('Branch details data:', branch);
+
   const { mutate: mutateBranchDetails } = useUpdateBranchDetails(
     params.id || '',
   );

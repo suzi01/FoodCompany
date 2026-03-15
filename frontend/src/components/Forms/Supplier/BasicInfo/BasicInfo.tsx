@@ -4,6 +4,8 @@ import { Button } from '@/components/common/Button/Button';
 import { Image } from '@/components/common/Image';
 import { CreateSupplier } from '@/models/Supplier';
 import { ChangeEvent, useRef } from 'react';
+import { Input } from '@/components/common/Input';
+import { Radio, Group } from '@mantine/core';
 
 interface BasicInfoProps {
   data: CreateSupplier;
@@ -32,24 +34,37 @@ export const BasicInfo = ({ data, changedData }: BasicInfoProps) => {
 
   return (
     <div className="p-4 md:p-10">
-      {/* TODO : Replace with input component */}
-      <div className={`flex flex-col gap-1 `}>
-        <label htmlFor="Supplier" className=" text-gray-500">
-          Supplier Name *
-        </label>
-        <input
-          required
-          id="supplier"
-          type="text"
-          name="companyName"
-          className="border-2 border-gray-200 p-2 mb-4 rounded focus:border-black outline-none text-black"
-          value={data.companyName}
-          onChange={(e) => changedData(e.target.name, e.target.value)}
-        />
-      </div>
+      <Input
+        required
+        className="flex flex-col gap-1"
+        label="Supplier Name *"
+        value={data.companyName}
+        name="companyName"
+        onChange={(e) => changedData(e.target.name, e.target.value)}
+      />
+
+      {/* Add status field as a dropdown with options Active, Inactive, Pending */}
+      <label className="text-gray-500 uppercase font-medium">Status *</label>
+
+      <Radio.Group
+        value={data.status}
+        onChange={(value) => changedData('status', value)}
+        size="md"
+        variant="vertical"
+        className="pb-5"
+      >
+        <Group mt="xs">
+          <Radio value="Active" label="Active" />
+          <Radio value="Inactive" label="Inactive" />
+          <Radio value="Pending" label="Pending" />
+        </Group>
+      </Radio.Group>
 
       <div className={`flex flex-col gap-1 `}>
-        <label htmlFor="documentation" className=" text-gray-500">
+        <label
+          htmlFor="documentation"
+          className=" text-gray-500 uppercase font-medium"
+        >
           Documentation
         </label>
         <div className="flex justify-center items-center flex-col border-2 border-dashed border-gray-300 p-6 rounded-md">

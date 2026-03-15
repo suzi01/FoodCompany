@@ -1,5 +1,4 @@
-// generate unit tests for status badge component
-import { render, screen } from '@testing-library/react';
+import { render, screen } from '@/testUtils';
 import { StatusBadge, StatusBadgeProps } from './StatusBadge';
 
 describe('StatusBadge', () => {

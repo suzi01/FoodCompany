@@ -1,4 +1,5 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
+import { userEvent } from '@testing-library/user-event';
 import { Accordion } from './Accordion';
 import { vi } from 'vitest';
 
@@ -30,10 +31,10 @@ describe('Accordion', () => {
     expect(screen.queryByText('Content')).not.toBeInTheDocument();
   });
 
-  it('calls onClick handler when button is clicked', () => {
+  it('calls onClick handler when button is clicked', async () => {
     render(<Accordion {...defaultProps} />);
     const button = screen.getByRole('button');
-    fireEvent.click(button);
+    await userEvent.click(button);
     expect(mockOnClick).toHaveBeenCalledTimes(1);
   });
 
