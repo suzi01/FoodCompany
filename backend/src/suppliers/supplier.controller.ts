@@ -2,39 +2,47 @@ import { HttpError } from '../utils/app-error';
 import { catchAsync } from '../utils/catch-async';
 import { toSupplierResponseDTO } from '../utils/mappers/supplier.mapper';
 import * as supplierService from './supplier.service';
+import { Logger as logger } from '../utils/logger';
 
 // Display a list of all suppliers.
 export const getAllSuppliers = catchAsync(async (req, res, next) => {
+  logger.info('Fetching all suppliers');
   const suppliers = await supplierService.getAllSuppliers();
   const mappedSuppliers = suppliers.map(toSupplierResponseDTO);
-
+  logger.info(`Fetched ${mappedSuppliers.length} suppliers successfully`);
   res.status(200).json({ success: true, data: mappedSuppliers });
 });
 
 // Display a supplier.
 export const getSupplier = catchAsync(async (req, res, next) => {
+  logger.info(`Fetching supplier with ID: ${req.params.id}`);
   const supplier = await supplierService.getSupplier(req.params.id as string);
   if (!supplier) {
+    logger.warn(`No supplier found with ID: ${req.params.id}`);
     return next(
       new HttpError(404, `No supplier found with ID ${req.params.id}`),
     );
   }
-
   const mappedSupplier = toSupplierResponseDTO(supplier);
-
+  logger.info(`Fetched supplier with ID: ${req.params.id} successfully`);
   res.status(200).json({ success: true, data: mappedSupplier });
 });
 
 // Add a new supplier.
 export const createSupplier = catchAsync(async (req, res, next) => {
+  logger.info('Creating new supplier with data:', req.body);
   const newSupplier = await supplierService.createSupplier(req.body);
   const mappedSupplier = toSupplierResponseDTO(newSupplier);
+  logger.info(`Supplier created successfully with ID: ${newSupplier._id}`);
   res.status(201).json({ success: true, data: mappedSupplier });
 });
 
 // - **Search**: Filter suppliers by name, items they provide (through a product search), or unique code (which you could add, such as a supplier ID).
 export const searchSuppliers = catchAsync(async (req, res, next) => {
   const { companyName, product, status, sort, order } = req.query;
+  logger.info(
+    `Searching suppliers with companyName: ${companyName}, product: ${product}, status: ${status}, sort: ${sort}, order: ${order}`,
+  );
   const suppliers = await supplierService.searchSuppliers(
     typeof companyName === 'string' ? companyName : '',
     typeof product === 'string' ? product : '',
@@ -50,6 +58,10 @@ export const searchSuppliers = catchAsync(async (req, res, next) => {
 // - **Update**: Modify an existing supplier's details.
 
 export const updateSupplier = catchAsync(async (req, res, next) => {
+  logger.info(
+    `Updating supplier with ID: ${req.params.id} and data:`,
+    req.body,
+  );
   const updatedSupplier = await supplierService.updateSupplier(
     req.params.id as string,
     req.body,
@@ -60,20 +72,24 @@ export const updateSupplier = catchAsync(async (req, res, next) => {
     );
   }
   const mappedSupplier = toSupplierResponseDTO(updatedSupplier);
+  logger.info(`Supplier with ID: ${req.params.id} updated successfully`);
   res.status(200).json({ success: true, data: mappedSupplier });
 });
 
 // Remove a supplier.
 
 export const deleteSupplier = catchAsync(async (req, res, next) => {
+  logger.info(`Deleting supplier with ID: ${req.params.id}`);
   const deletedSupplier = await supplierService.deleteSupplier(
     req.params.id as string,
   );
   if (!deletedSupplier) {
+    logger.warn(`No supplier found to delete with ID: ${req.params.id}`);
     return next(
       new HttpError(404, `Supplier with ID ${req.params.id} not found`),
     );
   }
+  logger.info(`Supplier with ID: ${req.params.id} deleted successfully`);
   res.status(200).json({
     success: true,
     message: 'Supplier deleted successfully',
