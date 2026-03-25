@@ -28,9 +28,7 @@ export const FilterAndSortForm = ({ filterItems }: FilterAndSortFormProps) => {
     const formData = new FormData(e.currentTarget);
     const filters: Record<string, string> = {};
     formData.forEach((value, key) => {
-      if (value) {
-        filters[toCamelCase(key)] = value.toString();
-      }
+      filters[toCamelCase(key)] = value.toString();
     });
     updateMultipleFilters(filters);
   };

@@ -1,4 +1,3 @@
-import Calendar from '@/assets/icons/calendar.svg';
 import Export from '@/assets/icons/export.svg';
 import Filter from '@/assets/icons/filter.svg';
 

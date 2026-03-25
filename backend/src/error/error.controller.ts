@@ -1,15 +1,18 @@
 import { Request, Response, NextFunction } from 'express';
 import { HttpError } from '../utils/app-error';
 import { GlobalError } from '../types/GlobalError';
+import { Logger as logger } from '../utils/logger';
 
 const handleCastErrorDB = (err: GlobalError) => {
   const message = `Invalid ${err.path}: ${err.value}.`;
+  logger.warn(`CastError: ${message}`);
   return new HttpError(400, message);
 };
 
 const handleDuplicateFieldsDB = (err: GlobalError) => {
   const value = err.keyValue ? JSON.stringify(err.keyValue) : '';
   const message = `Duplicate field value: ${value}. Please use another value!`;
+  logger.warn(`DuplicateFieldsError: ${message}`);
   return new HttpError(400, message);
 };
 
@@ -23,6 +26,7 @@ const handleValidationErrorDB = (err: GlobalError) => {
       })
     : [];
   const message = `Invalid input data. ${errors.join('. ')}`;
+  logger.warn(`ValidationError: ${message}`);
   return new HttpError(400, message);
 };
 
@@ -42,7 +46,7 @@ const sendErrorProd = (err: GlobalError, res: Response) => {
       message: err.message,
     });
   } else {
-    console.error('ERROR 💥', err);
+    logger.error(`ERROR 💥: ${err.message}`);
     res.status(500).json({
       status: 'error',
       message: 'Something went very wrong!',
@@ -56,6 +60,10 @@ export const globalErrorHandler = (
   res: Response,
   next: NextFunction,
 ) => {
+  logger.error({
+    message: err.message,
+    method: req.method,
+  });
   err.statusCode = err.name === 'ValidationError' ? 400 : err.statusCode || 500;
   err.status = err.status || 'error';
   if (

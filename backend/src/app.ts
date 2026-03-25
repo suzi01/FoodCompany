@@ -7,9 +7,13 @@ import { globalErrorHandler } from './error/error.controller';
 import productRouter from './products/product.routes';
 import supplierRouter from './suppliers/supplier.routes';
 import { HttpError } from './utils/app-error';
+import { MorganMiddleware as morganMiddleware } from './middlewares/morgan-middleware';
+import { Logger as logger } from './utils/logger';
 
 const app = express();
 app.use(cors());
+
+app.use(morganMiddleware);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -28,22 +32,20 @@ app.all(/.*/, (req, _res, next) => {
 
 app.use(globalErrorHandler);
 
-console.log('config port:', config.port);
-
 // Start server with proper database connection
 const startServer = async () => {
   try {
     if (process.env.NODE_ENV !== 'test') {
-      console.log('🌱 Connecting to MongoDB...');
+      logger.info('Attempting to connect to MongoDB...');
       await connectToDB();
-      console.log('✅ MongoDB connected');
+      logger.info('MongoDB connection established successfully');
     }
 
     app.listen(config.port, () => {
-      console.log(`🚀 Server running on http://localhost:${config.port}`);
+      logger.info(`🚀 Server running on http://localhost:${config.port}`);
     });
   } catch (err) {
-    console.error('❌ Failed to start server:', err);
+    logger.error('❌ Failed to start server:', err);
     process.exit(1);
   }
 };
