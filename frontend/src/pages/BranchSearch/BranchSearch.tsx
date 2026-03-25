@@ -34,7 +34,10 @@ export const BranchSearch = () => {
         text={searchText}
         placeholder="Search branches..."
         onTextChange={(text: string) => setSearchText(text)}
-        onClear={() => setSearchText('')}
+        onClear={() => {
+          setSearchText('');
+          searchParams[1]('');
+        }}
         className="w-full"
       />
       {isLoading ? (
