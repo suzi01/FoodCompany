@@ -6,10 +6,14 @@ import Supplier from './supplier.model';
 
 import { FilterQuery } from 'mongoose';
 
-export const getAllSuppliers = async () => {
-  return await Supplier.find()
+export const getAllSuppliers = async (page: number, limit: number) => {
+  const totalDocuments = await Supplier.countDocuments();
+  const suppliers = await await Supplier.find()
     .populate('products', 'name')
-    .populate('associatedBranches', 'branchName createdAt _id');
+    .populate('associatedBranches', 'branchName createdAt _id')
+    .skip((page - 1) * limit)
+    .limit(limit);
+  return { suppliers, totalDocuments };
 };
 
 export const createSupplier = async (data: CreateSupplierDto) => {
@@ -34,6 +38,7 @@ export const searchSuppliers = async (
   status: string,
   sort: string,
   order: string,
+  page: number,
 ) => {
   const query: FilterQuery<SupplierSearchParams> = {};
 
@@ -48,10 +53,15 @@ export const searchSuppliers = async (
   }
   if (status !== '') query.status = { $regex: status, $options: 'i' };
 
-  return await Supplier.find(query)
+  const totalDocuments = await Supplier.countDocuments(query);
+  const suppliers = await Supplier.find(query)
+    .skip((page - 1) * 10)
+    .limit(10)
     .sort({ [sort]: order === 'asc' ? 1 : -1 })
     .populate('products', 'name')
     .populate('associatedBranches', 'branchName createdAt');
+
+  return { suppliers, totalDocuments };
 };
 
 export const getSupplier = async (id: string) => {

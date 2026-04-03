@@ -21,9 +21,10 @@ describe('supplier Controller', () => {
 
   describe('getAllSuppliers', () => {
     it('GET / should return a list of suppliers', async () => {
-      (supplierService.getAllSuppliers as jest.Mock).mockResolvedValue(
-        mockSuppliers,
-      );
+      (supplierService.getAllSuppliers as jest.Mock).mockResolvedValue({
+        suppliers: mockSuppliers,
+        totalDocuments: mockSuppliers.length,
+      });
 
       const response = await request(app).get('/api/v1/suppliers/');
       expect(response.status).toBe(200);
@@ -77,9 +78,10 @@ describe('supplier Controller', () => {
 
   describe('searchSuppliers', () => {
     it('GET / find a supplier based on search criteria', async () => {
-      (supplierService.searchSuppliers as jest.Mock).mockResolvedValue(
-        mockSuppliers,
-      );
+      (supplierService.searchSuppliers as jest.Mock).mockResolvedValue({
+        suppliers: mockSuppliers,
+        totalDocuments: mockSuppliers.length,
+      });
 
       const response = await request(app).get(
         '/api/v1/suppliers/search?companyName=TestCo',
@@ -101,9 +103,10 @@ describe('supplier Controller', () => {
     });
 
     it('GET / should handle multiple search parameters', async () => {
-      (supplierService.searchSuppliers as jest.Mock).mockResolvedValue([
-        mockSuppliers[0],
-      ]);
+      (supplierService.searchSuppliers as jest.Mock).mockResolvedValue({
+        suppliers: [mockSuppliers[0]],
+        totalDocuments: 1,
+      });
 
       const response = await request(app).get(
         '/api/v1/suppliers/search?companyName=Test&product=widgets&status=active&sort=companyName&order=Descending',
@@ -117,6 +120,7 @@ describe('supplier Controller', () => {
         'active',
         'companyName',
         'Descending',
+        1,
       );
     });
   });
