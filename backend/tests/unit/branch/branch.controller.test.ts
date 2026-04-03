@@ -21,11 +21,12 @@ describe('branch Controller', () => {
 
   describe('getAllBranches', () => {
     it('GET / should return a list of branches', async () => {
-      (branchService.getAllBranches as jest.Mock).mockResolvedValue(
-        mockBranches,
-      );
+      (branchService.getAllBranches as jest.Mock).mockResolvedValue({
+        branches: mockBranches,
+        totalDocuments: mockBranches.length,
+      });
 
-      const response = await request(app).get('/api/v1/branches/');
+      const response = await request(app).get('/api/v1/branches');
       expect(response.status).toBe(200);
       expect(Array.isArray(response.body.data)).toBe(true);
       expect(response.body.data).toEqual(mockBranchesDto);
@@ -75,9 +76,10 @@ describe('branch Controller', () => {
 
   describe('searchBranches', () => {
     it('GET / find a branch based on search criteria', async () => {
-      (branchService.searchBranches as jest.Mock).mockResolvedValue(
-        mockBranches,
-      );
+      (branchService.searchBranches as jest.Mock).mockResolvedValue({
+        branches: mockBranches,
+        totalDocuments: mockBranches.length,
+      });
 
       const response = await request(app).get(
         '/api/v1/branches/search?branchName=Tes',
@@ -99,9 +101,10 @@ describe('branch Controller', () => {
     });
 
     it('GET / should handle multiple search parameters', async () => {
-      (branchService.searchBranches as jest.Mock).mockResolvedValue([
-        mockBranches[0],
-      ]);
+      (branchService.searchBranches as jest.Mock).mockResolvedValue({
+        branches: [mockBranches[0]],
+        totalDocuments: 1,
+      });
 
       const response = await request(app).get(
         '/api/v1/branches/search?branchName=Test&branchEmail=widgets&supplierName=ABC123&sort=companyName&order=Descending',
@@ -116,6 +119,8 @@ describe('branch Controller', () => {
         'ABC123',
         'companyName',
         'Descending',
+        1,
+        10,
       );
     });
   });

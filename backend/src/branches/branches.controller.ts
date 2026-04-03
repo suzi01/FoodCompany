@@ -3,15 +3,36 @@ import { catchAsync } from '../utils/catch-async';
 import { toBranchResponseDTO } from '../utils/mappers/branches.mapper';
 import * as branchService from './branch.service';
 import { Logger as logger } from '../utils/logger';
+import { pageAndLimitValidation } from '../utils/pageAndLimitValidation';
+import { DEFAULT_LIMIT, DEFAULT_PAGE } from '../constants';
 
 export const getAllBranches = catchAsync(async (req, res, next) => {
   logger.info('Fetching all branches');
-  const branches = await branchService.getAllBranches();
+  const page = parseInt(req.query.page as string) || DEFAULT_PAGE;
+  const limit = parseInt(req.query.limit as string) || DEFAULT_LIMIT;
+
+  pageAndLimitValidation(page, limit);
+
+  const { branches, totalDocuments } = await branchService.getAllBranches(
+    page,
+    limit,
+  );
   const mappedBranches = branches.map((branch) =>
     toBranchResponseDTO({ branch, mode: 'multiple' }),
   );
-  logger.info(`Fetched ${mappedBranches.length} branches successfully`);
-  res.status(200).json({ success: true, data: mappedBranches });
+
+  logger.info(
+    `Fetched page ${page} with ${mappedBranches.length} branches successfully`,
+  );
+
+  res.status(200).json({
+    success: true,
+    page,
+    limit,
+    totalDocuments,
+    totalPages: Math.ceil(totalDocuments / limit),
+    data: mappedBranches,
+  });
 });
 
 export const getBranch = catchAsync(async (req, res, next) => {
@@ -31,22 +52,37 @@ export const getBranch = catchAsync(async (req, res, next) => {
 
 export const searchBranches = catchAsync(async (req, res, next) => {
   logger.info(`Searching branches with query:`, req.query);
+  const page = parseInt(req.query.page as string) || DEFAULT_PAGE;
+
+  pageAndLimitValidation(page, DEFAULT_LIMIT);
+
   const { branchName, branchEmail, contactName, supplierName, sort, order } =
     req.query;
 
-  const branches = await branchService.searchBranches(
+  const { branches, totalDocuments } = await branchService.searchBranches(
     typeof branchName === 'string' ? branchName : '',
     typeof branchEmail === 'string' ? branchEmail : '',
     typeof contactName === 'string' ? contactName : '',
     typeof supplierName === 'string' ? supplierName : '',
     typeof sort === 'string' ? sort : 'BranchName',
     typeof order === 'string' ? order : 'asc',
+    page,
+    DEFAULT_LIMIT,
   );
+
   const mappedBranches = branches.map((branch) =>
     toBranchResponseDTO({ branch, mode: 'multiple' }),
   );
+
   logger.info(`Fetched ${mappedBranches.length} branches successfully`);
-  res.status(200).json({ success: true, data: mappedBranches });
+  res.status(200).json({
+    success: true,
+    page,
+    limit: DEFAULT_LIMIT,
+    totalDocuments,
+    totalPages: Math.ceil(totalDocuments / DEFAULT_LIMIT),
+    data: mappedBranches,
+  });
 });
 
 export const updateBranch = catchAsync(async (req, res, next) => {

@@ -7,8 +7,13 @@ import Supplier from '../suppliers/supplier.model';
 
 import { BranchSearchParams } from '../types/SearchParams/BranchSearchParams';
 
-export const getAllBranches = async () => {
-  return await Branch.find().populate('suppliers', 'companyName -_id');
+export const getAllBranches = async (page: number, limit: number) => {
+  const totalDocuments = await Branch.countDocuments();
+  const branches = await Branch.find()
+    .populate('suppliers', 'companyName -_id')
+    .skip((page - 1) * limit)
+    .limit(limit);
+  return { branches, totalDocuments };
 };
 
 export const getBranch = async (id: string) => {
@@ -25,6 +30,8 @@ export const searchBranches = async (
   supplierName: string,
   sort: string,
   order: string,
+  page: number,
+  limit: number,
 ) => {
   const query: FilterQuery<BranchSearchParams> = {};
 
@@ -38,9 +45,15 @@ export const searchBranches = async (
   if (contactName !== '')
     query.mainContactName = { $regex: contactName, $options: 'i' };
 
-  return await Branch.find(query)
+  const foundBranches = await Branch.find(query)
+    .skip((page - 1) * limit)
+    .limit(limit)
     .populate('suppliers', 'companyName -_id')
     .sort({ [sort]: order === 'asc' ? 1 : -1 });
+
+  const totalDocuments = await Branch.countDocuments(query);
+
+  return { branches: foundBranches, totalDocuments };
 };
 
 export const createBranch = async (data: CreateBranchDto) => {
