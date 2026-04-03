@@ -15,7 +15,7 @@ interface ProductProps {
 }
 
 export function buildProduct(overrides: Partial<ProductProps> = {}): IProduct {
-  const product = new Product({
+  return {
     _id: new Types.ObjectId(),
     name: faker.food.fruit(),
     idOrBarcode: faker.commerce.isbn(),
@@ -23,10 +23,8 @@ export function buildProduct(overrides: Partial<ProductProps> = {}): IProduct {
     supplier: new Types.ObjectId(),
     price: parseFloat(faker.commerce.price({ min: 0.5, max: 100, dec: 2 })),
     description: faker.food.description(),
-    createdAt: faker.date.past().toISOString(),
-    updatedAt: faker.date.recent().toISOString(),
+    createdAt: faker.date.past(),
+    updatedAt: faker.date.recent(),
     ...overrides,
-  });
-
-  return product.toObject() as IProduct;
+  } as IProduct;
 }
