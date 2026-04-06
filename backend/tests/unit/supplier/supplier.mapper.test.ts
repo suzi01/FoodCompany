@@ -12,8 +12,7 @@ describe('Supplier mappers', () => {
 
   describe('supplierMapper', () => {
     it('should map a supplier to DTO', async () => {
-      const fakeSupplier = new Supplier({ ...mockSupplier });
-      const result = toSupplierResponseDTO(fakeSupplier);
+      const result = toSupplierResponseDTO(mockSupplier);
       expect(result).toEqual(mockSupplierDto);
     });
   });

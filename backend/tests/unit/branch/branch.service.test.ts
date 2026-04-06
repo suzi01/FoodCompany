@@ -57,31 +57,45 @@ describe('Branch Service', () => {
 
   describe('getAllBranches', () => {
     it('should return all branches', async () => {
-      const mockPopulate = jest.fn().mockResolvedValue(mockBranches);
+      const mockLimit = jest.fn().mockResolvedValue(mockBranches);
+      const mockSkip = jest.fn().mockReturnValue({ limit: mockLimit });
+      const mockPopulate = jest.fn().mockReturnValue({ skip: mockSkip });
       (Branch.find as jest.Mock).mockReturnValue({ populate: mockPopulate });
 
-      const result = await getAllBranches();
+      const totalDocuments = mockBranches.length;
+      (Branch.countDocuments as jest.Mock).mockResolvedValue(totalDocuments);
+
+      const result = await getAllBranches(1, 10);
 
       expect(Branch.find).toHaveBeenCalled();
-      expect(result).toEqual(mockBranches);
+      expect(result).toEqual({ branches: mockBranches, totalDocuments });
     });
     it('should return empty array when no branches exist', async () => {
-      const mockPopulate = jest.fn().mockResolvedValue([]);
+      const mockLimit = jest.fn().mockResolvedValue([]);
+      const mockSkip = jest.fn().mockReturnValue({ limit: mockLimit });
+      const mockPopulate = jest.fn().mockReturnValue({ skip: mockSkip });
+      const totalDocuments = 0;
+      (Branch.countDocuments as jest.Mock).mockResolvedValue(totalDocuments);
+
       (Branch.find as jest.Mock).mockReturnValue({ populate: mockPopulate });
 
-      const result = await getAllBranches();
+      const result = await getAllBranches(1, 10);
 
       expect(Branch.find).toHaveBeenCalledWith();
-      expect(result).toEqual([]);
-      expect(result).toHaveLength(0);
+      expect(result).toEqual({ branches: [], totalDocuments: 0 });
+      expect(result.branches).toHaveLength(0);
     });
 
     it('should handle database errors', async () => {
       const error = new Error('Database query failed');
-      const mockPopulate = jest.fn().mockRejectedValue(error);
+      const mockLimit = jest.fn().mockRejectedValue(error);
+      const mockSkip = jest.fn().mockReturnValue({ limit: mockLimit });
+      const mockPopulate = jest.fn().mockReturnValue({ skip: mockSkip });
       (Branch.find as jest.Mock).mockReturnValue({ populate: mockPopulate });
 
-      await expect(getAllBranches()).rejects.toThrow('Database query failed');
+      await expect(getAllBranches(1, 10)).rejects.toThrow(
+        'Database query failed',
+      );
       expect(Branch.find).toHaveBeenCalled();
     });
   });
@@ -175,22 +189,27 @@ describe('Branch Service', () => {
   });
 
   describe('searchBranches', () => {
-    const mockSearchResults = [
-      mockBranch,
-      {
-        ...mockBranch,
-        _id: '507f1f77bcf86cd799439012',
-        branchName: 'Beta Branch',
-      },
-    ];
+    const mockSearchResults = {
+      branches: [
+        mockBranch,
+        { _id: '507f1f77bcf86cd799439012', branchName: 'Beta Branch' },
+      ],
+
+      totalDocuments: 0,
+    };
 
     let mockSort: jest.Mock;
     let mockPopulate: jest.Mock;
+    let mockLimit: jest.Mock;
+    let mockSkip: jest.Mock;
 
     beforeEach(() => {
-      mockSort = jest.fn().mockResolvedValue(mockSearchResults);
+      mockSort = jest.fn().mockResolvedValue(mockSearchResults.branches);
       mockPopulate = jest.fn().mockReturnValue({ sort: mockSort });
-      (Branch.find as jest.Mock).mockReturnValue({ populate: mockPopulate });
+      mockLimit = jest.fn().mockReturnValue({ populate: mockPopulate });
+      mockSkip = jest.fn().mockReturnValue({ limit: mockLimit });
+
+      (Branch.find as jest.Mock).mockReturnValue({ skip: mockSkip });
     });
 
     it('should search branches with all parameters', async () => {
@@ -201,6 +220,8 @@ describe('Branch Service', () => {
         'ABC123',
         'branchName',
         'asc',
+        1,
+        10,
       );
 
       expect(Branch.find).toHaveBeenCalledWith({
@@ -213,6 +234,7 @@ describe('Branch Service', () => {
         'companyName -_id',
       );
       expect(mockSort).toHaveBeenCalledWith({ branchName: 1 });
+      console.log(result  );
       expect(result).toEqual(mockSearchResults);
     });
 
@@ -224,6 +246,8 @@ describe('Branch Service', () => {
         '',
         'branchName',
         'desc',
+        1,
+        10,
       );
 
       expect(Branch.find).toHaveBeenCalledWith({
@@ -238,7 +262,7 @@ describe('Branch Service', () => {
       mockSort.mockRejectedValue(error);
 
       await expect(
-        searchBranches('Test', '', '', '', 'branchName', 'asc'),
+        searchBranches('Test', '', '', '', 'branchName', 'asc', 1, 10),
       ).rejects.toThrow('Search failed');
     });
 
@@ -250,6 +274,8 @@ describe('Branch Service', () => {
         '',
         'branchName',
         'asc',
+        1,
+        10,
       );
 
       expect(Branch.find).toHaveBeenCalledWith({

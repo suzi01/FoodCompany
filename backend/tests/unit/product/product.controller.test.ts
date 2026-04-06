@@ -33,13 +33,18 @@ describe('Product Controller', () => {
 
   describe('getAllProducts', () => {
     it('GET / should return a list of products', async () => {
-      (productService.getAllProducts as jest.Mock).mockResolvedValue(
-        mockProducts,
-      );
+      (productService.getAllProducts as jest.Mock).mockResolvedValue({
+        products: mockProducts,
+        totalDocuments: mockProducts.length,
+      });
       const response = await request(app).get('/api/v1/products');
       expect(response.status).toBe(200);
       expect(Array.isArray(response.body.data)).toBe(true);
       expect(response.body.data).toEqual(mockProductsDto);
+      expect(response.body.page).toBe(1);
+      expect(response.body.limit).toBe(10);
+      expect(response.body.totalDocuments).toBe(mockProducts.length);
+      expect(response.body.totalPages).toBe(1);
     });
 
     it('GET / should handle errors', async () => {
@@ -49,6 +54,28 @@ describe('Product Controller', () => {
       const response = await request(app).get('/api/v1/products');
       expect(response.status).toBe(500);
       expect(response.body.message).toBe('No products found');
+    });
+
+    it('GET / should return 400 if page is less than 1', async () => {
+      const response = await request(app).get('/api/v1/products?page=-1');
+      expect(response.status).toBe(400);
+      expect(response.body.message).toBe(
+        'Page and limit must be positive integers',
+      );
+    });
+
+    it('GET / should return 400 if limit exceeds 20', async () => {
+      const response = await request(app).get('/api/v1/products?limit=21');
+      expect(response.status).toBe(400);
+      expect(response.body.message).toBe('Limit cannot exceed 20');
+    });
+
+    it('GET / should return 400 if limit is less than 1', async () => {
+      const response = await request(app).get('/api/v1/products?limit=-1');
+      expect(response.status).toBe(400);
+      expect(response.body.message).toBe(
+        'Page and limit must be positive integers',
+      );
     });
   });
 
@@ -83,9 +110,10 @@ describe('Product Controller', () => {
 
   describe('searchProducts', () => {
     it('GET / find a product based on search criteria', async () => {
-      (productService.searchProducts as jest.Mock).mockResolvedValue(
-        mockProducts,
-      );
+      (productService.searchProducts as jest.Mock).mockResolvedValue({
+        products: mockProducts,
+        totalDocuments: mockProducts.length,
+      });
       const response = await request(app).get(
         '/api/v1/products/search?name=Test',
       );
@@ -105,9 +133,10 @@ describe('Product Controller', () => {
     });
 
     it('GET / should handle multiple search parameters', async () => {
-      (productService.searchProducts as jest.Mock).mockResolvedValue([
-        mockProducts[0],
-      ]);
+      (productService.searchProducts as jest.Mock).mockResolvedValue({
+        products: [mockProducts[0]],
+        totalDocuments: 1,
+      });
       const response = await request(app).get(
         '/api/v1/products/search?name=Test&barcode=123456789&supplier=SupplierName&sortBy=name&category=Fruit&order=desc',
       );
@@ -117,9 +146,20 @@ describe('Product Controller', () => {
         'Test',
         '123456789',
         'SupplierName',
-        'name',
         'Fruit',
+        'name',
         'desc',
+        1,
+      );
+    });
+
+    it('GET / should return 400 if page is less than 1', async () => {
+      const response = await request(app).get(
+        '/api/v1/products/search?page=-1',
+      );
+      expect(response.status).toBe(400);
+      expect(response.body.message).toBe(
+        'Page and limit must be positive integers',
       );
     });
   });
@@ -314,36 +354,107 @@ describe('Product Controller', () => {
 
   describe('getProductsInStock', () => {
     it('GET / should return products in stock', async () => {
-      (productService.getProductsInStock as jest.Mock).mockResolvedValue([
-        mockProducts[0],
-      ]);
+      (productService.getProductsInStock as jest.Mock).mockResolvedValue({
+        products: [mockProducts[0]],
+        totalDocuments: 1,
+      });
       const response = await request(app).get('/api/v1/products/stock/in');
       expect(response.status).toBe(200);
       expect(Array.isArray(response.body.data)).toBe(true);
       expect(response.body.data.length).toBeGreaterThan(0);
+      expect(response.body.page).toBe(1);
+      expect(response.body.limit).toBe(10);
+      expect(response.body.totalDocuments).toBe(1);
+      expect(response.body.totalPages).toBe(1);
+    });
+
+    it('GET / should return 400 if page is less than 1', async () => {
+      const response = await request(app).get(
+        '/api/v1/products/stock/in?page=-1',
+      );
+      expect(response.status).toBe(400);
+      expect(response.body.message).toBe(
+        'Page and limit must be positive integers',
+      );
+    });
+
+    it('GET / should return 400 if limit exceeds 20', async () => {
+      const response = await request(app).get(
+        '/api/v1/products/stock/in?limit=21',
+      );
+      expect(response.status).toBe(400);
+      expect(response.body.message).toBe('Limit cannot exceed 20');
     });
   });
 
   describe('getProductsOutOfStock', () => {
     it('GET / should return products out of stock', async () => {
-      (productService.getProductsOutOfStock as jest.Mock).mockResolvedValue([]);
+      (productService.getProductsOutOfStock as jest.Mock).mockResolvedValue({
+        products: [],
+        totalDocuments: 0,
+      });
       const response = await request(app).get('/api/v1/products/stock/out');
       expect(response.status).toBe(200);
       expect(Array.isArray(response.body.data)).toBe(true);
+      expect(response.body.page).toBe(1);
+      expect(response.body.limit).toBe(10);
+      expect(response.body.totalDocuments).toBe(0);
+      expect(response.body.totalPages).toBe(0);
+    });
+
+    it('GET / should return 400 if page is less than 1', async () => {
+      const response = await request(app).get(
+        '/api/v1/products/stock/out?page=-1',
+      );
+      expect(response.status).toBe(400);
+      expect(response.body.message).toBe(
+        'Page and limit must be positive integers',
+      );
+    });
+
+    it('GET / should return 400 if limit exceeds 20', async () => {
+      const response = await request(app).get(
+        '/api/v1/products/stock/out?limit=21',
+      );
+      expect(response.status).toBe(400);
+      expect(response.body.message).toBe('Limit cannot exceed 20');
     });
   });
 
   describe('getProductsByPriceRange', () => {
     it('GET / should return products in price range', async () => {
-      (productService.getProductsByPriceRange as jest.Mock).mockResolvedValue([
-        mockProducts[1],
-      ]);
+      (productService.getProductsByPriceRange as jest.Mock).mockResolvedValue({
+        products: [mockProducts[1]],
+        totalDocuments: 1,
+      });
       const response = await request(app).get(
         '/api/v1/products/price-range?minPrice=1&maxPrice=5',
       );
       expect(response.status).toBe(200);
       expect(Array.isArray(response.body.data)).toBe(true);
       expect(response.body.data.length).toBeGreaterThan(0);
+      expect(response.body.page).toBe(1);
+      expect(response.body.limit).toBe(10);
+      expect(response.body.totalDocuments).toBe(1);
+      expect(response.body.totalPages).toBe(1);
+    });
+
+    it('GET / should return 400 if page is less than 1', async () => {
+      const response = await request(app).get(
+        '/api/v1/products/price-range?page=-1',
+      );
+      expect(response.status).toBe(400);
+      expect(response.body.message).toBe(
+        'Page and limit must be positive integers',
+      );
+    });
+
+    it('GET / should return 400 if limit exceeds 20', async () => {
+      const response = await request(app).get(
+        '/api/v1/products/price-range?limit=21',
+      );
+      expect(response.status).toBe(400);
+      expect(response.body.message).toBe('Limit cannot exceed 20');
     });
   });
 

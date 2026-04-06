@@ -6,8 +6,12 @@ import Product from './product.model';
 
 import { ClientSession, FilterQuery } from 'mongoose';
 
-export const getAllProducts = async () => {
-  return Product.find();
+export const getAllProducts = async (page: number, limit: number) => {
+  const totalDocuments = await Product.countDocuments();
+  const products = await Product.find()
+    .skip((page - 1) * limit)
+    .limit(limit);
+  return { products, totalDocuments };
 };
 
 export const getProduct = async (id: string) => {
@@ -51,6 +55,7 @@ export const searchProducts = async (
   category: string,
   sortBy: string,
   order: string,
+  page: number,
 ) => {
   const query: FilterQuery<ProductSearchParams> = {};
 
@@ -60,24 +65,44 @@ export const searchProducts = async (
   if (barcode !== '') query.barcode = { $regex: barcode, $options: 'i' };
   if (supplier !== '') query.supplier = { $regex: supplier, $options: 'i' };
 
-  return await Product.find(query).sort({ [sortBy]: order === 'asc' ? 1 : -1 });
+  const totalDocuments = await Product.countDocuments(query);
+  const products = await Product.find(query)
+    .skip((page - 1) * 10)
+    .limit(10)
+    .sort({ [sortBy]: order === 'asc' ? 1 : -1 });
+  return { products, totalDocuments };
 };
 
 export const getProductsByPriceRange = async (
   minPrice: number,
   maxPrice: number,
+  page: number,
+  limit: number,
 ) => {
-  return await Product.find({
-    price: { $gte: minPrice, $lte: maxPrice },
-  });
+  const filter = { price: { $gte: minPrice, $lte: maxPrice } };
+  const totalDocuments = await Product.countDocuments(filter);
+  const products = await Product.find(filter)
+    .skip((page - 1) * limit)
+    .limit(limit);
+  return { products, totalDocuments };
 };
 
-export const getProductsInStock = async () => {
-  return await Product.find({ quantityInStock: { $gt: 0 } });
+export const getProductsInStock = async (page: number, limit: number) => {
+  const filter = { quantityInStock: { $gt: 0 } };
+  const totalDocuments = await Product.countDocuments(filter);
+  const products = await Product.find(filter)
+    .skip((page - 1) * limit)
+    .limit(limit);
+  return { products, totalDocuments };
 };
 
-export const getProductsOutOfStock = async () => {
-  return await Product.find({ quantityInStock: 0 });
+export const getProductsOutOfStock = async (page: number, limit: number) => {
+  const filter = { quantityInStock: 0 };
+  const totalDocuments = await Product.countDocuments(filter);
+  const products = await Product.find(filter)
+    .skip((page - 1) * limit)
+    .limit(limit);
+  return { products, totalDocuments };
 };
 
 export const updateProductStock = async (id: string, quantity: number) => {

@@ -3,14 +3,30 @@ import { catchAsync } from '../utils/catch-async';
 import { toSupplierResponseDTO } from '../utils/mappers/supplier.mapper';
 import * as supplierService from './supplier.service';
 import { Logger as logger } from '../utils/logger';
+import { pageAndLimitValidation } from '../utils/pageAndLimitValidation';
+import { DEFAULT_LIMIT, DEFAULT_PAGE } from '../constants';
 
 // Display a list of all suppliers.
 export const getAllSuppliers = catchAsync(async (req, res, next) => {
   logger.info('Fetching all suppliers');
-  const suppliers = await supplierService.getAllSuppliers();
+  const page = parseInt(req.query.page as string) || DEFAULT_PAGE;
+  const limit = parseInt(req.query.limit as string) || DEFAULT_LIMIT;
+
+  pageAndLimitValidation(page, limit);
+  const { suppliers, totalDocuments } = await supplierService.getAllSuppliers(
+    page,
+    limit,
+  );
   const mappedSuppliers = suppliers.map(toSupplierResponseDTO);
   logger.info(`Fetched ${mappedSuppliers.length} suppliers successfully`);
-  res.status(200).json({ success: true, data: mappedSuppliers });
+  res.status(200).json({
+    success: true,
+    page,
+    limit,
+    totalDocuments,
+    totalPages: Math.ceil(totalDocuments / limit),
+    data: mappedSuppliers,
+  });
 });
 
 // Display a supplier.
@@ -39,24 +55,35 @@ export const createSupplier = catchAsync(async (req, res, next) => {
 
 // - **Search**: Filter suppliers by name, items they provide (through a product search), or unique code (which you could add, such as a supplier ID).
 export const searchSuppliers = catchAsync(async (req, res, next) => {
+  const page = parseInt(req.query.page as string) || DEFAULT_PAGE;
+
+  pageAndLimitValidation(page, DEFAULT_LIMIT);
+
   const { companyName, product, status, sort, order } = req.query;
   logger.info(
     `Searching suppliers with companyName: ${companyName}, product: ${product}, status: ${status}, sort: ${sort}, order: ${order}`,
   );
-  const suppliers = await supplierService.searchSuppliers(
+  const { suppliers, totalDocuments } = await supplierService.searchSuppliers(
     typeof companyName === 'string' ? companyName : '',
     typeof product === 'string' ? product : '',
     typeof status === 'string' ? status : '',
     typeof sort === 'string' ? sort : 'CompanyName',
     typeof order === 'string' ? order : 'asc',
+    page,
   );
   const mappedSuppliers = suppliers.map(toSupplierResponseDTO);
 
-  res.status(200).json({ success: true, data: mappedSuppliers });
+  res.status(200).json({
+    success: true,
+    page,
+    limit: DEFAULT_LIMIT,
+    totalDocuments,
+    totalPages: Math.ceil(totalDocuments / DEFAULT_LIMIT),
+    data: mappedSuppliers,
+  });
 });
 
 // - **Update**: Modify an existing supplier's details.
-
 export const updateSupplier = catchAsync(async (req, res, next) => {
   logger.info(
     `Updating supplier with ID: ${req.params.id} and data:`,
@@ -77,7 +104,6 @@ export const updateSupplier = catchAsync(async (req, res, next) => {
 });
 
 // Remove a supplier.
-
 export const deleteSupplier = catchAsync(async (req, res, next) => {
   logger.info(`Deleting supplier with ID: ${req.params.id}`);
   const deletedSupplier = await supplierService.deleteSupplier(

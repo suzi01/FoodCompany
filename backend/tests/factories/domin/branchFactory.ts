@@ -1,10 +1,10 @@
 import { faker } from '@faker-js/faker';
 import { Types } from 'mongoose';
 
-import Branch, { IBranch } from '../../../src/branches/branch.model';
+import { IBranch } from '../../../src/branches/branch.model';
 
 export function buildBranch(overrides: Partial<IBranch> = {}): IBranch {
-  const branch = new Branch({
+  return {
     _id: new Types.ObjectId(),
     branchName: faker.company.name(),
     mainContactName: faker.person.fullName(),
@@ -15,17 +15,15 @@ export function buildBranch(overrides: Partial<IBranch> = {}): IBranch {
     address: faker.location.streetAddress(),
     yearsActive: faker.number.int({ min: 1, max: 50 }),
     suppliers: [new Types.ObjectId()],
-    createdAt: faker.date.past().toISOString(),
-    updatedAt: faker.date.recent().toISOString(),
+    createdAt: faker.date.past(),
+    updatedAt: faker.date.recent(),
     inventory: [
       {
         product: new Types.ObjectId(),
         quantity: faker.number.int({ min: 0, max: 100 }),
-        lastRestocked: faker.date.recent().toISOString(),
+        lastRestocked: faker.date.recent(),
       },
     ],
     ...overrides,
-  });
-
-  return branch.toObject() as IBranch;
+  } as IBranch;
 }

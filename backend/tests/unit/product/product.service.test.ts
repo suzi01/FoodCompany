@@ -7,6 +7,9 @@ import {
   updateProduct,
   deleteProduct,
   searchProducts,
+  getProductsByPriceRange,
+  getProductsInStock,
+  getProductsOutOfStock,
 } from '../../../src/products/product.service';
 import { buildProduct } from '../../factories/domin/productFactory';
 
@@ -35,7 +38,7 @@ describe('Product Service', () => {
         ...newProduct,
         _id: '507f1f77bcf86cd799439011',
       };
-     
+
       (Product.create as jest.Mock).mockResolvedValue([createdProduct]);
       (Supplier.findByIdAndUpdate as jest.Mock).mockResolvedValue({});
 
@@ -73,7 +76,7 @@ describe('Product Service', () => {
   });
 
   describe('getAllProducts', () => {
-    it('should return all products', async () => {
+    it('should return all products with pagination', async () => {
       const products = [
         mockProduct,
         {
@@ -82,23 +85,38 @@ describe('Product Service', () => {
           name: 'Another Product',
         },
       ];
-      (Product.find as jest.Mock).mockResolvedValue(products);
-      const result = await getAllProducts();
+      const mockLimit = jest.fn().mockResolvedValue(products);
+      const mockSkip = jest.fn().mockReturnValue({ limit: mockLimit });
+      (Product.find as jest.Mock).mockReturnValue({ skip: mockSkip });
+      (Product.countDocuments as jest.Mock).mockResolvedValue(2);
+
+      const result = await getAllProducts(1, 10);
+
+      expect(Product.countDocuments).toHaveBeenCalled();
       expect(Product.find).toHaveBeenCalled();
-      expect(result).toEqual(products);
+      expect(mockSkip).toHaveBeenCalledWith(0);
+      expect(mockLimit).toHaveBeenCalledWith(10);
+      expect(result).toEqual({ products, totalDocuments: 2 });
     });
+
     it('should return empty array when no products exist', async () => {
-      (Product.find as jest.Mock).mockResolvedValue([]);
-      const result = await getAllProducts();
-      expect(Product.find).toHaveBeenCalledWith();
-      expect(result).toEqual([]);
-      expect(result).toHaveLength(0);
+      const mockLimit = jest.fn().mockResolvedValue([]);
+      const mockSkip = jest.fn().mockReturnValue({ limit: mockLimit });
+      (Product.find as jest.Mock).mockReturnValue({ skip: mockSkip });
+      (Product.countDocuments as jest.Mock).mockResolvedValue(0);
+
+      const result = await getAllProducts(1, 10);
+
+      expect(result).toEqual({ products: [], totalDocuments: 0 });
     });
+
     it('should handle database errors', async () => {
       const error = new Error('Database query failed');
-      (Product.find as jest.Mock).mockRejectedValue(error);
-      await expect(getAllProducts()).rejects.toThrow('Database query failed');
-      expect(Product.find).toHaveBeenCalled();
+      (Product.countDocuments as jest.Mock).mockRejectedValue(error);
+
+      await expect(getAllProducts(1, 10)).rejects.toThrow(
+        'Database query failed',
+      );
     });
   });
 
@@ -211,9 +229,14 @@ describe('Product Service', () => {
       { ...mockProduct, _id: '507f1f77bcf86cd799439012', name: 'Beta Product' },
     ];
     let mockSort: jest.Mock;
+    let mockLimit: jest.Mock;
+    let mockSkip: jest.Mock;
     beforeEach(() => {
       mockSort = jest.fn().mockResolvedValue(mockSearchResults);
-      (Product.find as jest.Mock).mockReturnValue({ sort: mockSort });
+      mockLimit = jest.fn().mockReturnValue({ sort: mockSort });
+      mockSkip = jest.fn().mockReturnValue({ limit: mockLimit });
+      (Product.find as jest.Mock).mockReturnValue({ skip: mockSkip });
+      (Product.countDocuments as jest.Mock).mockResolvedValue(2);
     });
     it('should search products with all parameters', async () => {
       const result = await searchProducts(
@@ -223,27 +246,44 @@ describe('Product Service', () => {
         'Fruit',
         'name',
         'asc',
+        1,
       );
       expect(Product.find).toHaveBeenCalledWith({
         name: { $regex: 'Test', $options: 'i' },
         category: { $regex: 'Fruit', $options: 'i' },
       });
+      expect(mockSkip).toHaveBeenCalledWith(0);
+      expect(mockLimit).toHaveBeenCalledWith(10);
       expect(mockSort).toHaveBeenCalledWith({ name: 1 });
-      expect(result).toEqual(mockSearchResults);
+      expect(result).toEqual({
+        products: mockSearchResults,
+        totalDocuments: 2,
+      });
     });
     it('should search products with only name', async () => {
-      const result = await searchProducts('Test', '', '', '', 'name', 'desc');
+      const result = await searchProducts(
+        'Test',
+        '',
+        '',
+        '',
+        'name',
+        'desc',
+        1,
+      );
       expect(Product.find).toHaveBeenCalledWith({
         name: { $regex: 'Test', $options: 'i' },
       });
       expect(mockSort).toHaveBeenCalledWith({ name: -1 });
-      expect(result).toEqual(mockSearchResults);
+      expect(result).toEqual({
+        products: mockSearchResults,
+        totalDocuments: 2,
+      });
     });
     it('should handle search errors', async () => {
       const error = new Error('Search failed');
       mockSort.mockRejectedValue(error);
       await expect(
-        searchProducts('Test', '', '', '', 'name', 'asc'),
+        searchProducts('Test', '', '', '', 'name', 'asc', 1),
       ).rejects.toThrow('Search failed');
     });
     it('should handle special regex characters in search terms', async () => {
@@ -254,12 +294,134 @@ describe('Product Service', () => {
         '',
         'name',
         'asc',
+        1,
       );
       expect(Product.find).toHaveBeenCalledWith({
         name: { $regex: 'Test.Product', $options: 'i' },
         barcode: { $regex: 'fruit+', $options: 'i' },
         supplier: { $regex: 'ABC[123]', $options: 'i' },
       });
+    });
+  });
+
+  describe('getProductsByPriceRange', () => {
+    it('should return products in price range with pagination', async () => {
+      const mockLimit = jest.fn().mockResolvedValue([mockProduct]);
+      const mockSkip = jest.fn().mockReturnValue({ limit: mockLimit });
+      (Product.find as jest.Mock).mockReturnValue({ skip: mockSkip });
+      (Product.countDocuments as jest.Mock).mockResolvedValue(1);
+
+      const result = await getProductsByPriceRange(1, 5, 1, 10);
+
+      expect(Product.countDocuments).toHaveBeenCalledWith({
+        price: { $gte: 1, $lte: 5 },
+      });
+      expect(Product.find).toHaveBeenCalledWith({
+        price: { $gte: 1, $lte: 5 },
+      });
+      expect(mockSkip).toHaveBeenCalledWith(0);
+      expect(mockLimit).toHaveBeenCalledWith(10);
+      expect(result).toEqual({ products: [mockProduct], totalDocuments: 1 });
+    });
+
+    it('should return empty when no products match price range', async () => {
+      const mockLimit = jest.fn().mockResolvedValue([]);
+      const mockSkip = jest.fn().mockReturnValue({ limit: mockLimit });
+      (Product.find as jest.Mock).mockReturnValue({ skip: mockSkip });
+      (Product.countDocuments as jest.Mock).mockResolvedValue(0);
+
+      const result = await getProductsByPriceRange(100, 200, 1, 10);
+
+      expect(result).toEqual({ products: [], totalDocuments: 0 });
+    });
+
+    it('should handle database errors', async () => {
+      const error = new Error('Database query failed');
+      (Product.countDocuments as jest.Mock).mockRejectedValue(error);
+
+      await expect(getProductsByPriceRange(1, 5, 1, 10)).rejects.toThrow(
+        'Database query failed',
+      );
+    });
+  });
+
+  describe('getProductsInStock', () => {
+    it('should return in-stock products with pagination', async () => {
+      const mockLimit = jest.fn().mockResolvedValue([mockProduct]);
+      const mockSkip = jest.fn().mockReturnValue({ limit: mockLimit });
+      (Product.find as jest.Mock).mockReturnValue({ skip: mockSkip });
+      (Product.countDocuments as jest.Mock).mockResolvedValue(1);
+
+      const result = await getProductsInStock(1, 10);
+
+      expect(Product.countDocuments).toHaveBeenCalledWith({
+        quantityInStock: { $gt: 0 },
+      });
+      expect(Product.find).toHaveBeenCalledWith({
+        quantityInStock: { $gt: 0 },
+      });
+      expect(mockSkip).toHaveBeenCalledWith(0);
+      expect(mockLimit).toHaveBeenCalledWith(10);
+      expect(result).toEqual({ products: [mockProduct], totalDocuments: 1 });
+    });
+
+    it('should return empty when no products are in stock', async () => {
+      const mockLimit = jest.fn().mockResolvedValue([]);
+      const mockSkip = jest.fn().mockReturnValue({ limit: mockLimit });
+      (Product.find as jest.Mock).mockReturnValue({ skip: mockSkip });
+      (Product.countDocuments as jest.Mock).mockResolvedValue(0);
+
+      const result = await getProductsInStock(1, 10);
+
+      expect(result).toEqual({ products: [], totalDocuments: 0 });
+    });
+
+    it('should handle database errors', async () => {
+      const error = new Error('Database query failed');
+      (Product.countDocuments as jest.Mock).mockRejectedValue(error);
+
+      await expect(getProductsInStock(1, 10)).rejects.toThrow(
+        'Database query failed',
+      );
+    });
+  });
+
+  describe('getProductsOutOfStock', () => {
+    it('should return out-of-stock products with pagination', async () => {
+      const mockLimit = jest.fn().mockResolvedValue([mockProduct]);
+      const mockSkip = jest.fn().mockReturnValue({ limit: mockLimit });
+      (Product.find as jest.Mock).mockReturnValue({ skip: mockSkip });
+      (Product.countDocuments as jest.Mock).mockResolvedValue(1);
+
+      const result = await getProductsOutOfStock(1, 10);
+
+      expect(Product.countDocuments).toHaveBeenCalledWith({
+        quantityInStock: 0,
+      });
+      expect(Product.find).toHaveBeenCalledWith({ quantityInStock: 0 });
+      expect(mockSkip).toHaveBeenCalledWith(0);
+      expect(mockLimit).toHaveBeenCalledWith(10);
+      expect(result).toEqual({ products: [mockProduct], totalDocuments: 1 });
+    });
+
+    it('should return empty when all products are in stock', async () => {
+      const mockLimit = jest.fn().mockResolvedValue([]);
+      const mockSkip = jest.fn().mockReturnValue({ limit: mockLimit });
+      (Product.find as jest.Mock).mockReturnValue({ skip: mockSkip });
+      (Product.countDocuments as jest.Mock).mockResolvedValue(0);
+
+      const result = await getProductsOutOfStock(1, 10);
+
+      expect(result).toEqual({ products: [], totalDocuments: 0 });
+    });
+
+    it('should handle database errors', async () => {
+      const error = new Error('Database query failed');
+      (Product.countDocuments as jest.Mock).mockRejectedValue(error);
+
+      await expect(getProductsOutOfStock(1, 10)).rejects.toThrow(
+        'Database query failed',
+      );
     });
   });
 });
