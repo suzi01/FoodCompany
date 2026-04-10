@@ -2,7 +2,12 @@ import { apiClient } from '@/utils/apiClient';
 import type { AxiosError } from 'axios';
 
 import { IFormInput } from '@/components/Forms/EditForms/IFormInput';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import {
+  keepPreviousData,
+  useMutation,
+  useQueryClient,
+} from '@tanstack/react-query';
+import { useMemo } from 'react';
 
 export const searchBranches = async (searchParams?: string) => {
   const response = await apiClient.get(`/branches/search${searchParams}`, {
@@ -12,14 +17,19 @@ export const searchBranches = async (searchParams?: string) => {
 };
 
 export const useSearchBranches = (searchParams?: string) => {
-  return {
-    queryFn: () => searchBranches(searchParams),
-    queryKey: ['/branches/search', searchParams],
-    retry: (retryCount: number, error: AxiosError) => {
-      return error?.response?.status !== 500 && retryCount < 3;
-    },
-  };
+  return useMemo(() => {
+    return {
+      queryFn: () => searchBranches(searchParams),
+      queryKey: ['/branches/search', searchParams],
+      placeholderData: keepPreviousData,
+      retry: (retryCount: number, error: AxiosError) => {
+        return error?.response?.status !== 500 && retryCount < 3;
+      },
+    };
+  }, [searchParams]);
 };
+
+
 
 export const getBranchById = async (branchId: string) => {
   const response = await apiClient.get(`/branches/${branchId}`, {
