@@ -1,22 +1,25 @@
 import React from 'react';
-import { formatHeader } from '@/utils/formatHeader';
+import type { ColumnDef } from '../Table/Table';
 
-interface TableHeaderProps {
-  headers: string[];
+interface TableHeaderProps<T extends object> {
+  columns: ColumnDef<T>[];
   actions: boolean;
 }
 
-export const TableHeader = ({ headers, actions }: TableHeaderProps) => {
+export const TableHeader = <T extends object>({
+  columns,
+  actions,
+}: TableHeaderProps<T>) => {
   return (
     <thead>
       <tr className="text-left table-row border-b border-[#DFDFDF] text-[#808080]">
-        {headers.map((headerItem, index) => (
+        {columns.map((column, index) => (
           <th
-            key={`${headerItem}-${index}`}
-            title={headerItem}
+            key={`${String(column.key)}-${index}`}
+            title={column.label}
             className="px-2 py-3 font-light text-[18px] capitalize"
           >
-            {formatHeader(headerItem)}
+            {column.label}
           </th>
         ))}
         {actions && (

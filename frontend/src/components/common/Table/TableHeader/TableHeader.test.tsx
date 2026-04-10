@@ -6,7 +6,8 @@ describe('TableHeader', () => {
   const headers = ['Name', 'Age', 'Status'];
 
   it('renders table headers correctly without actions', () => {
-    render(<TableHeader headers={headers} actions={false} />);
+    const columns = headers.map((header) => ({ key: header, label: header }));
+    render(<TableHeader columns={columns} actions={false} />);
 
     headers.forEach((header) => {
       expect(screen.getByTitle(header)).toBeInTheDocument();
@@ -16,7 +17,8 @@ describe('TableHeader', () => {
   });
 
   it('renders table headers correctly with actions', () => {
-    render(<TableHeader headers={headers} actions={true} />);
+    const columns = headers.map((header) => ({ key: header, label: header }));
+    render(<TableHeader columns={columns} actions={true} />);
 
     headers.forEach((header) => {
       expect(screen.getByTitle(header)).toBeInTheDocument();

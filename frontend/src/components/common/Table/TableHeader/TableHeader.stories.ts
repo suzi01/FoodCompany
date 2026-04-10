@@ -2,9 +2,15 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 
 import { TableHeader } from './TableHeader';
 
-type Story = StoryObj<typeof TableHeader>;
+interface MockPerson {
+  name: string;
+  age: number;
+  status: string;
+}
 
-const meta: Meta<typeof TableHeader> = {
+type Story = StoryObj<typeof TableHeader<MockPerson>>;
+
+const meta: Meta<typeof TableHeader<MockPerson>> = {
   title: 'TableHeader',
   component: TableHeader,
   tags: ['autodocs'],
@@ -13,13 +19,21 @@ export default meta;
 
 export const BasicTableHeader: Story = {
   args: {
-    headers: ['Name', 'Age', 'Status'],
+    columns: [
+      { key: 'name', label: 'Name' },
+      { key: 'age', label: 'Age' },
+    ],
+    actions: false,
   },
 };
 
 export const TableHeaderWithAction: Story = {
   args: {
-    headers: ['Name', 'Age', 'Status'],
+    columns: [
+      { key: 'name', label: 'Name' },
+      { key: 'age', label: 'Age' },
+      { key: 'status', label: 'Status' },
+    ],
     actions: true,
   },
 };

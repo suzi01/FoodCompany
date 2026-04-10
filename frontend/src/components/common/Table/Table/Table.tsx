@@ -2,15 +2,21 @@ import React, { ReactNode } from 'react';
 import { TableHeader } from '../TableHeader';
 import { TableRow } from '../TableRow';
 
+export interface ColumnDef<T extends object> {
+  key: keyof T;
+  label: string;
+  visible?: boolean;
+}
+
 export interface TableProps<T extends object> {
-  headers: (keyof T)[];
+  columns: ColumnDef<T>[];
   rows: T[];
   actions?: boolean;
   otherActions?: (rowIndex: number) => ReactNode;
 }
 
 export const Table = <T extends object>({
-  headers,
+  columns,
   rows,
   actions = false,
   otherActions,
@@ -22,14 +28,14 @@ export const Table = <T extends object>({
     >
       <table className="table w-full border-collapse table-auto">
         <TableHeader
-          headers={headers as string[]}
+          columns={columns}
           actions={actions || Boolean(otherActions)}
         />
         <tbody>
           <TableRow
             rowItems={rows}
             actions={actions}
-            headers={headers as (keyof T)[]}
+            columns={columns}
             otherActions={otherActions}
           />
         </tbody>

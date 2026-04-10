@@ -1,25 +1,27 @@
 import { BasicMenu as ActionMenu } from '../../BasicMenu';
 import { StatusBadge } from '../../StatusBadge';
 import { StatusType } from '../../StatusBadge/StatusBadge';
+import type { ColumnDef } from '../Table/Table';
 
 export interface TableRowProps<T extends object> {
   rowItems: T[];
   actions?: boolean;
-  headers: (keyof T)[];
+  columns: ColumnDef<T>[];
   otherActions?: (rowIndex: number) => React.ReactNode;
 }
 
 export const TableRow = <T extends object>({
   rowItems,
   actions = false,
-  headers,
+  columns,
   otherActions,
 }: TableRowProps<T>) => {
   return (
     <>
       {rowItems.map((rowItem, rowIndex) => (
         <tr className="table-row text-left" key={`row-${rowIndex}`}>
-          {headers.map((value, cellIndex) => {
+          {columns.map((column, cellIndex) => {
+            const value = column.key;
             if (String(value).toLowerCase() === 'status') {
               return (
                 <td

@@ -30,7 +30,7 @@ export default meta;
 
 const args: TableRowProps<RowType> = {
   rowItems: data,
-  headers: headers,
+  columns: headers.map((header) => ({ key: header, label: header })),
 };
 
 export const BasicRow: Story = {
