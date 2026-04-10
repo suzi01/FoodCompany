@@ -52,16 +52,16 @@ export const BranchSearch = () => {
           />
           <Table
             actions={true}
-            headers={[
-              'branchName',
-              'mainContactName',
-              'mainContactPhoneNumber',
-              'mainContactEmail',
-              'branchEmail',
-              'phoneNumber',
-              'address',
-              'yearsActive',
-              'suppliers',
+            columns={[
+              { key: 'branchName', label: 'Branch Name' },
+              { key: 'mainContactName', label: 'Contact Name' },
+              { key: 'mainContactPhoneNumber', label: 'Contact Phone' },
+              { key: 'mainContactEmail', label: 'Contact Email' },
+              { key: 'branchEmail', label: 'Branch Email' },
+              { key: 'phoneNumber', label: 'Branch Phone' },
+              { key: 'address', label: 'Address' },
+              { key: 'yearsActive', label: 'Years Active' },
+              { key: 'suppliers', label: 'Suppliers' },
             ]}
             rows={branches?.data ?? []}
           />
