@@ -1,5 +1,5 @@
 import { render, screen, userEvent } from '@/testUtils';
-import { Pagination } from './pagination';
+import { Pagination } from './Pagination';
 import { vi } from 'vitest';
 
 describe('Pagination Component', () => {
