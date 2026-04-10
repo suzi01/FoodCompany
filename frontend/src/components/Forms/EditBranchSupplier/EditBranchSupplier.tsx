@@ -54,7 +54,10 @@ export const EditBranchSupplier = ({
               <Image src={Bin} alt="Delete" width={16} height={16} />
             </button>
           )}
-          headers={['Product name', 'Price/Unit']}
+          columns={[
+            { key: 'Product name', label: 'Product name' },
+            { key: 'Price/Unit', label: 'Price/Unit' },
+          ]}
           rows={[
             { 'Product name': 'Apples', 'Price/Unit': '$2.00' },
             { 'Product name': 'Bananas', 'Price/Unit': '$1.50' },

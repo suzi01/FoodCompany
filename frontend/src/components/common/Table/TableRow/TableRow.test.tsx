@@ -10,7 +10,11 @@ describe('TableRow', () => {
         <tbody>
           <TableRow
             rowItems={rowItems}
-            headers={['name', 'quantity', 'tags']}
+            columns={[
+              { key: 'name', label: 'Name' },
+              { key: 'quantity', label: 'Quantity' },
+              { key: 'tags', label: 'Tags' },
+            ]}
           />
         </tbody>
       </table>,
@@ -28,7 +32,13 @@ describe('TableRow', () => {
     render(
       <table>
         <tbody>
-          <TableRow rowItems={rowItems} headers={['status', 'name']} />
+          <TableRow
+            rowItems={rowItems}
+            columns={[
+              { key: 'status', label: 'Status' },
+              { key: 'name', label: 'Name' },
+            ]}
+          />
         </tbody>
       </table>,
     );
@@ -45,7 +55,10 @@ describe('TableRow', () => {
             <TableRow
               rowItems={rowItems}
               actions
-              headers={['status', 'name']}
+              columns={[
+                { key: 'status', label: 'Status' },
+                { key: 'name', label: 'Name' },
+              ]}
             />
           </tbody>
         </table>
@@ -60,7 +73,13 @@ describe('TableRow', () => {
     render(
       <table>
         <tbody>
-          <TableRow rowItems={rowItems} headers={['status', 'name']} />
+          <TableRow
+            rowItems={rowItems}
+            columns={[
+              { key: 'status', label: 'Status' },
+              { key: 'name', label: 'Name' },
+            ]}
+          />
         </tbody>
       </table>,
     );
@@ -76,7 +95,13 @@ describe('TableRow', () => {
     render(
       <table>
         <tbody>
-          <TableRow rowItems={rowItems} headers={['name', 'status']} />
+          <TableRow
+            rowItems={rowItems}
+            columns={[
+              { key: 'name', label: 'Name' },
+              { key: 'status', label: 'Status' },
+            ]}
+          />
         </tbody>
       </table>,
     );
@@ -90,7 +115,13 @@ describe('TableRow', () => {
     render(
       <table>
         <tbody>
-          <TableRow rowItems={rowItems} headers={['value', 'another']} />
+          <TableRow
+            rowItems={rowItems}
+            columns={[
+              { key: 'value', label: 'Value' },
+              { key: 'another', label: 'Another' },
+            ]}
+          />
         </tbody>
       </table>,
     );

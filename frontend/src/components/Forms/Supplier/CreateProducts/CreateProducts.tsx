@@ -123,7 +123,11 @@ export const CreateProducts = ({ data, changedData }: CreateProductsProps) => {
         ) : (
           <Table
             rows={data}
-            headers={['name', 'category', 'price']}
+            columns={[
+              { key: 'name', label: 'Product Name' },
+              { key: 'category', label: 'Category' },
+              { key: 'price', label: 'Price' },
+            ]}
             otherActions={(rowIndex) => (
               <button
                 onClick={() => {

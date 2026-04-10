@@ -12,7 +12,8 @@ describe('Table', () => {
   ];
 
   it('renders table with headers and rows correctly without actions', () => {
-    render(<Table headers={headers} rows={rows} actions={false} />);
+    const columns = headers.map((header) => ({ key: header, label: header }));
+    render(<Table columns={columns} rows={rows} actions={false} />);
 
     headers.forEach((header) => {
       expect(
@@ -30,9 +31,10 @@ describe('Table', () => {
   });
 
   it('renders table with headers and rows correctly with actions', () => {
+    const columns = headers.map((header) => ({ key: header, label: header }));
     render(
       <MemoryRouter>
-        <Table headers={headers} rows={rows} actions={true} />
+        <Table columns={columns} rows={rows} actions={true} />
       </MemoryRouter>,
     );
 

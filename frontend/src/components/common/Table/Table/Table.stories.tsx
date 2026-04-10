@@ -26,7 +26,11 @@ const meta: Meta<typeof Table<RowType>> = {
 export default meta;
 
 const args: Partial<TableProps<RowType>> = {
-  headers: ['name', 'age', 'city'],
+  columns: [
+    { key: 'name', label: 'Name' },
+    { key: 'age', label: 'Age' },
+    { key: 'city', label: 'City' },
+  ],
   rows: data,
   actions: false,
 };
