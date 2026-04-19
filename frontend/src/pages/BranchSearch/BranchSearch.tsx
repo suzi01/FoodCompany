@@ -67,15 +67,19 @@ export const BranchSearch = () => {
           <TableFilter
             hasStatusFilter={false}
             filterItems={['Branch Email', 'Contact Name', 'Supplier']}
+            sortItems={['Branch Name', 'Branch Email', 'Supplier Name']}
+            orderItems={[
+              { label: 'A-Z', value: 'asc' },
+              { label: 'Z-A', value: 'desc' },
+              { label: 'Newest', value: 'newest' },
+              { label: 'Oldest', value: 'oldest' },
+            ]}
           />
           <div className="flex flex-col gap-4 justify-center items-center w-full bg-white p-5 border border-gray-300 rounded-md shadow-sm">
             <Table
               actions={true}
               columns={[
                 { key: 'branchName', label: 'Branch Name' },
-                { key: 'mainContactName', label: 'Contact Name' },
-                { key: 'mainContactPhoneNumber', label: 'Contact Phone' },
-                { key: 'mainContactEmail', label: 'Contact Email' },
                 { key: 'branchEmail', label: 'Branch Email' },
                 { key: 'phoneNumber', label: 'Branch Phone' },
                 { key: 'address', label: 'Address' },
