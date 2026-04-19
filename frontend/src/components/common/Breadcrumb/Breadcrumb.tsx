@@ -14,7 +14,7 @@ export const Breadcrumb = () => {
         <Link
           key={currentLink}
           to={currentLink}
-          className={`capitalize text-xl ml-4 ${isLast ? 'text-blue-700 font-medium' : ''}`}
+          className={`capitalize text-md ml-4 ${isLast ? 'text-blue-700 font-medium' : ''}`}
         >
           {path}
           {!isLast && ' > '}
@@ -23,7 +23,7 @@ export const Breadcrumb = () => {
     });
 
   const breadcrumbs = [
-    <Link key="home" to="/" className="flex flex-row">
+    <Link key="home" to="/" className="flex flex-row ">
       <p className="mr-4">{paths.length > 0 ? 'Home' : ''}</p>
       {paths.length > 0 && ' > '}
     </Link>,
@@ -31,7 +31,7 @@ export const Breadcrumb = () => {
   ];
 
   return (
-    <div className="capitalize text-xl pt-2 pb-2 mb-4 flex flex-row w-full">
+    <div className="capitalize text-md pt-2 pb-2 mb-4 flex flex-row w-full">
       {breadcrumbs}
     </div>
   );
