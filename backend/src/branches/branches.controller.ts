@@ -64,7 +64,7 @@ export const searchBranches = catchAsync(async (req, res, next) => {
     typeof branchEmail === 'string' ? branchEmail : '',
     typeof contactName === 'string' ? contactName : '',
     typeof supplierName === 'string' ? supplierName : '',
-    typeof sort === 'string' ? sort : 'BranchName',
+    typeof sort === 'string' ? sort : 'branchName',
     typeof order === 'string' ? order : 'asc',
     page,
     DEFAULT_LIMIT,

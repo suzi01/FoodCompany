@@ -144,6 +144,7 @@ describe('Product Controller', () => {
       expect(response.body.data).toEqual([mockProductsDto[0]]);
       expect(productService.searchProducts).toHaveBeenCalledWith(
         'Test',
+        "",
         '123456789',
         'SupplierName',
         'Fruit',

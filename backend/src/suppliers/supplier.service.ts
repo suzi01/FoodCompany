@@ -51,13 +51,14 @@ export const searchSuppliers = async (
     const productIds = products.map((p) => p._id);
     query.products = { $in: productIds };
   }
-  if (status !== '') query.status = { $regex: status, $options: 'i' };
+  if (status !== '') query.status = { $regex: status };
 
   const totalDocuments = await Supplier.countDocuments(query);
   const suppliers = await Supplier.find(query)
+    .collation({ locale: 'en', strength: 2 })
+    .sort({ [sort]: order === 'asc' ? 1 : -1 })
     .skip((page - 1) * 10)
     .limit(10)
-    .sort({ [sort]: order === 'asc' ? 1 : -1 })
     .populate('products', 'name')
     .populate('associatedBranches', 'branchName createdAt');
 

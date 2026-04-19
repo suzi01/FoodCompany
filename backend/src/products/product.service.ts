@@ -50,10 +50,11 @@ export const deleteProduct = async (id: string) => {
 
 export const searchProducts = async (
   name: string,
+  price: string,
   barcode: string,
   supplier: string,
   category: string,
-  sortBy: string,
+  sort: string,
   order: string,
   page: number,
 ) => {
@@ -61,15 +62,25 @@ export const searchProducts = async (
 
   query.name = { $regex: name, $options: 'i' };
   if (name !== '') query.name = { $regex: name, $options: 'i' };
+  if (price !== '') query.price = { $lte: Number(price) };
   if (category !== '') query.category = { $regex: category, $options: 'i' };
   if (barcode !== '') query.barcode = { $regex: barcode, $options: 'i' };
-  if (supplier !== '') query.supplier = { $regex: supplier, $options: 'i' };
+
+  if (supplier !== '') {
+    const suppliers = await Supplier.find({
+      companyName: { $regex: supplier, $options: 'i' },
+    }).select('_id');
+    const supplierIds = suppliers.map((s) => s._id);
+    query.supplier = { $in: supplierIds };
+  }
 
   const totalDocuments = await Product.countDocuments(query);
   const products = await Product.find(query)
+    .collation({ locale: 'en', strength: 2 })
+    .sort({ [sort]: order === 'asc' ? 1 : -1 })
     .skip((page - 1) * 10)
     .limit(10)
-    .sort({ [sortBy]: order === 'asc' ? 1 : -1 });
+    .populate('supplier', 'companyName -_id');
   return { products, totalDocuments };
 };
 

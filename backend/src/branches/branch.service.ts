@@ -46,10 +46,11 @@ export const searchBranches = async (
     query.mainContactName = { $regex: contactName, $options: 'i' };
 
   const foundBranches = await Branch.find(query)
+    .collation({ locale: 'en', strength: 2 })
+    .sort({ [sort]: order === 'asc' ? 1 : -1 })
     .skip((page - 1) * limit)
     .limit(limit)
-    .populate('suppliers', 'companyName -_id')
-    .sort({ [sort]: order === 'asc' ? 1 : -1 });
+    .populate('suppliers', 'companyName -_id');
 
   const totalDocuments = await Branch.countDocuments(query);
 
