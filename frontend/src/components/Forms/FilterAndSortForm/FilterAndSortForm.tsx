@@ -7,16 +7,15 @@ import React from 'react';
 
 interface FilterAndSortFormProps {
   filterItems: string[];
+  sortItems?: string[];
+  orderItems?: { label: string; value: string }[];
 }
 
-const sortMenuItems = [
-  { label: 'A-Z', value: 'asc' },
-  { label: 'Z-A', value: 'desc' },
-  { label: 'Newest', value: 'newest' },
-  { label: 'Oldest', value: 'oldest' },
-];
-
-export const FilterAndSortForm = ({ filterItems }: FilterAndSortFormProps) => {
+export const FilterAndSortForm = ({
+  filterItems,
+  sortItems,
+  orderItems,
+}: FilterAndSortFormProps) => {
   const { searchParams, updateMultipleFilters } = useUrlFilters();
 
   const currentParams: Record<string, string> = Object.fromEntries(
@@ -64,9 +63,11 @@ export const FilterAndSortForm = ({ filterItems }: FilterAndSortFormProps) => {
         className="w-full border border-gray-300 rounded-md p-2 mb-4"
         defaultValue={currentParams[toCamelCase('sort')] || ''}
       >
-        <option value="branchName">Branch Name</option>
-        <option value="branchEmail">Email</option>
-        <option value="supplierName">Supplier Name</option>
+        {sortItems?.map((item) => (
+          <option key={item} value={toCamelCase(item)}>
+            {item}
+          </option>
+        ))}
       </select>
 
       <label
@@ -81,7 +82,7 @@ export const FilterAndSortForm = ({ filterItems }: FilterAndSortFormProps) => {
         className="w-full border border-gray-300 rounded-md p-2 mb-4"
         defaultValue={currentParams[toCamelCase('order')] || ''}
       >
-        {sortMenuItems.map((item) => (
+        {orderItems?.map((item) => (
           <option key={item.label} value={item.value}>
             {item.label}
           </option>
