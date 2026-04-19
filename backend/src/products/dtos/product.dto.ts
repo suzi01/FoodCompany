@@ -1,5 +1,9 @@
 import z from 'zod';
-import { id } from 'zod/v4/locales';
+
+const supplierSchema = z.union([
+  z.string(),
+  z.object({ companyName: z.string() }),
+]);
 
 export const productSchema = z.object({
   id: z.string(),
@@ -9,7 +13,7 @@ export const productSchema = z.object({
     .max(100),
   category: z.string().min(2).max(50),
   idOrBarcode: z.string().min(2).max(50),
-  supplier: z.string().min(2).max(50),
+  supplier: z.array(supplierSchema),
   price: z.number().min(0, 'Price must be a positive number'),
   description: z.string().max(500),
   createdAt: z.string(),
