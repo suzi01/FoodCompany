@@ -116,13 +116,14 @@ export const searchProducts = catchAsync(async (req, res, next) => {
   pageAndLimitValidation(page, DEFAULT_LIMIT);
 
   logger.info(`Searching products with query:`, req.query);
-  const { name, barcode, supplier, sortBy, category, order } = req.query;
+  const { name, price, barcode, supplier, sort, category, order } = req.query;
   const { products, totalDocuments } = await productService.searchProducts(
     typeof name === 'string' ? name : '',
+    typeof price === 'string' ? price : '',
     typeof barcode === 'string' ? barcode : '',
     typeof supplier === 'string' ? supplier : '',
     typeof category === 'string' ? category : '',
-    typeof sortBy === 'string' ? sortBy : 'name',
+    typeof sort === 'string' ? sort : 'name',
     typeof order === 'string' ? order : 'asc',
     page,
   );

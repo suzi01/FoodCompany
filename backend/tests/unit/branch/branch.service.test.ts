@@ -198,18 +198,22 @@ describe('Branch Service', () => {
       totalDocuments: 0,
     };
 
+    let mockCollation: jest.Mock;
     let mockSort: jest.Mock;
     let mockPopulate: jest.Mock;
     let mockLimit: jest.Mock;
     let mockSkip: jest.Mock;
 
     beforeEach(() => {
-      mockSort = jest.fn().mockResolvedValue(mockSearchResults.branches);
-      mockPopulate = jest.fn().mockReturnValue({ sort: mockSort });
+      mockPopulate = jest.fn().mockResolvedValue(mockSearchResults.branches);
       mockLimit = jest.fn().mockReturnValue({ populate: mockPopulate });
       mockSkip = jest.fn().mockReturnValue({ limit: mockLimit });
+      mockSort = jest.fn().mockReturnValue({ skip: mockSkip });
+      mockCollation = jest.fn().mockReturnValue({ sort: mockSort });
 
-      (Branch.find as jest.Mock).mockReturnValue({ skip: mockSkip });
+      (Branch.find as jest.Mock).mockReturnValue({
+        collation: mockCollation,
+      });
     });
 
     it('should search branches with all parameters', async () => {
@@ -234,7 +238,6 @@ describe('Branch Service', () => {
         'companyName -_id',
       );
       expect(mockSort).toHaveBeenCalledWith({ branchName: 1 });
-      console.log(result  );
       expect(result).toEqual(mockSearchResults);
     });
 
@@ -259,7 +262,7 @@ describe('Branch Service', () => {
 
     it('should handle search errors', async () => {
       const error = new Error('Search failed');
-      mockSort.mockRejectedValue(error);
+      mockPopulate.mockRejectedValue(error);
 
       await expect(
         searchBranches('Test', '', '', '', 'branchName', 'asc', 1, 10),

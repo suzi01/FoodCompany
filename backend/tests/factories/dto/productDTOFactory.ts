@@ -9,7 +9,7 @@ export function buildProductDTO(
     name: faker.food.fruit(),
     idOrBarcode: faker.commerce.isbn(),
     category: faker.food.ethnicCategory(),
-    supplier: faker.string.uuid(),
+    supplier: [faker.company.name()],
     price: parseFloat(faker.commerce.price({ min: 0.5, max: 100, dec: 2 })),
     description: faker.food.description(),
     createdAt: faker.date.past().toISOString(),
