@@ -6,11 +6,12 @@ import * as useUrlFiltersModule from '@/hooks/useUrlFilters/useUrlFilters';
 
 describe('FilterAndSortForm', () => {
   const filterItems = ['Name', 'Location', 'Status'];
+  const mockOnClose = vi.fn();
 
   test('renders filter inputs based on filterItems prop', () => {
     render(
       <MemoryRouter>
-        <FilterAndSortForm filterItems={filterItems} />
+        <FilterAndSortForm filterItems={filterItems} onSubmit={mockOnClose} />
       </MemoryRouter>,
     );
 
@@ -23,7 +24,7 @@ describe('FilterAndSortForm', () => {
   test('renders sort by select with correct options', () => {
     render(
       <MemoryRouter>
-        <FilterAndSortForm filterItems={filterItems} />
+        <FilterAndSortForm filterItems={filterItems} onSubmit={mockOnClose} />
       </MemoryRouter>,
     );
 
@@ -47,7 +48,7 @@ describe('FilterAndSortForm', () => {
 
     render(
       <MemoryRouter>
-        <FilterAndSortForm filterItems={filterItems} />
+        <FilterAndSortForm filterItems={filterItems} onSubmit={mockOnClose} />
       </MemoryRouter>,
     );
 
@@ -73,5 +74,6 @@ describe('FilterAndSortForm', () => {
       sort: 'branchEmail',
       order: 'asc',
     });
+    expect(mockOnClose).toHaveBeenCalledTimes(1);
   });
 });

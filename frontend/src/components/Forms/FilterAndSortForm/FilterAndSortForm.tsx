@@ -7,6 +7,7 @@ import React from 'react';
 
 interface FilterAndSortFormProps {
   filterItems: string[];
+  onSubmit?: () => void;
 }
 
 const sortMenuItems = [
@@ -16,7 +17,10 @@ const sortMenuItems = [
   { label: 'Oldest', value: 'oldest' },
 ];
 
-export const FilterAndSortForm = ({ filterItems }: FilterAndSortFormProps) => {
+export const FilterAndSortForm = ({
+  filterItems,
+  onSubmit,
+}: FilterAndSortFormProps) => {
   const { searchParams, updateMultipleFilters } = useUrlFilters();
 
   const currentParams: Record<string, string> = Object.fromEntries(
@@ -31,6 +35,7 @@ export const FilterAndSortForm = ({ filterItems }: FilterAndSortFormProps) => {
       filters[toCamelCase(key)] = value.toString();
     });
     updateMultipleFilters(filters);
+    onSubmit?.();
   };
 
   return (
