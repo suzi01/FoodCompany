@@ -9,7 +9,6 @@ import {
   updateSupplier,
 } from '../../../src/suppliers/supplier.service';
 import { buildSupplier } from '../../factories/domin/supplierFactory';
-import { mock } from 'node:test';
 
 jest.mock('../../../src/suppliers/supplier.model');
 jest.mock('../../../src/products/product.model');
@@ -260,11 +259,12 @@ describe('Supplier Service', () => {
       totalDocuments: 0,
     };
 
+    let mockCollation: jest.Mock;
     let mockSort: jest.Mock;
+    let mockSkip: jest.Mock;
+    let mockLimit: jest.Mock;
     let mockPopulate: jest.Mock;
     let mockPopulateSupplier: jest.Mock;
-    let mockLimit: jest.Mock;
-    let mockSkip: jest.Mock;
 
     beforeEach(() => {
       mockPopulateSupplier = jest
@@ -273,10 +273,13 @@ describe('Supplier Service', () => {
       mockPopulate = jest
         .fn()
         .mockReturnValue({ populate: mockPopulateSupplier });
-      mockSort = jest.fn().mockReturnValue({ populate: mockPopulate });
-      mockLimit = jest.fn().mockReturnValue({ sort: mockSort });
+      mockLimit = jest.fn().mockReturnValue({ populate: mockPopulate });
       mockSkip = jest.fn().mockReturnValue({ limit: mockLimit });
-      (Supplier.find as jest.Mock).mockReturnValue({ skip: mockSkip });
+      mockSort = jest.fn().mockReturnValue({ skip: mockSkip });
+      mockCollation = jest.fn().mockReturnValue({ sort: mockSort });
+      (Supplier.find as jest.Mock).mockReturnValue({
+        collation: mockCollation,
+      });
     });
 
     it('should search suppliers with company name only', async () => {
@@ -333,7 +336,7 @@ describe('Supplier Service', () => {
 
       expect(Supplier.find).toHaveBeenCalledWith({
         companyName: { $regex: 'Acme', $options: 'i' },
-        status: { $regex: 'Active', $options: 'i' },
+        status: { $regex: 'Active' },
       });
       expect(mockSort).toHaveBeenCalledWith({ companyName: -1 });
     });
@@ -356,7 +359,7 @@ describe('Supplier Service', () => {
       expect(Supplier.find).toHaveBeenCalledWith({
         companyName: { $regex: 'Acme', $options: 'i' },
         products: { $in: ['prod1'] },
-        status: { $regex: 'Active', $options: 'i' },
+        status: { $regex: 'Active' },
       });
       expect(mockSort).toHaveBeenCalledWith({ status: 1 });
     });
@@ -366,7 +369,7 @@ describe('Supplier Service', () => {
 
       expect(Supplier.find).toHaveBeenCalledWith({
         companyName: { $regex: 'ACME', $options: 'i' },
-        status: { $regex: 'ACTIVE', $options: 'i' },
+        status: { $regex: 'ACTIVE' },
       });
     });
 
@@ -390,14 +393,7 @@ describe('Supplier Service', () => {
         select: jest.fn().mockResolvedValue([]),
       });
 
-      const result = await searchSuppliers(
-        '',
-        'nonexistent',
-        '',
-        'companyName',
-        'asc',
-        1,
-      );
+      await searchSuppliers('', 'nonexistent', '', 'companyName', 'asc', 1);
 
       expect(Supplier.find).toHaveBeenCalledWith({
         companyName: { $regex: '', $options: 'i' },

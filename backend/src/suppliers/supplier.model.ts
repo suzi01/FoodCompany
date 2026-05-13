@@ -13,8 +13,8 @@ export interface ISupplier extends Document {
   email: string;
   phoneNumber?: string;
   status: SupplierStatusType;
-  products?: Types.ObjectId[];
-  associatedBranches?: Types.ObjectId[];
+  productsProvided?: Types.ObjectId[];
+  branches?: Types.ObjectId[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -59,8 +59,8 @@ const supplierSchema = new Schema<ISupplier>(
   },
   {
     timestamps: true,
-    toJSON: { virtuals: true },
-    toObject: { virtuals: true },
+    toJSON: { virtuals: false },
+    toObject: { virtuals: false },
   },
 );
 

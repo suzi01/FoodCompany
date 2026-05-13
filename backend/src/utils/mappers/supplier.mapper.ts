@@ -18,17 +18,16 @@ export const toSupplierResponseDTO = (supplier: ISupplier): SupplierDto => ({
   phoneNumber: supplier.phoneNumber ?? '',
   status: supplier.status as 'Active' | 'Inactive' | 'Pending',
   products:
-    supplier.products?.map((product: Types.ObjectId | SupplierProduct) =>
+    supplier.productsProvided?.map((product: Types.ObjectId | SupplierProduct) =>
       typeof product === 'object' && 'name' in product
         ? product.name
         : product.toString(),
     ) ?? [],
   branches:
-    supplier.associatedBranches?.map(
-      (branch: Types.ObjectId | SupplierBranch) =>
-        typeof branch === 'object' && 'branchName' in branch
-          ? branch.branchName
-          : branch.toString(),
+    supplier.branches?.map((branch: Types.ObjectId | SupplierBranch) =>
+      typeof branch === 'object' && 'branchName' in branch
+        ? branch.branchName
+        : branch.toString(),
     ) ?? [],
   createdAt: supplier.createdAt.toISOString(),
   updatedAt: supplier.updatedAt.toISOString(),

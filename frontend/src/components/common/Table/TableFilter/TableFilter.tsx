@@ -13,6 +13,8 @@ interface TablePropsWithFilter {
   filteredStatus: string;
   setFilterStatus: (value: string) => void;
   filterItems: string[];
+  sortItems?: string[];
+  orderItems?: { label: string; value: string }[];
 }
 
 interface TablePropsWithNoFilter {
@@ -20,6 +22,8 @@ interface TablePropsWithNoFilter {
   filteredStatus?: never;
   setFilterStatus?: never;
   filterItems: string[];
+  sortItems?: string[];
+  orderItems?: { label: string; value: string }[];
 }
 
 type TableFilterProps = TablePropsWithFilter | TablePropsWithNoFilter;
@@ -56,6 +60,8 @@ export const TableFilter = ({
   filteredStatus,
   setFilterStatus,
   filterItems,
+  sortItems,
+  orderItems,
 }: TableFilterProps) => {
   const [opened, setOpened] = useState(false);
   return (
@@ -68,6 +74,11 @@ export const TableFilter = ({
               <StatusButton
                 status="All"
                 isActive={filteredStatus === 'All'}
+                onClick={setFilterStatus}
+              />
+              <StatusButton
+                status="Active"
+                isActive={filteredStatus === 'Active'}
                 onClick={setFilterStatus}
               />
               <StatusButton

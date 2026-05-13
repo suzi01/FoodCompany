@@ -69,9 +69,11 @@ export const FilterAndSortForm = ({
         className="w-full border border-gray-300 rounded-md p-2 mb-4"
         defaultValue={currentParams[toCamelCase('sort')] || ''}
       >
-        <option value="branchName">Branch Name</option>
-        <option value="branchEmail">Email</option>
-        <option value="supplierName">Supplier Name</option>
+        {sortItems?.map((item) => (
+          <option key={item} value={toCamelCase(item)}>
+            {item}
+          </option>
+        ))}
       </select>
 
       <label
@@ -86,7 +88,7 @@ export const FilterAndSortForm = ({
         className="w-full border border-gray-300 rounded-md p-2 mb-4"
         defaultValue={currentParams[toCamelCase('order')] || ''}
       >
-        {sortMenuItems.map((item) => (
+        {orderItems?.map((item) => (
           <option key={item.label} value={item.value}>
             {item.label}
           </option>

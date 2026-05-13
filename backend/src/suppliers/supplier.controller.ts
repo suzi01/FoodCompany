@@ -58,16 +58,15 @@ export const searchSuppliers = catchAsync(async (req, res, next) => {
   const page = parseInt(req.query.page as string) || DEFAULT_PAGE;
 
   pageAndLimitValidation(page, DEFAULT_LIMIT);
-
   const { companyName, product, status, sort, order } = req.query;
   logger.info(
-    `Searching suppliers with companyName: ${companyName}, product: ${product}, status: ${status}, sort: ${sort}, order: ${order}`,
+    `Searching suppliers with companyName: ${companyName}, product: ${product}, status: ${status}, sort: ${sort ? sort : 'companyName'}, order: ${order ? order : 'asc'}, page: ${page}`,
   );
   const { suppliers, totalDocuments } = await supplierService.searchSuppliers(
     typeof companyName === 'string' ? companyName : '',
     typeof product === 'string' ? product : '',
     typeof status === 'string' ? status : '',
-    typeof sort === 'string' ? sort : 'CompanyName',
+    typeof sort === 'string' ? sort : 'companyName',
     typeof order === 'string' ? order : 'asc',
     page,
   );
