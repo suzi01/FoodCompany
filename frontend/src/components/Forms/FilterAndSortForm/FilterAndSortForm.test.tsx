@@ -8,7 +8,7 @@ describe('FilterAndSortForm', () => {
   const filterItems = ['Name', 'Location', 'Status'];
   const mockOnClose = vi.fn();
 
-  test('renders filter inputs based on filterItems prop', () => {
+  it('renders filter inputs based on filterItems prop', () => {
     render(
       <MemoryRouter>
         <FilterAndSortForm filterItems={filterItems} onSubmit={mockOnClose} />
@@ -21,23 +21,27 @@ describe('FilterAndSortForm', () => {
     });
   });
 
-  test('renders sort by select with correct options', () => {
+  it('renders sort by select with correct options', () => {
+    const options = ['A-Z', 'Z-A', 'Newest', 'Oldest'];
     render(
       <MemoryRouter>
-        <FilterAndSortForm filterItems={filterItems} onSubmit={mockOnClose} />
+        <FilterAndSortForm
+          filterItems={filterItems}
+          onSubmit={mockOnClose}
+          sortItems={options}
+        />
       </MemoryRouter>,
     );
 
     const sortBySelect = screen.getByLabelText('Sort By');
     expect(sortBySelect).toBeInTheDocument();
 
-    const options = ['A-Z', 'Z-A', 'Newest', 'Oldest'];
     options.forEach((option) => {
       expect(screen.getByRole('option', { name: option })).toBeInTheDocument();
     });
   });
 
-  test('submits form and calls updateMultipleFilters with correct values', async () => {
+  it('submits form and calls updateMultipleFilters with correct values', async () => {
     const mockUpdateMultipleFilters = vi.fn();
 
     vi.spyOn(useUrlFiltersModule, 'useUrlFilters').mockReturnValue({
@@ -48,7 +52,15 @@ describe('FilterAndSortForm', () => {
 
     render(
       <MemoryRouter>
-        <FilterAndSortForm filterItems={filterItems} onSubmit={mockOnClose} />
+        <FilterAndSortForm
+          filterItems={filterItems}
+          onSubmit={mockOnClose}
+          sortItems={['Email', 'Status']}
+          orderItems={[
+            { label: 'A-Z', value: 'asc' },
+            { label: 'Z-A', value: 'desc' },
+          ]}
+        />
       </MemoryRouter>,
     );
 
@@ -71,7 +83,7 @@ describe('FilterAndSortForm', () => {
       name: 'Test Name',
       location: 'Test Location',
       status: 'Active',
-      sort: 'branchEmail',
+      sort: 'email',
       order: 'asc',
     });
     expect(mockOnClose).toHaveBeenCalledTimes(1);

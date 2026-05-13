@@ -123,6 +123,8 @@ export const TableFilter = ({
           children={
             <FilterAndSortForm
               filterItems={filterItems}
+              sortItems={sortItems}
+              orderItems={orderItems}
               onSubmit={() => setOpened(false)}
             />
           }

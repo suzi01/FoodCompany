@@ -8,18 +8,16 @@ import React from 'react';
 interface FilterAndSortFormProps {
   filterItems: string[];
   onSubmit?: () => void;
+  sortItems?: string[];
+  orderItems?: { label: string; value: string }[];
 }
 
-const sortMenuItems = [
-  { label: 'A-Z', value: 'asc' },
-  { label: 'Z-A', value: 'desc' },
-  { label: 'Newest', value: 'newest' },
-  { label: 'Oldest', value: 'oldest' },
-];
 
 export const FilterAndSortForm = ({
   filterItems,
   onSubmit,
+  sortItems,
+  orderItems,
 }: FilterAndSortFormProps) => {
   const { searchParams, updateMultipleFilters } = useUrlFilters();
 
