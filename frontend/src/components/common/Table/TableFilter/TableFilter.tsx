@@ -64,7 +64,6 @@ export const TableFilter = ({
   orderItems,
 }: TableFilterProps) => {
   const [opened, setOpened] = useState(false);
-
   return (
     <div className="flex mb-4 pb-4 border-b border-gray-[#ccc]">
       {hasStatusFilter &&
@@ -121,7 +120,14 @@ export const TableFilter = ({
         <Drawer
           opened={opened}
           setOpened={setOpened}
-          children={<FilterAndSortForm filterItems={filterItems} sortItems={sortItems} orderItems={orderItems} />}
+          children={
+            <FilterAndSortForm
+              filterItems={filterItems}
+              sortItems={sortItems}
+              orderItems={orderItems}
+              onSubmit={() => setOpened(false)}
+            />
+          }
         />
 
         <BasicMenu

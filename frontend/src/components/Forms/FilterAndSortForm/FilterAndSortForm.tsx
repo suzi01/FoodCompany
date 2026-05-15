@@ -7,12 +7,15 @@ import React from 'react';
 
 interface FilterAndSortFormProps {
   filterItems: string[];
+  onSubmit?: () => void;
   sortItems?: string[];
   orderItems?: { label: string; value: string }[];
 }
 
+
 export const FilterAndSortForm = ({
   filterItems,
+  onSubmit,
   sortItems,
   orderItems,
 }: FilterAndSortFormProps) => {
@@ -30,6 +33,7 @@ export const FilterAndSortForm = ({
       filters[toCamelCase(key)] = value.toString();
     });
     updateMultipleFilters(filters);
+    onSubmit?.();
   };
 
   return (

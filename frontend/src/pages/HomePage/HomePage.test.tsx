@@ -13,14 +13,18 @@ describe('HomePage.tsx', () => {
         <HomePage />
       </MemoryRouter>,
     );
-    const headerText = screen.getByText('Awards & Accomplishments');
-    const branchLink = screen.getByText('Find a branch');
-    const produceLink = screen.getByText('View all products');
-    const supplerLink = screen.getByText('Discover our suppliers');
+    const heading = screen.getByRole('heading', {
+      name: /Welcome back Rivera!/i,
+    });
+    const revenueText = screen.getByText(/Total Revenue/i);
+    const customersText = screen.getByText(/Total Customers/i);
+    const transactionsText = screen.getByText(/Total Transactions/i);
+    const productsText = screen.getByText(/Total Products/i);
 
-    expect(headerText).toBeInTheDocument();
-    expect(produceLink).toBeInTheDocument();
-    expect(branchLink).toBeInTheDocument();
-    expect(supplerLink).toBeInTheDocument();
+    expect(revenueText).toBeInTheDocument();
+    expect(customersText).toBeInTheDocument();
+    expect(transactionsText).toBeInTheDocument();
+    expect(productsText).toBeInTheDocument();
+    expect(heading).toBeInTheDocument();
   });
 });
