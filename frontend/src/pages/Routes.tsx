@@ -4,6 +4,7 @@ import { HomePage } from './HomePage';
 import { BranchSearch } from './BranchSearch';
 import { ProductSearch } from './ProductSearch';
 import { SupplierSearch } from './SuppliersSearch';
+import { TransactionsPage } from './TransactionsPage';
 import { ROUTES } from '@/contants/routes';
 import { EditBranchDetails } from './BranchDetails';
 
@@ -15,6 +16,10 @@ const router = createBrowserRouter([
       {
         path: ROUTES.HOME,
         element: <HomePage />,
+      },
+      {
+        path: ROUTES.TRANSACTIONS,
+        element: <TransactionsPage />,
       },
       {
         path: ROUTES.BRANCHES,

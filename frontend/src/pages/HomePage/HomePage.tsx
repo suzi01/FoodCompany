@@ -7,46 +7,59 @@ import { LineChart } from '@mantine/charts';
 import { RingProgress, Text } from '@mantine/core';
 import { Link } from 'react-router-dom';
 
-const transactions = [
+const rawTransactions = [
   {
     TransactionID: '123456789',
-    ProductName: 'Apple',
+    Products: ['Apple'],
     Customer: 'John Doe',
-    Amount: '$12.99',
-    Status: 'Completed',
+    Cost: 12.99,
+    Amount: 1,
+    Status: 'Active',
     Date: '2024-06-15',
   },
   {
     TransactionID: '987654321',
-    ProductName: 'Banana',
+    Products: ['Banana', 'Orange', 'Mango'],
     Customer: 'Jane Smith',
-    Amount: '$8.49',
+    Cost: 24.99,
+    Amount: 3,
     Status: 'Pending',
     Date: '2024-06-14',
   },
   {
     TransactionID: '456789123',
-    ProductName: 'Carrot',
+    Products: ['Carrot'],
     Customer: 'Alice Johnson',
-    Amount: '$5.75',
-    Status: 'Completed',
+    Cost: 5.75,
+    Amount: 1,
+    Status: 'Active',
     Date: '2024-06-13',
   },
 ];
+
 const lineGraphData = [
-  { date: 'Jan', temperature: -25 },
-  { date: 'Feb', temperature: -10 },
-  { date: 'Mar', temperature: 5 },
-  { date: 'Apr', temperature: 15 },
-  { date: 'May', temperature: 30 },
-  { date: 'Jun', temperature: 15 },
-  { date: 'Jul', temperature: 30 },
-  { date: 'Aug', temperature: 40 },
-  { date: 'Sep', temperature: 15 },
-  { date: 'Oct', temperature: 20 },
-  { date: 'Nov', temperature: 0 },
-  { date: 'Dec', temperature: -10 },
+  { date: 'Jan', temperature: 5000 },
+  { date: 'Feb', temperature: 6200 },
+  { date: 'Mar', temperature: 5800 },
+  { date: 'Apr', temperature: 7100 },
+  { date: 'May', temperature: 8300 },
+  { date: 'Jun', temperature: 7600 },
+  { date: 'Jul', temperature: 9200 },
+  { date: 'Aug', temperature: 10100 },
+  { date: 'Sep', temperature: 8900 },
+  { date: 'Oct', temperature: 7800 },
+  { date: 'Nov', temperature: 6500 },
+  { date: 'Dec', temperature: 8700 },
 ];
+
+// Transform raw transactions to include formatted ProductName for display
+const transactions = rawTransactions.map((tx) => ({
+  ...tx,
+  ProductName:
+    tx.Products.length === 1
+      ? tx.Products[0]
+      : `${tx.Products.length} items...`,
+}));
 
 export const HomePage = () => {
   return (
@@ -103,13 +116,13 @@ export const HomePage = () => {
       <div className="grid md:grid-cols-3 gap-8">
         <Card className=" lg:col-span-2 col-span-3">
           <Heading level={5} className="text-xl mt-4 mb-2 font-semibold">
-            Temperature Overview
+            Sales Overview
           </Heading>
           <p className="pb-4">Real time user engagement</p>
           <LineChart
             h={250}
             data={lineGraphData}
-            series={[{ name: 'temperature', label: 'Avg. Temperature' }]}
+            series={[{ name: 'temperature', label: 'Sales Revenue' }]}
             dataKey="date"
             type="gradient"
             gradientStops={[
@@ -122,8 +135,8 @@ export const HomePage = () => {
             ]}
             strokeWidth={5}
             curveType="natural"
-            yAxisProps={{ domain: [-25, 40] }}
-            valueFormatter={(value) => `${value}°C`}
+            yAxisProps={{ domain: [0, 10000] }}
+            valueFormatter={(value) => `$${value}`}
           />
         </Card>
         <Card className="text-center lg:col-span-1 col-span-2 items-center flex flex-col">
@@ -165,6 +178,7 @@ export const HomePage = () => {
             { key: 'TransactionID', label: 'Transaction ID' },
             { key: 'ProductName', label: 'Product Name' },
             { key: 'Customer', label: 'Customer' },
+            { key: 'Cost', label: 'Cost' },
             { key: 'Amount', label: 'Amount' },
             { key: 'Status', label: 'Status' },
             { key: 'Date', label: 'Date' },
