@@ -8,6 +8,7 @@ import { TableFilter } from '@/components/common/Table/TableFilter';
 import { useSearchProducts } from '@/services/Products/Products';
 import { Loader } from '@mantine/core';
 import { Pagination } from '@/components/common/Pagination';
+import { handleTableExport } from '@/utils';
 
 export const ProductSearch = () => {
   const [paginationPage, setPaginationPage] = useState(1);
@@ -45,6 +46,19 @@ export const ProductSearch = () => {
     searchParams[1](`productName=${searchText}&page=${page}`);
   };
 
+  const tableColumns = [
+    { key: 'name', label: 'Product Name' },
+    { key: 'category', label: 'Category' },
+    { key: 'supplier', label: 'Supplier' },
+    { key: 'price', label: 'Price' },
+  ];
+
+  const tableRows = (products?.data ?? []) as Record<string, unknown>[];
+
+  const handleExport = (format: 'csv' | 'excel' | 'pdf') => {
+    handleTableExport(format, tableColumns, tableRows, 'products-export');
+  };
+
   return (
     <div className="flex flex-col gap-6">
       <SearchBar
@@ -67,23 +81,15 @@ export const ProductSearch = () => {
           <TableFilter
             hasStatusFilter={false}
             filterItems={['Barcode', 'Category', 'Supplier']}
-            sortItems={['Supplier','Price','Category']}
+            sortItems={['Supplier', 'Price', 'Category']}
             orderItems={[
               { label: 'Ascending', value: 'asc' },
               { label: 'Descending', value: 'desc' },
             ]}
+            onExport={handleExport}
           />
           <div className="flex flex-col gap-4 justify-center items-center w-full bg-white p-5 border border-gray-300 rounded-md shadow-sm">
-            <Table
-              actions={true}
-              columns={[
-                { key: 'name', label: 'Product Name' },
-                { key: 'category', label: 'Category' },
-                { key: 'supplier', label: 'Supplier' },
-                { key: 'price', label: 'Price' },
-              ]}
-              rows={products?.data ?? []}
-            />
+            <Table actions={true} columns={tableColumns} rows={tableRows} />
             <Pagination
               setCurrentPage={handleSetPaginationPage}
               currentPage={products?.currentPage ?? paginationPage}

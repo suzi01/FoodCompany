@@ -8,6 +8,7 @@ import { TableFilter } from '@/components/common/Table/TableFilter';
 import { Loader } from '@mantine/core';
 import { Pagination } from '@/components/common/Pagination';
 import { useSearchSuppliers } from '@/services/Suppliers/Supplier';
+import { handleTableExport } from '@/utils';
 
 export const SupplierSearch = () => {
   const [paginationPage, setPaginationPage] = useState(1);
@@ -52,6 +53,20 @@ export const SupplierSearch = () => {
     searchParams[1](`companyName=${searchText}${statusQuery}&page=${page}`);
   };
 
+  const tableColumns = [
+    { key: 'companyName', label: 'Company Name' },
+    { key: 'status', label: 'Status' },
+    { key: 'email', label: 'Company Email' },
+    { key: 'phoneNumber', label: 'Company Phone' },
+    { key: 'products', label: 'Products' },
+  ];
+
+  const tableRows = (suppliers?.data ?? []) as Record<string, unknown>[];
+
+  const handleExport = (format: 'csv' | 'excel' | 'pdf') => {
+    handleTableExport(format, tableColumns, tableRows, 'suppliers-export');
+  };
+
   return (
     <div className="flex flex-col gap-6">
       <SearchBar
@@ -81,19 +96,10 @@ export const SupplierSearch = () => {
             ]}
             filteredStatus={filterStatus}
             setFilterStatus={handleSetFilterStatus}
+            onExport={handleExport}
           />
           <div className="flex flex-col gap-4 justify-center items-center w-full bg-white p-5 border border-gray-300 rounded-md shadow-sm">
-            <Table
-              actions={true}
-              columns={[
-                { key: 'companyName', label: 'Company Name' },
-                { key: 'status', label: 'Status' },
-                { key: 'email', label: 'Company Email' },
-                { key: 'phoneNumber', label: 'Company Phone' },
-                { key: 'products', label: 'Products' },
-              ]}
-              rows={suppliers?.data ?? []}
-            />
+            <Table actions={true} columns={tableColumns} rows={tableRows} />
             <Pagination
               setCurrentPage={handleSetPaginationPage}
               currentPage={suppliers?.currentPage ?? paginationPage}
