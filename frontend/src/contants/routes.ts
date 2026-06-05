@@ -3,6 +3,7 @@ export const ROUTES = {
   BRANCHES: '/branches',
   SUPPLIERS: '/suppliers',
   PRODUCTS: '/products',
+  TRANSACTIONS: '/transactions',
   BRANCH_DETAILS: '/branches/:id/view',
   BRANCH_TEST: '/branches/:id',
   SUPPLIER_DETAILS: '/suppliers/:id/view',
