@@ -6,10 +6,12 @@ import { MemoryRouter } from 'react-router-dom';
 
 describe('TableFilter Component', () => {
   const mockSetFilterStatus = vi.fn();
+  const mockOnExport = vi.fn();
   const filterItems = ['View', 'Edit', 'Delete'];
 
   beforeEach(() => {
     mockSetFilterStatus.mockClear();
+    mockOnExport.mockClear();
   });
 
   it('renders filter buttons correctly on desktop', () => {
@@ -114,7 +116,30 @@ describe('TableFilter Component', () => {
     });
   });
 
-  it('renders filter and sort button and export button', () => {
+  it('renders filter and sort button and export button when onExport is provided', () => {
+    Object.defineProperty(window, 'innerWidth', {
+      writable: true,
+      configurable: true,
+      value: 1024,
+    });
+    render(
+      <MemoryRouter>
+        <TableFilter
+          hasStatusFilter={false}
+          filterItems={filterItems}
+          onExport={mockOnExport}
+        />
+      </MemoryRouter>,
+    );
+
+    const filterButton = screen.getByText(/filter & sort/i);
+    const exportButton = screen.getByText(/export/i);
+
+    expect(filterButton).toBeInTheDocument();
+    expect(exportButton).toBeInTheDocument();
+  });
+
+  it('does not render export button when onExport is not provided', () => {
     Object.defineProperty(window, 'innerWidth', {
       writable: true,
       configurable: true,
@@ -126,10 +151,57 @@ describe('TableFilter Component', () => {
       </MemoryRouter>,
     );
 
-    const filterButton = screen.getByText(/filter & sort/i);
-    const exportButton = screen.getByText(/export/i);
+    expect(screen.queryByText(/export/i)).not.toBeInTheDocument();
+  });
 
-    expect(filterButton).toBeInTheDocument();
-    expect(exportButton).toBeInTheDocument();
+  it('calls onExport with csv format', async () => {
+    render(
+      <MemoryRouter>
+        <TableFilter
+          hasStatusFilter={false}
+          filterItems={filterItems}
+          onExport={mockOnExport}
+        />
+      </MemoryRouter>,
+    );
+
+    await userEvent.click(screen.getByText(/export/i));
+    await userEvent.click(screen.getByText('CSV'));
+
+    expect(mockOnExport).toHaveBeenCalledWith('csv');
+  });
+
+  it('calls onExport with excel format', async () => {
+    render(
+      <MemoryRouter>
+        <TableFilter
+          hasStatusFilter={false}
+          filterItems={filterItems}
+          onExport={mockOnExport}
+        />
+      </MemoryRouter>,
+    );
+
+    await userEvent.click(screen.getByText(/export/i));
+    await userEvent.click(screen.getByText('Excel'));
+
+    expect(mockOnExport).toHaveBeenCalledWith('excel');
+  });
+
+  it('calls onExport with pdf format', async () => {
+    render(
+      <MemoryRouter>
+        <TableFilter
+          hasStatusFilter={false}
+          filterItems={filterItems}
+          onExport={mockOnExport}
+        />
+      </MemoryRouter>,
+    );
+
+    await userEvent.click(screen.getByText(/export/i));
+    await userEvent.click(screen.getByText('PDF'));
+
+    expect(mockOnExport).toHaveBeenCalledWith('pdf');
   });
 });
