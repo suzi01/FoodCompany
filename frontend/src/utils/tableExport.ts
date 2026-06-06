@@ -49,12 +49,11 @@ export const exportToCsv = (
   fileName: string,
 ) => {
   const header = columns.map((column) => escapeCsvCell(column.label)).join(',');
-  const body = rows.map((row) => {
-    return columns
-      .map((column) => normalizeCellValue(row[column.key]))
-      .map((value) => escapeCsvCell(value))
-      .join(',');
-  });
+  const body = rows.map((row) =>
+    columns
+      .map((col) => escapeCsvCell(normalizeCellValue(row[col.key])))
+      .join(','),
+  );
 
   const csv = [header, ...body].join('\n');
   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
