@@ -8,31 +8,28 @@ import { Drawer } from '../../Drawer';
 import { FilterAndSortForm } from '../../../Forms/FilterAndSortForm';
 import { Image } from '../../Image/Image';
 
-interface TablePropsWithFilter {
+type ExportFormat = 'csv' | 'excel' | 'pdf';
+
+interface TableFilterBaseProps {
+  filterItems: string[];
+  sortItems?: string[];
+  orderItems?: { label: string; value: string }[];
+  onExport?: (format: ExportFormat) => void;
+}
+
+interface TablePropsWithFilter extends TableFilterBaseProps {
   hasStatusFilter: true;
   filteredStatus: string;
   setFilterStatus: (value: string) => void;
-  filterItems: string[];
-  sortItems?: string[];
-  orderItems?: { label: string; value: string }[];
 }
 
-interface TablePropsWithNoFilter {
+interface TablePropsWithNoFilter extends TableFilterBaseProps {
   hasStatusFilter: false;
   filteredStatus?: never;
   setFilterStatus?: never;
-  filterItems: string[];
-  sortItems?: string[];
-  orderItems?: { label: string; value: string }[];
 }
 
 type TableFilterProps = TablePropsWithFilter | TablePropsWithNoFilter;
-
-const exportMenuItems = [
-  { label: 'CSV' },
-  { label: 'Excel' },
-  { label: 'PDF' },
-];
 
 const StatusButton = ({
   status,
@@ -62,8 +59,15 @@ export const TableFilter = ({
   filterItems,
   sortItems,
   orderItems,
+  onExport,
 }: TableFilterProps) => {
   const [opened, setOpened] = useState(false);
+  const exportMenuItems = [
+    { label: 'CSV', onClick: () => onExport?.('csv') },
+    { label: 'Excel', onClick: () => onExport?.('excel') },
+    { label: 'PDF', onClick: () => onExport?.('pdf') },
+  ];
+
   return (
     <div className="flex mb-4 pb-4 border-b border-gray-[#ccc]">
       {hasStatusFilter &&
@@ -130,17 +134,19 @@ export const TableFilter = ({
           }
         />
 
-        <BasicMenu
-          target={
-            <button className="border border-[#bcbcbc] rounded-[8px] px-3 py-1.5">
-              <div className="flex items-center gap-1.5">
-                <Image src={Export} alt="export icon" className="w-[15px]" />
-                <p className="hidden md:block">Export</p>
-              </div>
-            </button>
-          }
-          items={exportMenuItems}
-        />
+        {onExport && (
+          <BasicMenu
+            target={
+              <button className="border border-[#bcbcbc] rounded-[8px] px-3 py-1.5">
+                <div className="flex items-center gap-1.5">
+                  <Image src={Export} alt="export icon" className="w-[15px]" />
+                  <p className="hidden md:block">Export</p>
+                </div>
+              </button>
+            }
+            items={exportMenuItems}
+          />
+        )}
       </div>
     </div>
   );

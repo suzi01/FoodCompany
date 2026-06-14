@@ -8,6 +8,7 @@ import { TableFilter } from '@/components/common/Table/TableFilter';
 import { useSearchBranches } from '@/services/Branches/Branches';
 import { Loader } from '@mantine/core';
 import { Pagination } from '@/components/common/Pagination';
+import { handleTableExport } from '@/utils';
 
 export const BranchSearch = () => {
   const [paginationPage, setPaginationPage] = useState(1);
@@ -45,6 +46,21 @@ export const BranchSearch = () => {
     searchParams[1](`branchName=${searchText}&page=${page}`);
   };
 
+  const tableColumns = [
+    { key: 'branchName', label: 'Branch Name' },
+    { key: 'branchEmail', label: 'Branch Email' },
+    { key: 'phoneNumber', label: 'Branch Phone' },
+    { key: 'address', label: 'Address' },
+    { key: 'yearsActive', label: 'Years Active' },
+    { key: 'suppliers', label: 'Suppliers' },
+  ];
+
+  const tableRows = (branches?.data ?? []) as Record<string, unknown>[];
+
+  const handleExport = (format: 'csv' | 'excel' | 'pdf') => {
+    handleTableExport(format, tableColumns, tableRows, 'branches-export');
+  };
+
   return (
     <div className="flex flex-col gap-6">
       <SearchBar
@@ -74,20 +90,10 @@ export const BranchSearch = () => {
               { label: 'Newest', value: 'newest' },
               { label: 'Oldest', value: 'oldest' },
             ]}
+            onExport={handleExport}
           />
           <div className="flex flex-col gap-4 justify-center items-center w-full bg-white p-5 border border-gray-300 rounded-md shadow-sm">
-            <Table
-              actions={true}
-              columns={[
-                { key: 'branchName', label: 'Branch Name' },
-                { key: 'branchEmail', label: 'Branch Email' },
-                { key: 'phoneNumber', label: 'Branch Phone' },
-                { key: 'address', label: 'Address' },
-                { key: 'yearsActive', label: 'Years Active' },
-                { key: 'suppliers', label: 'Suppliers' },
-              ]}
-              rows={branches?.data ?? []}
-            />
+            <Table actions={true} columns={tableColumns} rows={tableRows} />
             <Pagination
               setCurrentPage={handleSetPaginationPage}
               currentPage={branches?.currentPage ?? paginationPage}
